@@ -1,4 +1,33 @@
 #!/usr/bin/env python3
+
+#This file is part of Mutational Signatures Project.
+
+#Mutational Signatures Project: need info on project
+
+#Copyright (C) 2018 Erik Bergstrom
+
+#
+
+#Mutational Signatures is free software: need to include distribtution
+
+#rights and so forth
+
+#
+
+#Mutational Signatures is distributed in the hope that it will be useful,
+
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+#GNU General Public License for more details [change to whatever group we should include.
+ 
+
+#Author: Erik Bergstrom
+
+#Contact: ebergstr@eng.ucsd.edu
+
+
 import re
 import os
 import argparse
