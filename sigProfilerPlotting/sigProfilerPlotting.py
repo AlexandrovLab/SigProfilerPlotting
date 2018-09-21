@@ -35,11 +35,16 @@ from collections import OrderedDict
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.font_manager
+from matplotlib.backends.backend_pdf import PdfPages
 
 
-def plot96(matrix_path, output_path, signature):
-	del matplotlib.font_manager.weight_dict['roman']
-	matplotlib.font_manager._rebuild()
+def plot96(matrix_path, output_path, signature, project):
+	if 'roman' in matplotlib.font_manager.weight_dict:
+		del matplotlib.font_manager.weight_dict['roman']
+		matplotlib.font_manager._rebuild()
+
+	pp = PdfPages(output_path + '96_mutations_sample_' + project + '.pdf')
+
 
 	mutations = dict()
 	total_count = []
@@ -65,7 +70,7 @@ def plot96(matrix_path, output_path, signature):
 	for sample in mutations.keys():
 		total_count = sum(sum(nuc.values()) for nuc in mutations[sample].values())
 		plt.rcParams['axes.linewidth'] = 2
-		plt.figure(figsize=(43.93,9.92))
+		plot1 = plt.figure(figsize=(43.93,9.92))
 		plt.rc('axes', edgecolor='lightgray')
 		panel1 = plt.axes([0.04, 0.09, 0.95, 0.77])
 		xlabels = []
@@ -106,13 +111,16 @@ def plot96(matrix_path, output_path, signature):
 
 		if signature:
 			ytick_offest = (y/4)
+			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
+			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
+					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
 		else:
 			ytick_offest = int(y/4)
-		labs = np.arange(0.375,96.375,1)
-		if signature:
-			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
-		else:
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
+			ylabels= [0, ytick_offest, ytick_offest*2, 
+				  	  ytick_offest*3, ytick_offest*4]		
+
+		labs = np.arange(0.375,96.375,1)
 
 		panel1.set_xlim([0, 96])
 		panel1.set_ylim([0, y])
@@ -127,25 +135,22 @@ def plot96(matrix_path, output_path, signature):
 			count += 1
 			if count == 16:
 				count = 0
-				m += 1
+				m += 1	
 
-
-
-		if signature:
-			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
-					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
-
-			plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
-
-		else:
-			ylabels= [0, ytick_offest, ytick_offest*2, 
-				  	  ytick_offest*3, ytick_offest*4]		
+		plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 		panel1.set_yticklabels(ylabels, fontsize=30)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
+
+		if signature:
+			plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+		else:
+			plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+
+
 
 		panel1.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=False,\
@@ -157,13 +162,16 @@ def plot96(matrix_path, output_path, signature):
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 
-		plt.savefig(output_path + '96_mutations_sample_' + sample + '.pdf')
+		pp.savefig(plot1)
+	pp.close()
 
 
+def plot192(matrix_path, output_path, signature, project):
+	if 'roman' in matplotlib.font_manager.weight_dict:
+		del matplotlib.font_manager.weight_dict['roman']
+		matplotlib.font_manager._rebuild()
 
-def plot192(matrix_path, output_path, signature):
-	del matplotlib.font_manager.weight_dict['roman']
-	matplotlib.font_manager._rebuild()
+	pp = PdfPages(output_path + '192_mutations_sample_' + project + '.pdf')
 
 	mutations = dict()
 	with open (matrix_path) as f:
@@ -197,7 +205,7 @@ def plot192(matrix_path, output_path, signature):
 	for sample in mutations.keys():
 		total_count = sum(sum(sum(tsb) for tsb in nuc.values()) for nuc in mutations[sample].values())
 		plt.rcParams['axes.linewidth'] = 2
-		plt.figure(figsize=(43.93,9.92))
+		plot1 = plt.figure(figsize=(43.93,9.92))
 		plt.rc('axes', edgecolor='lightgray')
 		panel1 = plt.axes([0.04, 0.09, 0.95, 0.77])
 		xlabels = []
@@ -252,13 +260,14 @@ def plot192(matrix_path, output_path, signature):
 
 		if signature:
 			ytick_offest = (y/4)
+			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
+			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
+					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
 		else:
 			ytick_offest = int(y/4)
-
-		if signature:
-			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
-		else:
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
+			ylabels= [0, ytick_offest, ytick_offest*2, 
+				  	  ytick_offest*3, ytick_offest*4]
 
 		labs = np.arange(0.750,192.750,1)
 
@@ -276,22 +285,19 @@ def plot192(matrix_path, output_path, signature):
 			if count == 16:
 				count = 0
 				m += 1
-
-		if signature:
-			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
-					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
-
-			plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
-
-		else:
-			ylabels= [0, ytick_offest, ytick_offest*2, 
-				  	  ytick_offest*3, ytick_offest*4]		
+		
+		plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 		panel1.set_yticklabels(ylabels, fontsize=30)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
+
+		if signature:
+			plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+		else:
+			plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 		panel1.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=False,\
@@ -302,13 +308,17 @@ def plot192(matrix_path, output_path, signature):
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 
-		plt.savefig(output_path + '192_mutations_sample_' + sample + '.pdf')
+		pp.savefig(plot1)
+	pp.close()
 
 
+def plotINDEL(matrix_path, output_path, signature, project):
+	if 'roman' in matplotlib.font_manager.weight_dict:
+		del matplotlib.font_manager.weight_dict['roman']
+		matplotlib.font_manager._rebuild()
 
-def plotINDEL(matrix_path, output_path, signature):
-	del matplotlib.font_manager.weight_dict['roman']
-	matplotlib.font_manager._rebuild()
+	pp = PdfPages(output_path + 'INDEL_mutations_sample_' + project + '.pdf')
+
 	indel_types = ['1:Del:C:1', '1:Del:C:2', '1:Del:C:3', '1:Del:C:4', '1:Del:C:5', '1:Del:C:6'
 				   '1:Del:T:1', '1:Del:T:2', '1:Del:T:3', '1:Del:T:4', '1:Del:T:5', '1:Del:T:6'
 				   '1:Ins:C:0', '1:Ins:C:1', '1:Ins:C:2', '1:Ins:C:3', '1:Ins:C:4', '1:Ins:C:5',
@@ -359,17 +369,18 @@ def plotINDEL(matrix_path, output_path, signature):
 	for sample in mutations.keys():
 		total_count = sum(sum(nuc) for nuc in mutations[sample].values())
 		plt.rcParams['axes.linewidth'] = 2
-		plt.figure(figsize=(43.93,12))
+		plot1 = plt.figure(figsize=(43.93,12))
 		plt.rc('axes', edgecolor='black')
 		panel1 = plt.axes([0.045, 0.17, 0.92, 0.65])
 		xlabels = []
 		
 		x = 0.4
 		ymax = 0
-		colors = [[255/256,178/256,102/256], [255/256,128/256,1/256], [162/256,207/256,99/256], [76/256,153/256,1/256], 
-				  [249/256,210/256,171/256], [230/256,132/256,76/256], [208/256,46/256,46/256], [141/256,1/256,1/256],
-				  [204/256,229/256,255/256], [159/256,195/256,230/256], [68/256,123/256,178/256], [1/256,76/256,153/256],
-				  [231/256,231/256,242/256], [185/256,185/256,223/256], [129/256,129/256,191/256], [95/256,40/256,149/256]]
+		colors = [[253/256,190/256,111/256], [255/256,128/256,2/256], [176/256,221/256,139/256], [54/256,161/256,46/256], 
+				  [253/256,202/256,181/256], [252/256,138/256,106/256], [241/256,68/256,50/256], [188/256,25/256,26/256],
+				  [208/256,225/256,242/256], [148/256,196/256,223/256], [74/256,152/256,201/256], [23/256,100/256,171/256],
+				  [226/256,226/256,239/256], [182/256,182/256,216/256], [134/256,131/256,189/256], [98/256,64/256,155/256]]
+
 		i = 0
 		for key in mutations[sample]:
 			l = 1
@@ -438,7 +449,7 @@ def plotINDEL(matrix_path, output_path, signature):
 		plt.text(.21, yText_labels_top, '1bp Insertion', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 		plt.text(.375, yText_labels_top, '>1bp Deletion at Repeats\n      (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 		plt.text(.64, yText_labels_top, '>1bp Insertions at Repeats\n       (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-		plt.text(.85, yText_labels_top, 'Mircohomology\n  (Indel Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+		plt.text(.85, yText_labels_top, 'Mircohomology\n  (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 		plt.text(.058, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
 		plt.text(.19, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
@@ -446,10 +457,6 @@ def plotINDEL(matrix_path, output_path, signature):
 		plt.text(.65, yText_labels_bottom_sec, 'Number of Repeat Units', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 		plt.text(.85, yText_labels_bottom_sec, 'Mircohomology Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
-
-
-
-		
 		x = .0477
 		for i in range (0, 8, 1):
 			if i != 2 and i != 3:
@@ -473,36 +480,36 @@ def plotINDEL(matrix_path, output_path, signature):
 
 		if signature:
 			ytick_offest = (y/4)
+			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
+			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
+					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
+
 		else:
 			ytick_offest = int(y/4)
-
-		if signature:
-			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
-		else:
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
+			ylabels= [0, ytick_offest, ytick_offest*2, 
+				  	  ytick_offest*3, ytick_offest*4]
+
 
 		labs = np.arange(0.375,83.375,1)
 
 		panel1.set_xlim([0, 83])
 		panel1.set_ylim([0, y])
 		panel1.set_xticks(labs)
-		panel1.set_yticks(ylabs)
+		panel1.set_yticks(ylabs)	
 
-		if signature:
-			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
-					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
-
-			plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
-
-		else:
-			ylabels= [0, ytick_offest, ytick_offest*2, 
-				  	  ytick_offest*3, ytick_offest*4]		
+		plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 		panel1.set_yticklabels(ylabels, fontsize=30)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
+
+		if signature:
+			plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+		else:
+			plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 		panel1.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=False,\
@@ -513,13 +520,16 @@ def plotINDEL(matrix_path, output_path, signature):
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 
-		plt.savefig(output_path + 'INDEL_mutations_sample_' + sample + '.pdf')
-		plt.close()
+		pp.savefig(plot1)
+	pp.close()
 
 
-def plotDINUC(matrix_path, output_path, signature):
-	del matplotlib.font_manager.weight_dict['roman']
-	matplotlib.font_manager._rebuild()
+def plotDINUC(matrix_path, output_path, signature, project):
+	if 'roman' in matplotlib.font_manager.weight_dict:
+		del matplotlib.font_manager.weight_dict['roman']
+		matplotlib.font_manager._rebuild()
+
+	pp = PdfPages(output_path + 'DINUC_mutations_sample_' + project + '.pdf')
 
 	dinucs = ['TT>GG','TT>CG','TT>AG','TT>GC','TT>CC','TT>AC','TT>GA','TT>CA','TT>AA','AC>CA','AC>CG','AC>CT','AC>GA',
 			  'AC>GG','AC>GT','AC>TA','AC>TG','AC>TT','CT>AA','CT>AC','CT>AG','CT>GA','CT>GC','CT>GG','CT>TG','CT>TC',
@@ -558,7 +568,7 @@ def plotDINUC(matrix_path, output_path, signature):
 	for sample in mutations.keys():
 		total_count = sum(sum(nuc.values()) for nuc in mutations[sample].values())
 		plt.rcParams['axes.linewidth'] = 4
-		plt.figure(figsize=(43.93,9.92))
+		plot1 = plt.figure(figsize=(43.93,9.92))
 		plt.rc('axes', edgecolor='grey')
 		panel1 = plt.axes([0.04, 0.09, 0.95, 0.77])
 		xlabels = []
@@ -617,34 +627,26 @@ def plotDINUC(matrix_path, output_path, signature):
 
 		if signature:
 			ytick_offest = (y/4)
+			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
+			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
+					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
 		else:
 			if y < 10:
 				if y/4 - int(y/4) > 0.5:
 					ytick_offest = int(y/4) + 1
 				else:
 					ytick_offest = int(y/4)
-				#ytick_offest = int(y/4)
+
 			else:
 				ytick_offest = int(y/4)
 			if ytick_offest == 0:
 				ytick_offest = 1
-
-		if signature:
-			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
-		else:
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
-
-
-
-		if signature:
-			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
-					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
-
-			plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
-
-		else:
 			ylabels= [0, ytick_offest, ytick_offest*2, 
-				  	  ytick_offest*3, ytick_offest*4]		
+				  	  ytick_offest*3, ytick_offest*4]
+		
+		
+		plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 
 		labs = np.arange(0.44,78.44,1)
@@ -654,11 +656,16 @@ def plotDINUC(matrix_path, output_path, signature):
 		panel1.set_yticks(ylabs)
 		panel1.set_xticklabels(xlabels, rotation='vertical', fontsize=30, color='grey', fontname='Courier New', verticalalignment='top', fontweight='bold')
 
-		panel1.set_yticklabels(ylabels, fontsize=30)
+		panel1.set_yticklabels(ylabels, fontsize=25)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
+
+		if signature:
+			plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+		else:
+			plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 		panel1.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=True,\
@@ -670,7 +677,8 @@ def plotDINUC(matrix_path, output_path, signature):
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 		[i.set_color("grey") for i in plt.gca().get_xticklabels()]
 
-		plt.savefig(output_path + 'DINUC_mutations_sample_' + sample + '.pdf')
+		pp.savefig(plot1)
+	pp.close()
 
 
 def main():
@@ -696,13 +704,13 @@ def main():
 		os.system("mkdir " + output_path)
 
 	if context == '96':
-		plot96(matrix_path, output_path, signature)
+		plot96(matrix_path, output_path, signature, project)
 	elif context == '192':
-		plot192(matrix_path, output_path, signature)
+		plot192(matrix_path, output_path, signature, project)
 	elif context == 'INDEL':
-		plotINDEL(matrix_path, output_path, signature)
+		plotINDEL(matrix_path, output_path, signature, project)
 	elif context == 'DINUC':
-		plotDINUC(matrix_path, output_path, signature)
+		plotDINUC(matrix_path, output_path, signature, project)
 	else:
 		print("Context not supported.")
 

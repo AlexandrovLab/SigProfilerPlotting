@@ -1,0 +1,17 @@
+# Complied python modules
+*.pyc
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+
+# Hidden files and directories
+*.DS_Store
+
+# R code to ignore
+*rain_plots_BRCA
+*README
+!README.rst
+*SBS_mutation_count_plotting.R
