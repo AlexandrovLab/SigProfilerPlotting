@@ -38,7 +38,7 @@ import matplotlib.font_manager
 from matplotlib.backends.backend_pdf import PdfPages
 
 
-def plot96(matrix_path, output_path, signature, project):
+def plot96(matrix_path, output_path, signature, project, percentage):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -63,7 +63,10 @@ def plot96(matrix_path, output_path, signature, project):
 			sample_index = 1
 
 			for sample in samples:
-				mutCount = int(line[sample_index])
+				if percentage:
+					mutCount = float(line[sample_index])
+				else:
+					mutCount = int(line[sample_index])
 				mutations[sample][mut_type][nuc] = mutCount
 				sample_index += 1
 
@@ -83,9 +86,14 @@ def plot96(matrix_path, output_path, signature, project):
 			for seq in mutations[sample][key]:
 				xlabels.append(seq[0]+seq[2]+seq[6])
 				if signature:
-					plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-					if mutations[sample][key][seq]/total_count*100 > ymax:
-						ymax = mutations[sample][key][seq]/total_count*100
+					if percentage:
+						plt.bar(x, mutations[sample][key][seq]*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if mutations[sample][key][seq]*100 > ymax:
+							ymax = mutations[sample][key][seq]*100
+					else:	
+						plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if mutations[sample][key][seq]/total_count*100 > ymax:
+							ymax = mutations[sample][key][seq]/total_count*100
 				else:
 					plt.bar(x, mutations[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
 					if mutations[sample][key][seq] > ymax:
@@ -166,7 +174,7 @@ def plot96(matrix_path, output_path, signature, project):
 	pp.close()
 
 
-def plot192(matrix_path, output_path, signature, project):
+def plot192(matrix_path, output_path, signature, project, percentage):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -193,7 +201,10 @@ def plot192(matrix_path, output_path, signature, project):
 				sample_index = 1
 
 				for sample in samples:
-					mutCount = int(line[sample_index])
+					if percentage:
+						mutCount = float(line[sample_index])
+					else:
+						mutCount = int(line[sample_index])
 					if nuc not in mutations[sample][mut_type].keys():
 						mutations[sample][mut_type][nuc] = [0,0]
 					if bias == 'T':
@@ -218,14 +229,24 @@ def plot192(matrix_path, output_path, signature, project):
 			for seq in mutations[sample][key]:
 				xlabels.append(seq[0]+seq[2]+seq[6])
 				if signature:
-					plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
-					x += 0.75
-					plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
-					x += .2475
-					if mutations[sample][key][seq][0]/total_count*100 > ymax:
-							ymax = mutations[sample][key][seq][0]/total_count*100
-					elif mutations[sample][key][seq][1]/total_count*100 > ymax:
-							ymax = mutations[sample][key][seq][1]/total_count*100
+					if percentage:
+						plt.bar(x, mutations[sample][key][seq][0]*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
+						x += 0.75
+						plt.bar(x, mutations[sample][key][seq][1]*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
+						x += .2475
+						if mutations[sample][key][seq][0]*100 > ymax:
+								ymax = mutations[sample][key][seq][0]*100
+						elif mutations[sample][key][seq][1]*100 > ymax:
+								ymax = mutations[sample][key][seq][1]*100
+					else:
+						plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
+						x += 0.75
+						plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
+						x += .2475
+						if mutations[sample][key][seq][0]/total_count*100 > ymax:
+								ymax = mutations[sample][key][seq][0]/total_count*100
+						elif mutations[sample][key][seq][1]/total_count*100 > ymax:
+								ymax = mutations[sample][key][seq][1]/total_count*100
 
 				else:
 					plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
@@ -312,7 +333,7 @@ def plot192(matrix_path, output_path, signature, project):
 	pp.close()
 
 
-def plotINDEL(matrix_path, output_path, signature, project):
+def plotINDEL(matrix_path, output_path, signature, project, percentage):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -360,7 +381,10 @@ def plotINDEL(matrix_path, output_path, signature, project):
 
 			for sample in samples:
 				if mut_type in mutations[sample].keys():
-					mutCount = int(line[sample_index])
+					if percentage:
+						mutCount = float(line[sample_index])
+					else:
+						mutCount = int(line[sample_index])
 					mutations[sample][mut_type][repeat_size] = mutCount
 				else:
 					continue
@@ -387,9 +411,15 @@ def plotINDEL(matrix_path, output_path, signature, project):
 			for seq in mutations[sample][key]:
 				xlabels.append(l)
 				if signature:
-					plt.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-					if seq/total_count*100 > ymax:
-						ymax = seq/total_count*100
+					if percentage:
+						plt.bar(x, seq*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if seq*100 > ymax:
+							ymax = seq*100
+
+					else:
+						plt.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if seq/total_count*100 > ymax:
+							ymax = seq/total_count*100
 				else:
 					plt.bar(x, seq,width=0.4,color=colors[i],align='center', zorder=1000)
 					if seq > ymax:
@@ -524,7 +554,7 @@ def plotINDEL(matrix_path, output_path, signature, project):
 	pp.close()
 
 
-def plotDINUC(matrix_path, output_path, signature, project):
+def plotDINUC(matrix_path, output_path, signature, project, percentage):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -561,7 +591,10 @@ def plotDINUC(matrix_path, output_path, signature, project):
 			sample_index = 1
 
 			for sample in samples:
-				mutCount = int(line[sample_index])
+				if percentage:
+					mutCount = float(line[sample_index])
+				else:
+					mutCount = int(line[sample_index])
 				mutations[sample][mut_type][nuc] = mutCount
 				sample_index += 1
 
@@ -586,9 +619,14 @@ def plotDINUC(matrix_path, output_path, signature, project):
 			for seq in muts:
 				xlabels.append(seq)
 				if signature:
-					plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-					if mutations[sample][key][seq]/total_count*100 > ymax:
-							ymax = mutations[sample][key][seq]/total_count*100					
+					if percentage:
+						plt.bar(x, mutations[sample][key][seq]*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if mutations[sample][key][seq]*100 > ymax:
+								ymax = mutations[sample][key][seq]*100	
+					else:
+						plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if mutations[sample][key][seq]/total_count*100 > ymax:
+								ymax = mutations[sample][key][seq]/total_count*100					
 				else:
 					plt.bar(x, mutations[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
 					if mutations[sample][key][seq] > ymax:
@@ -688,29 +726,32 @@ def main():
 	parser.add_argument("--project", "-p", help="Provide the unique project name.")
 	parser.add_argument("--context", "-c", help="Provide the unique project name.")
 	parser.add_argument("-s", "--signature", help="Optional Parameter: Create the plots on a signature bases.", action='store_true')
+	parser.add_argument("-sp", "--signaturePercentages", help="Optional Parameter: Create the plots on a signature bases using NMF results.", action='store_true')
 	args = parser.parse_args()
 
 	matrix = args.matrix
 	project = args.project
 	context = args.context
+	percentage = args.signaturePercentages
+
 	if args.signature:
 		signature = True
 
 	current_dir = os.getcwd()
 	ref_dir = re.sub('\/scripts$', '', current_dir)
-	matrix_path = ref_dir + "/references/matrix/" + matrix
+	matrix_path = ref_dir + "/references/matrix/" + project + "/" + matrix
 	output_path = ref_dir + "/plots/" + project  + "/"
 	if not os.path.exists(output_path):
 		os.system("mkdir " + output_path)
 
 	if context == '96':
-		plot96(matrix_path, output_path, signature, project)
+		plot96(matrix_path, output_path, signature, project, percentage)
 	elif context == '192':
-		plot192(matrix_path, output_path, signature, project)
+		plot192(matrix_path, output_path, signature, project, percentage)
 	elif context == 'INDEL':
-		plotINDEL(matrix_path, output_path, signature, project)
+		plotINDEL(matrix_path, output_path, signature, project, percentage)
 	elif context == 'DINUC':
-		plotDINUC(matrix_path, output_path, signature, project)
+		plotDINUC(matrix_path, output_path, signature, project, percentage)
 	else:
 		print("Context not supported.")
 
