@@ -38,7 +38,7 @@ import matplotlib.font_manager
 from matplotlib.backends.backend_pdf import PdfPages
 
 
-def plot96(matrix_path, output_path, signature, project, percentage):
+def plot96(matrix_path, output_path, signature, project, percentage=False):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -118,7 +118,7 @@ def plot96(matrix_path, output_path, signature, project, percentage):
 		plt.text(.89, yText, 'T>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
 		if signature:
-			ytick_offest = (y/4)
+			ytick_offest = round((y/4), 1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
@@ -174,7 +174,7 @@ def plot96(matrix_path, output_path, signature, project, percentage):
 	pp.close()
 
 
-def plot192(matrix_path, output_path, signature, project, percentage):
+def plot192(matrix_path, output_path, signature, project, percentage=False):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -230,14 +230,14 @@ def plot192(matrix_path, output_path, signature, project, percentage):
 				xlabels.append(seq[0]+seq[2]+seq[6])
 				if signature:
 					if percentage:
-						plt.bar(x, mutations[sample][key][seq][0]*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
+						plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
 						x += 0.75
-						plt.bar(x, mutations[sample][key][seq][1]*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
+						plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
 						x += .2475
-						if mutations[sample][key][seq][0]*100 > ymax:
-								ymax = mutations[sample][key][seq][0]*100
-						elif mutations[sample][key][seq][1]*100 > ymax:
-								ymax = mutations[sample][key][seq][1]*100
+						if mutations[sample][key][seq][0]/total_count*100 > ymax:
+								ymax = mutations[sample][key][seq][0]/total_count*100
+						elif mutations[sample][key][seq][1]/total_count*100 > ymax:
+								ymax = mutations[sample][key][seq][1]/total_count*100
 					else:
 						plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
 						x += 0.75
@@ -280,7 +280,7 @@ def plot192(matrix_path, output_path, signature, project, percentage):
 
 
 		if signature:
-			ytick_offest = (y/4)
+			ytick_offest = round((y/4),1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
@@ -333,7 +333,7 @@ def plot192(matrix_path, output_path, signature, project, percentage):
 	pp.close()
 
 
-def plotINDEL(matrix_path, output_path, signature, project, percentage):
+def plotINDEL(matrix_path, output_path, signature, project, percentage=False):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -509,7 +509,7 @@ def plotINDEL(matrix_path, output_path, signature, project, percentage):
 		plt.text(x, yText_labels_bottom, '1  2  3  4  5+', fontsize=32, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 		if signature:
-			ytick_offest = (y/4)
+			ytick_offest = round((y/4), 1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
@@ -554,7 +554,7 @@ def plotINDEL(matrix_path, output_path, signature, project, percentage):
 	pp.close()
 
 
-def plotDINUC(matrix_path, output_path, signature, project, percentage):
+def plotDINUC(matrix_path, output_path, signature, project, percentage=False):
 	if 'roman' in matplotlib.font_manager.weight_dict:
 		del matplotlib.font_manager.weight_dict['roman']
 		matplotlib.font_manager._rebuild()
@@ -664,7 +664,7 @@ def plotDINUC(matrix_path, output_path, signature, project, percentage):
 
 
 		if signature:
-			ytick_offest = (y/4)
+			ytick_offest = round((y/4), 1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
