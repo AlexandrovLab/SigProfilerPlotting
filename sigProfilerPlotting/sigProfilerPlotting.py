@@ -719,6 +719,138 @@ def plotDINUC(matrix_path, output_path, signature, project, percentage=False):
 	pp.close()
 
 
+def plot96_single(matrix_path, sample, signature, project, percentage=False):
+	if 'roman' in matplotlib.font_manager.weight_dict:
+		del matplotlib.font_manager.weight_dict['roman']
+		matplotlib.font_manager._rebuild()
+
+	#pp = PdfPages(output_path + '96_mutations_sample_' + project + '.pdf')
+
+
+	mutations = dict()
+	total_count = []
+	with open (matrix_path) as f:
+		first_line = f.readline()
+		samples = first_line.strip().split()
+		samples = samples[1:]
+		sample_index = samples.index(sample) + 1
+		mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
+							 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
+
+		for lines in f:
+			line = lines.strip().split()
+			nuc = line[0]
+			mut_type = line[0][2:5]
+
+			if percentage:
+				mutCount = float(line[sample_index])
+			else:
+				mutCount = int(line[sample_index])
+			mutations[sample][mut_type][nuc] = mutCount
+
+	total_count = sum(sum(nuc.values()) for nuc in mutations[sample].values())
+	plt.rcParams['axes.linewidth'] = 2
+	plot1 = plt.figure(figsize=(43.93,9.92))
+	plt.rc('axes', edgecolor='lightgray')
+	panel1 = plt.axes([0.04, 0.09, 0.95, 0.77])
+	xlabels = []
+	
+	x = 0.4
+	ymax = 0
+	colors = [[3/256,189/256,239/256], [1/256,1/256,1/256],[228/256,41/256,38/256], [203/256,202/256,202/256], [162/256,207/256,99/256], [236/256,199/256,197/256]]
+	i = 0
+	for key in mutations[sample]:
+		for seq in mutations[sample][key]:
+			xlabels.append(seq[0]+seq[2]+seq[6])
+			if signature:
+				if percentage:
+					plt.bar(x, mutations[sample][key][seq]*100,width=0.4,color=colors[i],align='center', zorder=1000)
+					if mutations[sample][key][seq]*100 > ymax:
+						ymax = mutations[sample][key][seq]*100
+				else:	
+					plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+					if mutations[sample][key][seq]/total_count*100 > ymax:
+						ymax = mutations[sample][key][seq]/total_count*100
+			else:
+				plt.bar(x, mutations[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
+				if mutations[sample][key][seq] > ymax:
+						ymax = mutations[sample][key][seq]
+			x += 1
+		i += 1
+
+	x = .043
+	y3 = .87
+	y = ymax*1.25
+	y2 = y+2
+	for i in range(0, 6, 1):
+		panel1.add_patch(plt.Rectangle((x,y3), .15, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
+		x += .159
+
+	yText = y3 + .06
+	plt.text(.1, yText, 'C>A', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+	plt.text(.255, yText, 'C>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+	plt.text(.415, yText, 'C>T', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+	plt.text(.575, yText, 'T>A', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+	plt.text(.735, yText, 'T>C', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+	plt.text(.89, yText, 'T>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+
+	if signature:
+		ytick_offest = round((y/4), 1)
+		ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
+		ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
+				  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
+	else:
+		ytick_offest = int(y/4)
+		ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
+		ylabels= [0, ytick_offest, ytick_offest*2, 
+			  	  ytick_offest*3, ytick_offest*4]		
+
+	labs = np.arange(0.375,96.375,1)
+
+	panel1.set_xlim([0, 96])
+	panel1.set_ylim([0, y])
+	panel1.set_xticks(labs)
+	panel1.set_yticks(ylabs)
+	count = 0
+	m = 0
+	for i in range (0, 96, 1):
+		plt.text(i/101 + .0415, .02, xlabels[i][0], fontsize=30, color='gray', rotation='vertical', verticalalignment='center', fontname='Courier New', transform=plt.gcf().transFigure)
+		plt.text(i/101 + .0415, .044, xlabels[i][1], fontsize=30, color=colors[m], rotation='vertical', verticalalignment='center', fontname='Courier New', fontweight='bold',transform=plt.gcf().transFigure)
+		plt.text(i/101 + .0415, .071, xlabels[i][2], fontsize=30, color='gray', rotation='vertical', verticalalignment='center', fontname='Courier New', transform=plt.gcf().transFigure)
+		count += 1
+		if count == 16:
+			count = 0
+			m += 1	
+
+	plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+
+	panel1.set_yticklabels(ylabels, fontsize=30)
+	plt.gca().yaxis.grid(True)
+	plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
+	panel1.set_xlabel('')
+	panel1.set_ylabel('')
+
+	if signature:
+		plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+	else:
+		plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+
+
+
+	panel1.tick_params(axis='both',which='both',\
+					   bottom=False, labelbottom=False,\
+					   left=True, labelleft=True,\
+					   right=True, labelright=False,\
+					   top=False, labeltop=False,\
+					   direction='in', length=25, colors='lightgray', width=2)
+
+
+	[i.set_color("black") for i in plt.gca().get_yticklabels()]
+
+	return(plot1)
+#	pp.savefig(plot1)
+#pp.close()
+
 def main():
 	signature = False
 	parser = argparse.ArgumentParser(description="Provide the necessary arguments to install the reference files.")
