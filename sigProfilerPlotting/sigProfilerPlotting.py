@@ -117,6 +117,9 @@ def plot96(matrix_path, output_path, signature, project, percentage=False):
 		plt.text(.735, yText, 'T>C', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 		plt.text(.89, yText, 'T>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
+
+
+
 		if signature:
 			ytick_offest = round((y/4), 1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
@@ -262,13 +265,9 @@ def plot192(matrix_path, output_path, signature, project, percentage=False):
 
 		x = .0415
 		y3 = .87
-		y = ymax*1.25
+		y = int(ymax*1.25)
 		x_plot = 0
-		for i in range(0, 6, 1):
-			panel1.add_patch(plt.Rectangle((x,y3), .155, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
-			panel1.add_patch(plt.Rectangle((x_plot,0), 32, ymax*1.25, facecolor=colors[i], zorder=0, alpha = 0.25, edgecolor='grey'))
-			x += .1585
-			x_plot += 32
+
 
 		yText = y3 + .06
 		plt.text(.1, yText, 'C>A', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
@@ -278,14 +277,23 @@ def plot192(matrix_path, output_path, signature, project, percentage=False):
 		plt.text(.735, yText, 'T>C', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 		plt.text(.89, yText, 'T>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
+		while y%4 !=0:
+			y+=1
+		ytick_offest = int(y/4)
 
+		for i in range(0, 6, 1):
+			panel1.add_patch(plt.Rectangle((x,y3), .155, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
+			panel1.add_patch(plt.Rectangle((x_plot,0), 32, y, facecolor=colors[i], zorder=0, alpha = 0.25, edgecolor='grey'))
+			x += .1585
+			x_plot += 32
+			
 		if signature:
-			ytick_offest = round((y/4),1)
+			#ytick_offest = round((y/4),1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
 		else:
-			ytick_offest = int(y/4)
+			#ytick_offest = int(y/4)
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
 			ylabels= [0, ytick_offest, ytick_offest*2, 
 				  	  ytick_offest*3, ytick_offest*4]

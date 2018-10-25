@@ -40,9 +40,13 @@ sigPlt.plotDINUC(matrix_path, output_path, signature, project, percentage=False)
 sigPlt.plotINDEL(matrix_path, output_path, signature, project, percentage=False)
 ```
 matrix_path -> path to the mutational matrix of interest
+
 output_path -> desired output path
+
 signature -> Boolean: Plot based upon signature exposures
+
 project -> name of unique sample set
+
 percentage -> Boolean: plot the mutational matrix as percentages of the sample's total mutation count. Default is False
 
 **EXAMPLE**

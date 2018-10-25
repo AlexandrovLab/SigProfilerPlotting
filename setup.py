@@ -6,11 +6,14 @@ def readme():
 
 
 setup(name='sigProfilerPlotting',
-		version='0.1',
+		version='0.1.2',
 		description='SigProfiler plotting tool',
 		url='',
-		author='Erik Bergstrom/Maria',
+		author='Erik Bergstrom',
 		author_email='ebergstr@eng.ucsd.edu',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
+		install_requires =[
+			"matplotlib"],
+		include_package_data=True,
 		zip_safe=False)
