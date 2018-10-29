@@ -50,7 +50,7 @@ def plot96(matrix_path, output_path, signature, project, percentage=False):
 	total_count = []
 	with open (matrix_path) as f:
 		first_line = f.readline()
-		samples = first_line.strip().split()
+		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
 			mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
@@ -172,8 +172,8 @@ def plot96(matrix_path, output_path, signature, project, percentage=False):
 
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
-
 		pp.savefig(plot1)
+		plt.close()
 	pp.close()
 
 
@@ -187,7 +187,7 @@ def plot192(matrix_path, output_path, signature, project, percentage=False):
 	mutations = dict()
 	with open (matrix_path) as f:
 		first_line = f.readline()
-		samples = first_line.strip().split()
+		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
 			mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
@@ -338,6 +338,7 @@ def plot192(matrix_path, output_path, signature, project, percentage=False):
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 
 		pp.savefig(plot1)
+		plt.close()
 	pp.close()
 
 
@@ -370,7 +371,7 @@ def plotINDEL(matrix_path, output_path, signature, project, percentage=False):
 	mutations = dict()
 	with open (matrix_path) as f:
 		first_line = f.readline()
-		samples = first_line.strip().split()
+		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
 			mutations[sample] = {'1DelC':[0,0,0,0,0,0], '1DelT':[0,0,0,0,0,0], '1InsC':[0,0,0,0,0,0], '1InsT':[0,0,0,0,0,0], 
@@ -559,6 +560,7 @@ def plotINDEL(matrix_path, output_path, signature, project, percentage=False):
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 
 		pp.savefig(plot1)
+		plt.close()
 	pp.close()
 
 
@@ -580,7 +582,7 @@ def plotDINUC(matrix_path, output_path, signature, project, percentage=False):
 	mutations = dict()
 	with open (matrix_path) as f:
 		first_line = f.readline()
-		samples = first_line.strip().split()
+		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
 			mutations[sample] = {'AC':OrderedDict(), 'AT':OrderedDict(), 'CC':OrderedDict(),
@@ -724,6 +726,7 @@ def plotDINUC(matrix_path, output_path, signature, project, percentage=False):
 		[i.set_color("grey") for i in plt.gca().get_xticklabels()]
 
 		pp.savefig(plot1)
+		plt.close()
 	pp.close()
 
 
@@ -739,7 +742,7 @@ def plot96_single(matrix_path, sample, signature, project, percentage=False):
 	total_count = []
 	with open (matrix_path) as f:
 		first_line = f.readline()
-		samples = first_line.strip().split()
+		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		sample_index = samples.index(sample) + 1
 		mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
