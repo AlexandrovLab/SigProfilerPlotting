@@ -1,0 +1,11 @@
+MANIFEST.in
+README.md
+setup.py
+sigProfilerPlotting/__init__.py
+sigProfilerPlotting/sigProfilerPlotting.py
+sigProfilerPlotting.egg-info/PKG-INFO
+sigProfilerPlotting.egg-info/SOURCES.txt
+sigProfilerPlotting.egg-info/dependency_links.txt
+sigProfilerPlotting.egg-info/not-zip-safe
+sigProfilerPlotting.egg-info/requires.txt
+sigProfilerPlotting.egg-info/top_level.txt

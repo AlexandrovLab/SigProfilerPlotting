@@ -46,15 +46,23 @@ def plot96(matrix_path, output_path, signature, project, percentage=False):
 	pp = PdfPages(output_path + '96_mutations_sample_' + project + '.pdf')
 
 
-	mutations = dict()
+	#mutations = dict()
+	mutations = OrderedDict()
 	total_count = []
 	with open (matrix_path) as f:
 		first_line = f.readline()
 		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
-			mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
-								 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
+			mutations[sample] = OrderedDict()
+			mutations[sample]['C>A'] = OrderedDict()
+			mutations[sample]['C>G'] = OrderedDict()
+			mutations[sample]['C>T'] = OrderedDict()
+			mutations[sample]['T>A'] = OrderedDict()
+			mutations[sample]['T>C'] = OrderedDict()
+			mutations[sample]['T>G'] = OrderedDict()
+			# mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
+			# 					 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
 
 		for lines in f:
 			line = lines.strip().split()
@@ -103,7 +111,7 @@ def plot96(matrix_path, output_path, signature, project, percentage=False):
 
 		x = .043
 		y3 = .87
-		y = ymax*1.25
+		y = int(ymax*1.25)
 		y2 = y+2
 		for i in range(0, 6, 1):
 			panel1.add_patch(plt.Rectangle((x,y3), .15, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
@@ -118,15 +126,17 @@ def plot96(matrix_path, output_path, signature, project, percentage=False):
 		plt.text(.89, yText, 'T>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
 
-
+		while y%4 != 0:
+			y += 1
+		ytick_offest = int(y/4)
 
 		if signature:
-			ytick_offest = round((y/4), 1)
+			#ytick_offest = round((y/4), 1)
 			ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 			ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 					  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
 		else:
-			ytick_offest = int(y/4)
+			#ytick_offest = int(y/4)
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
 			ylabels= [0, ytick_offest, ytick_offest*2, 
 				  	  ytick_offest*3, ytick_offest*4]		
@@ -184,14 +194,22 @@ def plot192(matrix_path, output_path, signature, project, percentage=False):
 
 	pp = PdfPages(output_path + '192_mutations_sample_' + project + '.pdf')
 
-	mutations = dict()
+	#mutations = dict()
+	mutations = OrderedDict()
 	with open (matrix_path) as f:
 		first_line = f.readline()
 		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
-			mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
-								 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
+			mutations[sample] = OrderedDict()
+			mutations[sample]['C>A'] = OrderedDict()
+			mutations[sample]['C>G'] = OrderedDict()
+			mutations[sample]['C>T'] = OrderedDict()
+			mutations[sample]['T>A'] = OrderedDict()
+			mutations[sample]['T>C'] = OrderedDict()
+			mutations[sample]['T>G'] = OrderedDict()
+			# mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
+			# 					 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
 
 		for lines in f:
 			line = lines.strip().split()
@@ -368,16 +386,36 @@ def plotINDEL(matrix_path, output_path, signature, project, percentage=False):
 				   '3:Ins:M:1', '3:Ins:M:2', '4:Ins:M:1', '4:Ins:M:2', '4:Ins:M:3', '5:Ins:M:1', 
 				   '5:Ins:M:2', '5:Ins:M:3', '5:Ins:M:4', '5:Ins:M:5']
 
-	mutations = dict()
+	#mutations = dict()
+	mutations = OrderedDict()
 	with open (matrix_path) as f:
 		first_line = f.readline()
 		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
-			mutations[sample] = {'1DelC':[0,0,0,0,0,0], '1DelT':[0,0,0,0,0,0], '1InsC':[0,0,0,0,0,0], '1InsT':[0,0,0,0,0,0], 
-								 '2DelR':[0,0,0,0,0,0], '3DelR':[0,0,0,0,0,0], '4DelR':[0,0,0,0,0,0], '5DelR':[0,0,0,0,0,0],
-								 '2InsR':[0,0,0,0,0,0], '3InsR':[0,0,0,0,0,0], '4InsR':[0,0,0,0,0,0], '5InsR':[0,0,0,0,0,0], 
-								 '2DelM':[0], '3DelM':[0,0], '4DelM':[0,0,0], '5DelM':[0,0,0,0,0]}
+			mutations[sample] = OrderedDict()
+			mutations[sample]['1DelC'] = [0,0,0,0,0,0]
+			mutations[sample]['1DelT'] = [0,0,0,0,0,0]
+			mutations[sample]['1InsC'] = [0,0,0,0,0,0]
+			mutations[sample]['1InsT'] = [0,0,0,0,0,0]
+			mutations[sample]['2DelR'] = [0,0,0,0,0,0]
+			mutations[sample]['3DelR'] = [0,0,0,0,0,0]
+			mutations[sample]['4DelR'] = [0,0,0,0,0,0]
+			mutations[sample]['5DelR'] = [0,0,0,0,0,0]
+			mutations[sample]['2InsR'] = [0,0,0,0,0,0]
+			mutations[sample]['3InsR'] = [0,0,0,0,0,0]
+			mutations[sample]['3InsR'] = [0,0,0,0,0,0]
+			mutations[sample]['4InsR'] = [0,0,0,0,0,0]
+			mutations[sample]['5InsR'] = [0,0,0,0,0,0]
+			mutations[sample]['2DelM'] = [0,0,0,0,0,0]
+			mutations[sample]['3DelM'] = [0,0,0,0,0,0]
+			mutations[sample]['4DelM'] = [0,0,0,0,0,0]
+			mutations[sample]['5DelM'] = [0,0,0,0,0,0]
+
+			# mutations[sample] = {'1DelC':[0,0,0,0,0,0], '1DelT':[0,0,0,0,0,0], '1InsC':[0,0,0,0,0,0], '1InsT':[0,0,0,0,0,0], 
+			# 					 '2DelR':[0,0,0,0,0,0], '3DelR':[0,0,0,0,0,0], '4DelR':[0,0,0,0,0,0], '5DelR':[0,0,0,0,0,0],
+			# 					 '2InsR':[0,0,0,0,0,0], '3InsR':[0,0,0,0,0,0], '4InsR':[0,0,0,0,0,0], '5InsR':[0,0,0,0,0,0], 
+			# 					 '2DelM':[0], '3DelM':[0,0], '4DelM':[0,0,0], '5DelM':[0,0,0,0,0]}
 
 		for lines in f:
 			line = lines.strip().split()
@@ -579,16 +617,29 @@ def plotDINUC(matrix_path, output_path, signature, project, percentage=False):
 			  'TC>AA','GC>AA','GC>AG','GC>AT','GC>CA','GC>CG','GC>TA','TA>GT','TA>CT','TA>AT','TA>GG','TA>CG','TA>GC']
 
 	revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
-	mutations = dict()
+	#mutations = dict()
+	mutations = OrderedDict()
 	with open (matrix_path) as f:
 		first_line = f.readline()
 		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		for sample in samples:
-			mutations[sample] = {'AC':OrderedDict(), 'AT':OrderedDict(), 'CC':OrderedDict(),
-								 'CG':OrderedDict(), 'CT':OrderedDict(), 'GC':OrderedDict(),
-								 'TA':OrderedDict(), 'TC':OrderedDict(), 'TG':OrderedDict(),
-								 'TT':OrderedDict()}
+			mutations[sample] = OrderedDict()
+			mutations[sample]['AC'] = OrderedDict()
+			mutations[sample]['AT'] = OrderedDict()
+			mutations[sample]['CC'] = OrderedDict()
+			mutations[sample]['CG'] = OrderedDict()
+			mutations[sample]['CT'] = OrderedDict()
+			mutations[sample]['GC'] = OrderedDict()
+			mutations[sample]['TA'] = OrderedDict()
+			mutations[sample]['TC'] = OrderedDict()
+			mutations[sample]['TG'] = OrderedDict()
+			mutations[sample]['TT'] = OrderedDict()
+
+			# mutations[sample] = {'AC':OrderedDict(), 'AT':OrderedDict(), 'CC':OrderedDict(),
+			# 					 'CG':OrderedDict(), 'CT':OrderedDict(), 'GC':OrderedDict(),
+			# 					 'TA':OrderedDict(), 'TC':OrderedDict(), 'TG':OrderedDict(),
+			# 					 'TT':OrderedDict()}
 
 		for lines in f:
 			line = lines.strip().split()
@@ -738,15 +789,24 @@ def plot96_single(matrix_path, sample, signature, project, percentage=False):
 	#pp = PdfPages(output_path + '96_mutations_sample_' + project + '.pdf')
 
 
-	mutations = dict()
+	#mutations = dict()
+	mutations = OrderedDict()
 	total_count = []
 	with open (matrix_path) as f:
 		first_line = f.readline()
 		samples = first_line.strip().split("\t")
 		samples = samples[1:]
 		sample_index = samples.index(sample) + 1
-		mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
-							 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
+		mutations[sample] = OrdereDict()
+		mutations[sample]['C>A'] = OrdereDict()
+		mutations[sample]['C>G'] = OrdereDict()
+		mutations[sample]['C>T'] = OrdereDict()
+		mutations[sample]['T>A'] = OrdereDict()
+		mutations[sample]['T>C'] = OrdereDict()
+		mutations[sample]['T>G'] = OrdereDict()
+
+		# mutations[sample] = {'C>A':OrderedDict(), 'C>G':OrderedDict(), 'C>T':OrderedDict(),
+		# 					 'T>A':OrderedDict(), 'T>C':OrderedDict(), 'T>G':OrderedDict()}
 
 		for lines in f:
 			line = lines.strip().split()
