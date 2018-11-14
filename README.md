@@ -20,11 +20,11 @@ This section will guide you through the minimum steps required to plot mutationa
  2. Configure your GitHub account to use SSH using the following link: https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/
  3. To download the current version of the tool to your local computer or server you need to clone the repository using the following command:
  ```
- 							git clone ssh://git@github.com/AlexandrovLab/SigProfilerPlotting 
+ git clone ssh://git@github.com/AlexandrovLab/SigProfilerPlotting 
  ```
  4. Using a terminal or command line on your computer/server, enter the sigProfilerPlotting directory
  ```
- 							cd sigProfilerPlotting/
+ cd sigProfilerPlotting/
  ```
  5. Install the tool using the following command:
  ```
@@ -42,12 +42,12 @@ This section will guide you through the minimum steps required to plot mutationa
 
 SigProfilerPlotting can also be installed from pypi. Use the following command:
 ```
-						pip install sigProfilerPlotting
+pip install sigProfilerPlotting
 ```
 
 This tool can also be installed from the Anaconda Cloud as a conda package. Use the following command:
 ```
-						conda install -c ebergstr sigprofilerplotting
+conda install -c ebergstr sigprofilerplotting
 ```
 
 **AVAILABLE FUNCTIONS**
