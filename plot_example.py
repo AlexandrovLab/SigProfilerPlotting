@@ -1,10 +1,10 @@
 import sigProfilerPlotting as sigPlt
 import os
 
-matrix_path = "BRCA_plot/matrix/"
-output_path = "BRCA_plot/plots/"
+matrix_path = "input/examples/samples/"
+output_path = "output/examples/samples"
 
-sigPlt.plot96(matrix_path + "BRCA_plot.SBS96.all", output_path, False, "BRCA_plot", False)
-sigPlt.plot192(matrix_path + "BRCA_plot.SBS192.all", output_path, False, "BRCA_plot", False)
-sigPlt.plotDINUC(matrix_path + "BRCA_plot.DBS78.all", output_path, False, "BRCA_plot", False)
-sigPlt.plotINDEL(matrix_path + "BRCA_plot.DBS94.all", output_path, False, "BRCA_plot", False)
+sigPlt.plot96(matrix_path + "breast_cancer_samples_example.SBS96.all", output_path, False, "BRCA_example", False)
+sigPlt.plot192(matrix_path + "breast_cancer_samples_example.SBS192.all", output_path, False, "BRCA_example", False)
+sigPlt.plotDINUC(matrix_path + "breast_cancer_samples_example.DBS78.all", output_path, False, "BRCA_example", False)
+sigPlt.plotINDEL(matrix_path + "breast_cancer_samples_example.ID94.all", output_path, False, "BRCA_example", False)

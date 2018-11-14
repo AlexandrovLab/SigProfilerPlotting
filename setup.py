@@ -6,7 +6,7 @@ def readme():
 
 
 setup(name='sigProfilerPlotting',
-		version='0.1.2',
+		version='0.1.3',
 		description='SigProfiler plotting tool',
 		url='',
 		author='Erik Bergstrom',

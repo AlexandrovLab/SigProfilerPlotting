@@ -15,37 +15,57 @@ The framework is written in PYTHON, however, it also requires the following soft
 
 **QUICK START GUIDE**
 
-This section will guide you through the minimum steps required to create mutational matrices:
- 1. Move into this repo after downloading. 
- 2. Install using the following command:
+This section will guide you through the minimum steps required to plot mutational matrices:
+ 1. Before you download and install sigProfilerPlotting, first create a GitHub account at the following link: https://help.github.com/articles/signing-up-for-a-new-github-account/
+ 2. Configure your GitHub account to use SSH using the following link: https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/
+ 3. To download the current version of the tool to your local computer or server you need to clone the repository using the following command:
+ ```
+ 							git clone ssh://git@github.com/AlexandrovLab/SigProfilerPlotting 
+ ```
+ 4. Using a terminal or command line on your computer/server, enter the sigProfilerPlotting directory
+ ```
+ 							cd sigProfilerPlotting/
+ ```
+ 5. Install the tool using the following command:
  ```
  pip install .
  ```
- 3.	After succesffully installing, this package can now be imported at the top of python scripts as follows:
+ 6.	After a succesfful installation, this package can now be imported at the top of python scripts as follows:
  ```
  import sigProfilerPlotting as sigPlt 
  ```
  The available functions are listed below. 
 
- 4. The final plots are saved into the *plots/* folder. 
+ 7. The final plots are saved into the user-provided output folder. 
+
+**ALTERNATE INSTALLATION METHOD**
+
+SigProfilerPlotting can also be installed from pypi. Use the following command:
+```
+						pip install sigProfilerPlotting
+```
+
+This tool can also be installed from the Anaconda Cloud as a conda package. Use the following command:
+```
+						conda install -c ebergstr sigprofilerplotting
+```
 
 **AVAILABLE FUNCTIONS**
 
 ```
 import sigProfilerPlotting as sigPlt
 
-sigPlt.plot96(matrix_path, output_path, signature, project, percentage=False)
-sigPlt.plot192(matrix_path, output_path, signature, project, percentage=False)
-sigPlt.plotDINUC(matrix_path, output_path, signature, project, percentage=False)
-sigPlt.plotINDEL(matrix_path, output_path, signature, project, percentage=False)
+sigPlt.plotSBS(matrix_path, output_path, project, plot_type, percentage=False)
+sigPlt.plotDBS(matrix_path, output_path, project, plot_type, percentage=False)
+sigPlt.plotID(matrix_path, output_path, project, plot_type, percentage=False)
 ```
 matrix_path -> path to the mutational matrix of interest
 
 output_path -> desired output path
 
-signature -> Boolean: Plot based upon signature exposures
-
 project -> name of unique sample set
+
+plot_type -> context of the mutational matrix (96, 192, 78, 94, etc.)
 
 percentage -> Boolean: plot the mutational matrix as percentages of the sample's total mutation count. Default is False
 
