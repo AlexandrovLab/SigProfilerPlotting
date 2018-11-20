@@ -1,28 +1,49 @@
 #!/usr/bin/env python3
 
-#This file is part of Mutational Signatures Project.
+# This source code file is a part of SigProfilerPlotting
 
-#Mutational Signatures Project: need info on project
+# SigProfilerPlotting is a tool included as part of the SigProfiler
 
-#Copyright (C) 2018 Erik Bergstrom
+# computational framework for comprehensive analysis of mutational
+
+# signatures from next-generation sequencing of cancer genomes.
+
+# SigProfilerPlotting provides a standard tool for displaying all 
+
+# types of mutational signatures as well as all types of mutational 
+
+# patterns in cancer genomes. The tool seamlessly integrates with 
+
+#other SigProfiler tools.
+
+# Copyright (C) 2018 Erik Bergstrom
 
 #
 
-#Mutational Signatures is free software: need to include distribtution
+# SigProfilerPlotting is free software: you can redistribute it and/or modify
 
-#rights and so forth
+# it under the terms of the GNU General Public License as published by
+
+# the Free Software Foundation, either version 3 of the License, or
+
+# (at your option) any later version.
 
 #
 
-#Mutational Signatures is distributed in the hope that it will be useful,
+# SigProfilerPlotting is distributed in the hope that it will be useful,
 
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
 
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 
-#GNU General Public License for more details [change to whatever group we should include.
+# GNU General Public License for more details.
+
+#
+
+# You should have received a copy of the GNU General Public License
+
+# along with SigProfilerPlotting.  If not, see http://www.gnu.org/licenses/
  
-
 #Author: Erik Bergstrom
 
 #Contact: ebergstr@eng.ucsd.edu
@@ -38,15 +59,6 @@ import numpy as np
 import matplotlib.font_manager
 from matplotlib.backends.backend_pdf import PdfPages
 
-
-# 96: A[C>A]A  -> 7, [1,5]
-# 192: T:A[C>A]A  -> 9, [3,7]
-# 1536: AA[C>A]AA  -> 9, [2, 6]
-# 3072: T:AA[C>A]AA  -> 11 [4, 8]
-# 94: 1:Del:4  -> varies
-# 78: AA>GG  -> 5
-# T78: T:AA>GG  -> 7
-# cont78: A[AA>GG]A  -> 9
 
 
 def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
@@ -261,23 +273,23 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 				for seq in mutations[sample][key]:
 					xlabels.append(seq[0]+seq[2]+seq[6])
 					if percentage:
-						plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
+						trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
 						x += 0.75
-						plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
+						untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
 						x += .2475
 						if mutations[sample][key][seq][0]/total_count*100 > ymax:
 								ymax = mutations[sample][key][seq][0]/total_count*100
-						elif mutations[sample][key][seq][1]/total_count*100 > ymax:
+						if mutations[sample][key][seq][1]/total_count*100 > ymax:
 								ymax = mutations[sample][key][seq][1]/total_count*100
 
 					else:
-						plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000)
+						trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
 						x += 0.75
-						plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000)
+						untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
 						x += .2475
 						if mutations[sample][key][seq][0] > ymax:
 								ymax = mutations[sample][key][seq][0]
-						elif mutations[sample][key][seq][1] > ymax:
+						if mutations[sample][key][seq][1] > ymax:
 								ymax = mutations[sample][key][seq][1]
 					x += 1
 				i += 1
@@ -296,8 +308,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.text(.735, yText, 'T>C', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 			plt.text(.89, yText, 'T>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
-			while y%4 !=0:
-				y+=1
+			while y%4 != 0:
+				y += 1
+
 			ytick_offest = int(y/4)
 
 			for i in range(0, 6, 1):
@@ -339,7 +352,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
 			panel1.set_xlabel('')
 			panel1.set_ylabel('')
-
+			plt.legend(handles=[trans, untrans], prop={'size':30})
 			if percentage:
 				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
@@ -526,7 +539,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.text(.21, yText_labels_top, '1bp Insertion', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 			plt.text(.375, yText_labels_top, '>1bp Deletion at Repeats\n      (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 			plt.text(.64, yText_labels_top, '>1bp Insertions at Repeats\n       (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-			plt.text(.85, yText_labels_top, 'Mircohomology\n  (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+			plt.text(.85, yText_labels_top, ' Mircohomology\n(Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 			plt.text(.058, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
 			plt.text(.19, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
@@ -575,7 +588,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_xticks(labs)
 			panel1.set_yticks(ylabs)	
 
-			plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			plt.text(0.0475, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			panel1.set_yticklabels(ylabels, fontsize=30)
 			plt.gca().yaxis.grid(True)
