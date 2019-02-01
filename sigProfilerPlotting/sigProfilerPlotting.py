@@ -18,10 +18,11 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 
 def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
-	if 'roman' in matplotlib.font_manager.weight_dict:
-		del matplotlib.font_manager.weight_dict['roman']
-		matplotlib.font_manager._rebuild()
+	# if 'roman' in matplotlib.font_manager.weight_dict:
+	# 	del matplotlib.font_manager.weight_dict['roman']
+	# 	matplotlib.font_manager._rebuild()
 
+	sig_probs = False
 	if plot_type == '96':
 		with open(matrix_path) as f:
 			next(f)
@@ -31,7 +32,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 				sys.exit("The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function.")
 
 		pp = PdfPages(output_path + 'SBS_96_plots_' + project + '.pdf')
-
 
 		mutations = OrderedDict()
 		total_count = []
@@ -58,6 +58,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 				for sample in samples:
 					if percentage:
 						mutCount = float(line[sample_index])
+						if mutCount < 1 and mutCount > 0:
+							sig_probs = True
 					else:
 						mutCount = int(line[sample_index])
 					mutations[sample][mut_type][nuc] = mutCount
@@ -139,7 +141,10 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 					count = 0
 					m += 1	
 
-			plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " substitutions", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " subs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			panel1.set_yticklabels(ylabels, fontsize=30)
 			plt.gca().yaxis.grid(True)
@@ -148,9 +153,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_ylabel('')
 
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 
 
@@ -176,7 +181,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			first_line = first_line.strip().split()
 			if first_line[0][7] != "]":
 				sys.exit("The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function.")
-		pp = PdfPages(output_path + 'SBS_192_plots_' + project + '.pdf')
+		pp = PdfPages(output_path + 'SBS_384_plots_' + project + '.pdf')
 
 		mutations = OrderedDict()
 		with open (matrix_path) as f:
@@ -206,6 +211,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 					for sample in samples:
 						if percentage:
 							mutCount = float(line[sample_index])
+							if mutCount < 1 and mutCount > 0:
+								sig_probs = True
 						else:
 							mutCount = int(line[sample_index])
 						if nuc not in mutations[sample][mut_type].keys():
@@ -232,9 +239,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 				for seq in mutations[sample][key]:
 					xlabels.append(seq[0]+seq[2]+seq[6])
 					if percentage:
-						trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+						trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 						x += 0.75
-						untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+						untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 						x += .2475
 						if mutations[sample][key][seq][0]/total_count*100 > ymax:
 								ymax = mutations[sample][key][seq][0]/total_count*100
@@ -242,9 +249,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 								ymax = mutations[sample][key][seq][1]/total_count*100
 
 					else:
-						trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+						trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 						x += 0.75
-						untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+						untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 						x += .2475
 						if mutations[sample][key][seq][0] > ymax:
 								ymax = mutations[sample][key][seq][0]
@@ -306,7 +313,10 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 					count = 0
 					m += 1
 			
-			plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " substitutions", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " transcribed subs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			panel1.set_yticklabels(ylabels, fontsize=30)
 			plt.gca().yaxis.grid(True)
@@ -315,9 +325,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_ylabel('')
 			plt.legend(handles=[trans, untrans], prop={'size':30})
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=False, labelbottom=False,\
@@ -366,6 +376,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 				for sample in samples:
 					if percentage:
 						mutCount = float(line[sample_index])
+						if mutCount < 1 and mutCount > 0:
+							sig_probs = True
 					else:
 						mutCount = int(line[sample_index])
 					mutations[sample][mut_type] = mutCount
@@ -427,13 +439,16 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.spines['right'].set_visible(False)
 			panel1.spines['top'].set_visible(False)
 
-			plt.text(.125, .9, sample + ": " + "{:,}".format(int(total_count)) + " substitutions", fontsize=40, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(.125, .9, sample, fontsize=40, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+			else:
+				plt.text(.125, .9, sample + ": " + "{:,}".format(int(total_count)) + " subs", fontsize=40, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
 
 			if percentage:
-				plt.xlabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.xlabel("Percentage of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.xlabel("Single Base Substitution Count", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.xlabel("Number of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.set_ylabel('')
 
@@ -450,7 +465,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.close()
 		pp.close()
 
-	elif plot_type == '12' or plot_type == '6SB':
+	elif plot_type == '12' or plot_type == '6SB' or plot_type == '24':
 		with open(matrix_path) as f:
 			next(f)
 			first_line = f.readline()
@@ -458,7 +473,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			if first_line[0][1] != ":" or len(first_line[0]) != 5:
 				sys.exit("The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function.")
 
-		pp = PdfPages(output_path + 'SBS_12_plots_' + project + '.pdf')
+		pp = PdfPages(output_path + 'SBS_24_plots_' + project + '.pdf')
 
 		mutations = OrderedDict()
 		with open (matrix_path) as f:
@@ -485,6 +500,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 					for sample in samples:
 						if percentage:
 							mutCount = float(line[sample_index])
+							if mutCount < 1 and mutCount > 0:
+								sig_probs = True
 						else:
 							mutCount = int(line[sample_index])						
 						if bias == 'T':
@@ -503,9 +520,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			xmax = 0
 			for key in mutations[sample]:
 				if percentage:
-					trans = plt.barh(y, mutations[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+					trans = plt.barh(y, mutations[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 					y -= 0.75
-					untrans = plt.barh(y, mutations[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+					untrans = plt.barh(y, mutations[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 					y -= .2475
 					if mutations[sample][key][0]/total_count*100 > xmax:
 							xmax = mutations[sample][key][0]/total_count*100
@@ -513,9 +530,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 							xmax = mutations[sample][key][1]/total_count*100
 
 				else:
-					trans = plt.barh(y, mutations[sample][key][0],height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+					trans = plt.barh(y, mutations[sample][key][0],height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 					y -= 0.75
-					untrans = plt.barh(y, mutations[sample][key][1],height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+					untrans = plt.barh(y, mutations[sample][key][1],height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 					y -= .2475
 					if mutations[sample][key][0] > xmax:
 							xmax = mutations[sample][key][0]
@@ -556,12 +573,15 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.spines['right'].set_visible(False)
 			panel1.spines['top'].set_visible(False)
 
-			plt.text(.125, .9, sample + ": " + "{:,}".format(int(total_count)) + " substitutions", fontsize=40, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(.125, .9, sample, fontsize=40, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
+			else:
+				plt.text(.125, .9, sample + ": " + "{:,}".format(int(total_count)) + " transcribed subs", fontsize=40, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 
 			if percentage:
-				plt.xlabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.xlabel("Percentage of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.xlabel("Single Base Substitution Count", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.xlabel("Number of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=True, labelbottom=True,\
@@ -581,12 +601,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False):
 
 
 def plotID(matrix_path, output_path, project, plot_type, percentage=False):
-	if 'roman' in matplotlib.font_manager.weight_dict:
-		del matplotlib.font_manager.weight_dict['roman']
-		matplotlib.font_manager._rebuild()
+	# if 'roman' in matplotlib.font_manager.weight_dict:
+	# 	del matplotlib.font_manager.weight_dict['roman']
+	# 	matplotlib.font_manager._rebuild()
 
-
-	if plot_type == '94' or plot_type == 'ID94' or plot_type == '96ID':
+	sig_probs = False
+	if plot_type == '94' or plot_type == 'ID94' or plot_type == '94ID':
 		with open(matrix_path) as f:
 			next(f)
 			first_line = f.readline()
@@ -594,8 +614,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			mutation_type = first_line[0]
 			mutation_type_list = mutation_type.split(":")
 			if len(mutation_type_list) != 4:
-				sys.exit("The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function.")
-		pp = PdfPages(output_path + 'ID_94_plots' + project + '.pdf')
+				sys.exit("The matrix does not match the correct ID96 format. Please check you formatting and rerun this plotting function.")
+		pp = PdfPages(output_path + 'ID_83_plots_' + project + '.pdf')
 
 		indel_types = ['1:Del:C:1', '1:Del:C:2', '1:Del:C:3', '1:Del:C:4', '1:Del:C:5', '1:Del:C:6'
 					   '1:Del:T:1', '1:Del:T:2', '1:Del:T:3', '1:Del:T:4', '1:Del:T:5', '1:Del:T:6'
@@ -654,6 +674,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 					if mut_type in mutations[sample].keys():
 						if percentage:
 							mutCount = float(line[sample_index])
+							if mutCount < 1 and mutCount > 0:
+								sig_probs = True
 						else:
 							mutCount = int(line[sample_index])
 						mutations[sample][mut_type][repeat_size] = mutCount
@@ -743,7 +765,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.text(.08, yText_labels_top, '1bp Deletion', fontsize=40, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
 			plt.text(.21, yText_labels_top, '1bp Insertion', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 			plt.text(.375, yText_labels_top, '>1bp Deletion at Repeats\n      (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-			plt.text(.64, yText_labels_top, '>1bp Insertions at Repeats\n       (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+			plt.text(.64, yText_labels_top, '>1bp Insertions at Repeats\n       (Insertion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 			plt.text(.85, yText_labels_top, ' Mircohomology\n(Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 			plt.text(.058, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
@@ -797,7 +819,10 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_xticks(labs)
 			panel1.set_yticks(ylabs)	
 
-			plt.text(0.0475, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " INDELs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.0475, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.0475, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " indels", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			panel1.set_yticklabels(ylabels, fontsize=30)
 			plt.gca().yaxis.grid(True)
@@ -806,9 +831,9 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_ylabel('')
 
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=False, labelbottom=False,\
@@ -829,11 +854,12 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 		with open(matrix_path) as f:
 			next(f)
 			first_line = f.readline()
-			first_line = first_line.strip().split()
+			first_line = first_line.strip().split("\t")
 			mutation_type = first_line[0]
 			mutation_type_list = mutation_type.split(":")
 			if len(mutation_type_list) != 5:
-				sys.exit("The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function.")
+				print(mutation_type_list)
+				sys.exit("The matrix does not match the correct ID-96 format. Please check you formatting and rerun this plotting function.")
 
 		pp = PdfPages(output_path + 'ID_96_plots_' + project + '.pdf')		
 
@@ -842,6 +868,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 					   '1:Ins:C:0', '1:Ins:C:1', '1:Ins:C:2', '1:Ins:C:3', '1:Ins:C:4', '1:Ins:C:5',
 					   '1:Ins:T:0', '1:Ins:T:1', '1:Ins:T:2', '1:Ins:T:3', '1:Ins:T:4', '1:Ins:T:5']
 
+		sig_probs = False
 		mutations = OrderedDict()
 		with open (matrix_path) as f:
 			first_line = f.readline()
@@ -871,6 +898,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 							if mut_type in mutations[sample]:
 								if percentage:
 									mutCount = float(line[sample_index])
+									if mutCount < 1 and mutCount > 0:
+										sig_probs = True
 								else:
 									mutCount = int(line[sample_index])
 								if bias == 'T':
@@ -884,7 +913,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 		for sample in mutations:
 			total_count = sum(sum(sum(tsb) for tsb in nuc) for nuc in mutations[sample].values())
 			plt.rcParams['axes.linewidth'] = 2
-			plot1 = plt.figure(figsize=(15,10))
+			plot1 = plt.figure(figsize=(15,13))
 			plt.rc('axes', edgecolor='black')
 			panel1 = plt.axes([0.12, 0.12, 0.8, 0.77])
 			xlabels = []
@@ -899,18 +928,18 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 				for seq in mutations[sample][key]:
 					xlabels.append(l)
 					if percentage:
-						trans = plt.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+						trans = plt.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 						x += 0.2
-						untrans = plt.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+						untrans = plt.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 						x += 0.8
 						if seq[0]/total_count*100 > ymax:
 							ymax = seq[0]/total_count*100
 						if seq[1]/total_count*100 > ymax:
 							ymax = seq[1]/total_count*100
 					else:
-						trans = plt.bar(x, seq[0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+						trans = plt.bar(x, seq[0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 						x += 0.2
-						untrans = plt.bar(x, seq[1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+						untrans = plt.bar(x, seq[1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 						x += 0.8
 						if seq[0] > ymax:
 								ymax = seq[0]
@@ -921,7 +950,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 
 			x = .125
 			y_top = .8975
-			y_bottom = .06525
+			#y_bottom = .06525
+			y_bottom = .075
 			y = int(ymax*1.25)
 			y2 = y+2
 
@@ -930,20 +960,20 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 
 
 			for i in range(0, 4, 1):
-				panel1.add_patch(plt.Rectangle((x,y_top), .185, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
-				panel1.add_patch(plt.Rectangle((x,y_bottom), .185, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
+				panel1.add_patch(plt.Rectangle((x,y_top), .185, .037, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
+				panel1.add_patch(plt.Rectangle((x,y_bottom), .185, .037, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
 				x += .202
 
 
-			yText = y_top + .006
+			yText = y_top + .005
 			plt.text(.205, yText, 'C', fontsize=40, fontname='Times New Roman', fontweight='bold', transform=plt.gcf().transFigure)
 			plt.text(.407, yText, 'T', fontsize=40, fontname='Times New Roman', fontweight='bold', color='white', transform=plt.gcf().transFigure)
 			plt.text(.609, yText, 'C', fontsize=40, fontname='Times New Roman', fontweight='bold', transform=plt.gcf().transFigure)
 			plt.text(.811, yText, 'T', fontsize=40, fontname='Times New Roman', fontweight='bold', color='white', transform=plt.gcf().transFigure)
 
-			yText_labels_top = yText + .057
+			yText_labels_top = yText + .05
 			yText_labels_bottom = y_bottom - .03
-			yText_labels_bottom_sec = yText_labels_bottom -.01
+			yText_labels_bottom_sec = yText_labels_bottom -.025
 
 			plt.text(.23, yText_labels_top, '1bp Deletion', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
 			plt.text(.634, yText_labels_top, '1bp Insertion', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
@@ -951,23 +981,23 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.text(.58, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=30, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 			
 			x = .127
-			yText_labels_bottom = y_bottom + 0.015
+			yText_labels_bottom = y_bottom - 0.025
 
 			for l in range (0, 4, 1):
 				if l < 2:
 					for i in range(1, 6, 1):
 						plt.text(x, yText_labels_bottom, str(i), fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 						x += 0.034
-					x -= 0.015
-					plt.text(x, yText_labels_bottom, '+6', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-					x += 0.0475
+					x -= 0.008
+					plt.text(x, yText_labels_bottom, '6+', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+					x += 0.041
 				else:
 					for i in range(0, 5, 1):
 						plt.text(x, yText_labels_bottom, str(i), fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-						x += 0.034
-					x -= 0.015
-					plt.text(x, yText_labels_bottom, '+5', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-					x += 0.0475
+						x += 0.033
+					x -= 0.005
+					plt.text(x, yText_labels_bottom, '5+', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+					x += 0.044
 
 			
 			while y%4 != 0:
@@ -995,7 +1025,10 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_ylim([0, y])
 			panel1.set_yticks(ylabs)	
 
-			plt.text(0.13, 0.85, sample + ": " + "{:,}".format(int(total_count)) + " INDELs", fontsize=30, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.13, 0.85, sample, fontsize=33, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.13, 0.85, sample + ": " + "{:,}".format(int(total_count)) + " transcribed indels", fontsize=33, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			panel1.set_yticklabels(ylabels, fontsize=30)
 			plt.gca().yaxis.grid(True)
@@ -1005,9 +1038,9 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			plt.legend(handles=[trans, untrans], prop={'size':20})
 
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=False, labelbottom=False,\
@@ -1041,20 +1074,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 					   '1:Del:T:1', '1:Del:T:2', '1:Del:T:3', '1:Del:T:4', '1:Del:T:5', '1:Del:T:6'
 					   '1:Ins:C:0', '1:Ins:C:1', '1:Ins:C:2', '1:Ins:C:3', '1:Ins:C:4', '1:Ins:C:5',
 					   '1:Ins:T:0', '1:Ins:T:1', '1:Ins:T:2', '1:Ins:T:3', '1:Ins:T:4', '1:Ins:T:5', 
-							# >1bp INDELS
-					   '2:Del:R:0', '2:Del:R:1', '2:Del:R:2', '2:Del:R:3', '2:Del:R:4', '2:Del:R:5',
-					   '3:Del:R:0', '3:Del:R:1', '3:Del:R:2', '3:Del:R:3', '3:Del:R:4', '3:Del:R:5',
-					   '4:Del:R:0', '4:Del:R:1', '4:Del:R:2', '4:Del:R:3', '4:Del:R:4', '4:Del:R:5',
-					   '5:Del:R:0', '5:Del:R:1', '5:Del:R:2', '5:Del:R:3', '5:Del:R:4', '5:Del:R:5',
-					   '2:Ins:R:0', '2:Ins:R:1', '2:Ins:R:2', '2:Ins:R:3', '2:Ins:R:4', '2:Ins:R:5', 
-					   '3:Ins:R:0', '3:Ins:R:1', '3:Ins:R:2', '3:Ins:R:3', '3:Ins:R:4', '3:Ins:R:5', 
-					   '4:Ins:R:0', '4:Ins:R:1', '4:Ins:R:2', '4:Ins:R:3', '4:Ins:R:4', '4:Ins:R:5',
-					   '5:Ins:R:0', '5:Ins:R:1', '5:Ins:R:2', '5:Ins:R:3', '5:Ins:R:4', '5:Ins:R:5',
-							#MicroHomology INDELS
-					   '2:Del:M:1', '3:Del:M:1', '3:Del:M:2', '4:Del:M:1', '4:Del:M:2', '4:Del:M:3',
-					   '5:Del:M:1', '5:Del:M:2', '5:Del:M:3', '5:Del:M:4', '5:Del:M:5', '2:Ins:M:1', 
-					   '3:Ins:M:1', '3:Ins:M:2', '4:Ins:M:1', '4:Ins:M:2', '4:Ins:M:3', '5:Ins:M:1', 
-					   '5:Ins:M:2', '5:Ins:M:3', '5:Ins:M:4', '5:Ins:M:5']
+					   'long_Del', 'long_Ins', 'MH', 'complex']
 
 		mutations = OrderedDict()
 		with open (matrix_path) as f:
@@ -1067,50 +1087,57 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 				mutations[sample]['1DelT'] = [0,0,0,0,0,0]
 				mutations[sample]['1InsC'] = [0,0,0,0,0,0]
 				mutations[sample]['1InsT'] = [0,0,0,0,0,0]
-				mutations[sample]['Ins'] = [0]
-				mutations[sample]['Del'] = [0]
+				mutations[sample]['long_Del'] = [0]
+				mutations[sample]['long_Ins'] = [0]
 				mutations[sample]['MH'] = [0]
+				mutations[sample]['complex'] = [0]
 
 			for lines in f:
 				line = lines.strip().split()
 				categories = line[0].split(":")
-				mut_type = categories[0] + categories[1] + categories[2]
-				repeat_size = int(categories[3])
+				if len(categories) < 2:
+					mut_type = categories[0]
+					repeat_size = 0
+				else:
+					mut_type = categories[0] + categories[1] + categories[2]
+					repeat_size = int(categories[3])
 				sample_index = 1
 
 				for sample in samples:
-					if mut_type in mutations[sample].keys():
+					#if mut_type in mutations[sample].keys():
 						if percentage:
 							mutCount = float(line[sample_index])
+							if mutCount < 1 and mutCount > 0:
+								sig_probs = True
 						else:
 							mutCount = int(line[sample_index])
 						mutations[sample][mut_type][repeat_size] = mutCount
 
-					else:
-						if percentage:
-							mutCount = float(line[sample_index])
-						else:
-							mutCount = int(line[sample_index])
-						if int(mut_type[0]) > 1:
-							repeat_size = 0
-							if categories[2] == 'M':
-								mut_type = 'MH'
-								mutations[sample][mut_type][repeat_size] += mutCount
-							else:
-								if categories[1] == 'Del':
-									mut_type = 'Del'
-									mutations[sample][mut_type][repeat_size] += mutCount
-								else:
-									mut_type = 'Ins'
-									mutations[sample][mut_type][repeat_size] += mutCount
+					# else:
+					# 	if percentage:
+					# 		mutCount = float(line[sample_index])
+					# 	else:
+					# 		mutCount = int(line[sample_index])
+					# 	if int(mut_type[0]) > 1:
+					# 		repeat_size = 0
+					# 		if categories[2] == 'M':
+					# 			mut_type = 'MH'
+					# 			mutations[sample][mut_type][repeat_size] += mutCount
+					# 		else:
+					# 			if categories[1] == 'Del':
+					# 				mut_type = 'Del'
+					# 				mutations[sample][mut_type][repeat_size] += mutCount
+					# 			else:
+					# 				mut_type = 'Ins'
+					# 				mutations[sample][mut_type][repeat_size] += mutCount
 
-						continue
-					sample_index += 1
+						#continue
+						sample_index += 1
 
 		for sample in mutations:
 			total_count = sum(sum(nuc) for nuc in mutations[sample].values())
 			plt.rcParams['axes.linewidth'] = 2
-			plot1 = plt.figure(figsize=(15,10))
+			plot1 = plt.figure(figsize=(15,13))
 			plt.rc('axes', edgecolor='black')
 			panel1 = plt.axes([0.12, 0.12, 0.8, 0.77])
 			xlabels = []
@@ -1118,7 +1145,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			x = 0.4
 			ymax = 0
 			colors = [[253/256,190/256,111/256], [255/256,128/256,2/256], [176/256,221/256,139/256], [54/256,161/256,46/256], 
-					  [188/256,25/256,26/256],[23/256,100/256,171/256],[98/256,64/256,155/256]]
+					  #[188/256,25/256,26/256],
+					  [23/256,100/256,171/256],[98/256,64/256,155/256], [98/256,64/256,155/256]]
 
 			i = 0
 			for key in mutations[sample]:
@@ -1135,51 +1163,72 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 								ymax = seq
 					x += 1
 					l += 1
-				i += 1
-			x = .125
+				if i < 4:
+					i += 1
+			x = .126
 			y_top = .9
-			y_bottom = .06
+			y_bottom = .075
 			y = int(ymax*1.25)
 			y2 = y+2
 		
 			for i in range(0, 4, 1):
-				panel1.add_patch(plt.Rectangle((x,y_top), .1615, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
-				panel1.add_patch(plt.Rectangle((x,y_bottom), .1615, .05, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
-				x += .178
+				panel1.add_patch(plt.Rectangle((x,y_top), .154, .037, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
+				panel1.add_patch(plt.Rectangle((x,y_bottom), .154, .037, facecolor=colors[i], clip_on=False, transform=plt.gcf().transFigure)) 
+				x += .1715
 
-			yText = y_top + .0065
-			plt.text(.19, yText, 'C', fontsize=40, fontname='Times New Roman', fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.37, yText, 'T', fontsize=40, fontname='Times New Roman', fontweight='bold', color='white', transform=plt.gcf().transFigure)
-			plt.text(.55, yText, 'C', fontsize=40, fontname='Times New Roman', fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.725, yText, 'T', fontsize=40, fontname='Times New Roman', fontweight='bold', color='white', transform=plt.gcf().transFigure)
+			x -= .001
+			panel1.add_patch(plt.Rectangle((x,y_top), .098, .037, facecolor=colors[i+1], clip_on=False, transform=plt.gcf().transFigure)) 
+			panel1.add_patch(plt.Rectangle((x,y_bottom), .098, .037, facecolor=colors[i+1], clip_on=False, transform=plt.gcf().transFigure)) 
 
-			yText_labels_top = yText + .057
+			yText = y_top + .0055
+			plt.text(.185, yText, 'C', fontsize=40, fontname='Times New Roman', fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.36, yText, 'T', fontsize=40, fontname='Times New Roman', fontweight='bold', color='white', transform=plt.gcf().transFigure)
+			plt.text(.53, yText, 'C', fontsize=40, fontname='Times New Roman', fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.705, yText, 'T', fontsize=40, fontname='Times New Roman', fontweight='bold', color='white', transform=plt.gcf().transFigure)
+
+			yText_labels_top = yText + .045
 			yText_labels_bottom = y_bottom - .03
-			yText_labels_bottom_sec = yText_labels_bottom -.01
+			yText_labels_bottom_sec = yText_labels_bottom -.025
 
-			plt.text(.21, yText_labels_top, '1bp Deletion', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
-			plt.text(.55, yText_labels_top, '1bp Insertion', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-			plt.text(.17, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=30, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
-			plt.text(.52, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=30, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+			plt.text(.2, yText_labels_top, '1bp Deletion', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
+			plt.text(.54, yText_labels_top, '1bp Insertion', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+			plt.text(.155, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=30, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
+			plt.text(.505, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=30, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+			plt.text(.827, yText_labels_top, '>1bp', fontsize=30, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+			plt.text(.83, yText_labels_bottom_sec, 'Type', fontsize=30, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 			x = .127
-			yText_labels_bottom = y_bottom + 0.015
+			yText_labels_bottom = y_bottom - 0.025
 
 			for l in range (0, 4, 1):
 				if l < 2:
 					for i in range(1, 6, 1):
 						plt.text(x, yText_labels_bottom, str(i), fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-						x += 0.0295
-					x -= 0.015
-					plt.text(x, yText_labels_bottom, '+6', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-					x += 0.046
+						x += 0.028
+					x -= 0.005
+					plt.text(x, yText_labels_bottom, '6+', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+					x += 0.037
 				else:
+					if l == 2:
+						x += 0
 					for i in range(0, 5, 1):
 						plt.text(x, yText_labels_bottom, str(i), fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-						x += 0.0295
-					x -= 0.015
-					plt.text(x, yText_labels_bottom, '+5', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-					x += 0.046
+						x += 0.028
+					x -= 0.005
+					plt.text(x, yText_labels_bottom, '5+', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+					x += 0.037
+
+			yText_labels_bottom += 0.01
+			plt.text(x, yText_labels_bottom, 'Del', fontsize=17, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
+			x += 0.026
+			plt.text(x, yText_labels_bottom, 'Ins', fontsize=17, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
+			x += 0.0295
+			yText_labels_bottom += 0.003
+			plt.text(x, yText_labels_bottom, 'MH', fontsize=17, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
+			x += 0.0295
+			yText_labels_bottom += 0.005
+			plt.text(x, yText_labels_bottom, 'COMP', fontsize=10, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
+		
 
 			while y%4 != 0:
 				y += 1
@@ -1196,11 +1245,14 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 
 			if not percentage:
 				ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-			panel1.set_xlim([0, 27])
+			panel1.set_xlim([0, 28])
 			panel1.set_ylim([0, y])
 			panel1.set_yticks(ylabs)	
 
-			plt.text(0.13, 0.85, sample + ": " + "{:,}".format(int(total_count)) + " INDELs", fontsize=30, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.13, 0.85, sample, fontsize=40, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.13, 0.85, sample + ": " + "{:,}".format(int(total_count)) + " indels", fontsize=40, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			panel1.set_yticklabels(ylabels, fontsize=30)
 			plt.gca().yaxis.grid(True)
@@ -1209,9 +1261,9 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_ylabel('')
 
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=False, labelbottom=False,\
@@ -1223,10 +1275,6 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 			[i.set_color("black") for i in plt.gca().get_yticklabels()]
 
 
-
-			
-
-
 			pp.savefig(plot1)
 			plt.close()
 		pp.close()
@@ -1235,10 +1283,11 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False):
 		print("The provided plot_type: ", plot_type, " is not supported by this plotting function")
 
 def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
-	if 'roman' in matplotlib.font_manager.weight_dict:
-		del matplotlib.font_manager.weight_dict['roman']
-		matplotlib.font_manager._rebuild()
+	# if 'roman' in matplotlib.font_manager.weight_dict:
+	# 	del matplotlib.font_manager.weight_dict['roman']
+	# 	matplotlib.font_manager._rebuild()
 
+	sig_probs = False
 	if plot_type == '78' or plot_type == '78DBS' or plot_type == 'DBS78':
 		with open(matrix_path) as f:
 			next(f)
@@ -1289,6 +1338,8 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 				for sample in samples:
 					if percentage:
 						mutCount = float(line[sample_index])
+						if mutCount < 1 and mutCount > 0:
+							sig_probs = True
 					else:
 						mutCount = int(line[sample_index])
 					mutations[sample][mut_type][nuc] = mutCount
@@ -1377,7 +1428,10 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 			if y < 4:
 				y = 4
 			
-			plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " double base substitutions", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " double subs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			if not percentage:
 				ylabels = ['{:,}'.format(int(x)) for x in ylabels]
@@ -1395,9 +1449,9 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.set_ylabel('')
 
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Double Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Double Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=False, labelbottom=True,\
@@ -1468,6 +1522,8 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 					for sample in samples:
 						if percentage:
 							mutCount = float(line[sample_index])
+							if mutCount < 1 and mutCount > 0:
+								sig_probs = True
 						else:
 							mutCount = int(line[sample_index])
 						if nuc not in mutations[sample][mut_type]:
@@ -1499,9 +1555,9 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 				for seq in muts:
 					xlabels.append(seq)
 					if percentage:
-						trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+						trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 						x += 0.2
-						untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+						untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 						x += .8
 						if mutations[sample][key][seq][0]/total_count*100 > ymax:
 								ymax = mutations[sample][key][seq][0]/total_count*100
@@ -1509,9 +1565,9 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 								ymax = mutations[sample][key][seq][1]/total_count*100
 
 					else:
-						trans = plt.bar(x, mutations[sample][key][seq][0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed')
+						trans = plt.bar(x, mutations[sample][key][seq][0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
 						x += 0.2
-						untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed')
+						untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
 						x += .8
 						if mutations[sample][key][seq][0] > ymax:
 								ymax = mutations[sample][key][seq][0]
@@ -1588,8 +1644,10 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 					  	  ytick_offest*3, ytick_offest*4]
 
 
-
-			plt.text(0.045, 0.77, sample + ": " + "{:,}".format(int(total_count)) + " double base substitutions", fontsize=50, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			if sig_probs:
+				plt.text(0.045, 0.77, sample, fontsize=50, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+			else:
+				plt.text(0.045, 0.77, sample + ": " + "{:,}".format(int(total_count)) + " transcribed subs", fontsize=50, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 			if not percentage:
 				ylabels = ['{:,}'.format(int(x)) for x in ylabels]
@@ -1608,9 +1666,9 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 			panel1.legend(handles=[trans, untrans], prop={'size':30})
 
 			if percentage:
-				plt.ylabel("Mutation Percentage", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Percentage of Double Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 			else:
-				plt.ylabel("Mutation Counts", fontsize=35, fontname="Times New Roman", weight = 'bold')
+				plt.ylabel("Number of Double Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 
 			panel1.tick_params(axis='both',which='both',\
 							   bottom=False, labelbottom=True,\
@@ -1633,9 +1691,9 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False):
 
 
 def plotSBS_single(matrix_path, sample, project, plot_type, percentage=False):
-	if 'roman' in matplotlib.font_manager.weight_dict:
-		del matplotlib.font_manager.weight_dict['roman']
-		matplotlib.font_manager._rebuild()
+	# if 'roman' in matplotlib.font_manager.weight_dict:
+	# 	del matplotlib.font_manager.weight_dict['roman']
+	# 	matplotlib.font_manager._rebuild()
 
 	if plot_type == '96':
 		with open(matrix_path) as f:
@@ -1808,7 +1866,7 @@ def main():
 	#plotSBS("/Users/ebergstr/Desktop/Perl_tests/testCode/simulation_code_python/mutation_simulation/references/matrix/BRCA_test/BRCA_test.SBS6.all", "/Users/ebergstr/Desktop/", "test", '6', True)
 	#plotDBS("/Users/ebergstr/Desktop/Perl_tests/testCode/simulation_code_python/mutation_simulation/references/matrix/BRCA_test/BRCA_test.DBS312.all", "/Users/ebergstr/Desktop/", "test", '312', True)
 
-	plotID("/Users/ebergstr/Desktop/Perl_tests/testCode/simulation_code_python/mutation_simulation/references/matrix/BRCA_test/BRCA_test.ID94.all", "/Users/ebergstr/Desktop/", "test", 'simple_ID', False)
+	plotID("/Users/ebergstr/Desktop/BRCA_new/output/INDEL/BRCA.INDEL28.all", "/Users/ebergstr/Desktop/", "test", 'simple_INDEL', percentage=False)
 
 if __name__ == '__main__':
 	main()
