@@ -1,6 +1,12 @@
 MANIFEST.in
 README.md
 setup.py
+fonts/Arial Bold.ttf
+fonts/Arial.ttf
+fonts/Courier New Bold.ttf
+fonts/Courier New.ttf
+fonts/Times New Roman Bold.ttf
+fonts/Times New Roman.ttf
 sigProfilerPlotting/__init__.py
 sigProfilerPlotting/sigProfilerPlotting.py
 sigProfilerPlotting.egg-info/PKG-INFO
