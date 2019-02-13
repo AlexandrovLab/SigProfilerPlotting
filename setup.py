@@ -47,7 +47,7 @@ class move_ttf(install):
 
 
 setup(name='sigProfilerPlotting',
-		version='0.1.18',
+		version='0.1.19',
 		description='SigProfiler plotting tool',
 		url='',
 		author='Erik Bergstrom',
