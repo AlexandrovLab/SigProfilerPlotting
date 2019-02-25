@@ -69,6 +69,12 @@ plot_type -> context of the mutational matrix (96, 192, 78, 94, etc.)
 
 percentage -> Boolean: plot the mutational matrix as percentages of the sample's total mutation count. Default is False
 
+To create a sample portrait, ensure that you have a matrix for all required contexts (SBS-6, SBS-24, SBS-96, SBS-384, SBS-1536, SBS-6144, DBS-78, DBS-312, ID-83, ID-28, ID-96)
+
+```
+from sigProfilerPlotting import sample_portrait as sP
+sP.samplePortrait(sample_matrices_path, output_path, project, percentage=False)
+```
 **EXAMPLE**
 
 This package comes with an example test for each plot type. Run the script plot_example.py from within the downloaded repo after installation:
