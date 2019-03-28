@@ -8,6 +8,7 @@ fonts/Courier New.ttf
 fonts/Times New Roman Bold.ttf
 fonts/Times New Roman.ttf
 sigProfilerPlotting/__init__.py
+sigProfilerPlotting/sample_portrait.py
 sigProfilerPlotting/sigProfilerPlotting.py
 sigProfilerPlotting.egg-info/PKG-INFO
 sigProfilerPlotting.egg-info/SOURCES.txt
