@@ -5,17 +5,19 @@
 #Contact: ebergstr@eng.ucsd.edu
 
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.font_manager
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.patches as mplpatches
 import re
 import os
 import sys
 import argparse
 from collections import OrderedDict
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.font_manager
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.patches as mplpatches
 
 
 
@@ -788,8 +790,18 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 		mutations = OrderedDict()
 		mutations_5 = OrderedDict()
 		mutations_3 = OrderedDict()
-		total_count = []
 		max_count = {}
+		max_all = {}
+		max_5 = {}
+		max_3 = {}
+		total_count = []
+		total_counts = {'TT':0, 'TG':0,'TC':0,'TA':0,
+						'GT':0,'GG':0,'GC':0,'GA':0,
+						'CT':0,'CG':0,'CC':0,'CA':0,
+						'AT':0,'AG':0,'AC':0,'AA':0,}
+		total_counts_5 = {'T':0, 'G':0,'C':0,'A':0}
+		total_counts_3 = {'T':0, 'G':0,'C':0,'A':0}
+
 		with open (matrix_path) as f:
 			first_line = f.readline()
 			if pcawg:
@@ -801,7 +813,15 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				samples = samples[1:]
 
 			for sample in samples:
-
+				max_all[sample] = 0
+				max_5[sample] = 0
+				max_3[sample] = 0
+				total_counts[sample]= {'TT':0, 'TG':0,'TC':0,'TA':0,
+									   'GT':0,'GG':0,'GC':0,'GA':0,
+									   'CT':0,'CG':0,'CC':0,'CA':0,
+									   'AT':0,'AG':0,'AC':0,'AA':0,}
+				total_counts_5[sample]= {'T':0, 'G':0,'C':0,'A':0}
+				total_counts_3[sample]= {'T':0, 'G':0,'C':0,'A':0}
 
 				mutations_96[sample] = OrderedDict()
 				mutations_96[sample]['C>A'] = OrderedDict()
@@ -897,6 +917,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					tri = line[0][1:8]
 
 				for sample in samples:
+
 					if tri not in mutations_96[sample][mut_type]:
 						mutations_96[sample][mut_type][tri] = 0
 					if percentage:
@@ -912,20 +933,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						sample_ref = sample_index - 1
 					if mutCount > max_count[samples[sample_ref]]:
 						max_count[samples[sample_ref]] = mutCount
+
+					if mutCount > max_all[sample]:
+						max_all[sample] = mutCount
+
 					mutations[sample][mut_type][penta_key][tri_key] = mutCount
+					total_counts[sample][penta_key] += mutCount
+					total_counts_5[sample][penta_key[0]] += mutCount
+					total_counts_3[sample][penta_key[1]] += mutCount
 					penta_key_short = penta_key[0]
 					mutations_5[sample][mut_type][penta_key_short][tri_key] = 0
 					mutations_3[sample][mut_type][penta_key_short][tri_key] = 0
 					mutations_96[sample][mut_type][tri] += mutCount
-
-
-
-
 					sample_index += 1
+
 
 		sample_count = 0
 		for sample in mutations.keys():
-			total_count = sum(sum(nuc.values()) for nuc in mutations_96[sample].values())
+			total_count_sample = sum(sum(nuc.values()) for nuc in mutations_96[sample].values())
+			total_count = max_all[sample]*1.1
+			ratio = total_count/total_count_sample
 			plt.rcParams['axes.linewidth'] = 2
 			plot1 = plt.figure(figsize=(43.93,22.5))
 			plt.rc('axes', edgecolor='lightgray')
@@ -940,7 +967,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			
 
 			colors = [[3/256,189/256,239/256], [1/256,1/256,1/256],[228/256,41/256,38/256], [203/256,202/256,202/256], [162/256,207/256,99/256], [236/256,199/256,197/256]]
-			colors_heat = [np.linspace(56/255,255/255,6), np.linspace(66/255,225/255,6), np.linspace(157/255,40/255,6)]
+			colors_heat = [np.linspace(56/255,255/255,5), np.linspace(66/255,225/255,5), np.linspace(157/255,40/255,5)]
 			colors_heat_compact = [np.linspace(56/255,255/255,5), np.linspace(66/255,225/255,5), np.linspace(157/255,40/255,5)]
 
 
@@ -950,6 +977,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			for key in mutations[sample]:
 				y_pos = 15
 				for penta in mutations[sample][key]:
+					#total_count = total_counts[sample][penta]
 					key_5 = penta[0]
 					key_3 = penta[1]
 					ylabels.append(penta[0] + "---" + penta[1])
@@ -957,9 +985,14 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						tri_nuc = tri[0] + "[" + key + "]" + tri[1]
 						normalized = mutations_96[sample][key][tri_nuc]
 						try:
-							mut_count = int(int(20 * round(float(mutations[sample][key][penta][tri]/normalized * 100))/20)/20)
-							mutations_5[sample][key][key_5][tri] += float(mutations[sample][key][penta][tri]/normalized * 100)
-							mutations_3[sample][key][key_3][tri] += float(mutations[sample][key][penta][tri]/normalized * 100)
+							mut_count = int(int(20 * round(float(mutations[sample][key][penta][tri]/total_count_sample/ratio* 100))/20)/20)
+							mutations_5[sample][key][key_5][tri] += float(mutations[sample][key][penta][tri])
+							mutations_3[sample][key][key_3][tri] += float(mutations[sample][key][penta][tri])
+							if mutations_5[sample][key][key_5][tri] > max_5[sample]:
+								max_5[sample] = mutations_5[sample][key][key_5][tri]
+							if mutations_3[sample][key][key_3][tri] > max_3[sample]:
+								max_3[sample] = mutations_3[sample][key][key_3][tri]
+
 						except:
 							mut_count = 0
 						xlabels.append(tri[0]+"-"+tri[1])
@@ -971,23 +1004,31 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						x_pos += 1
 					y_pos -= 1
 					x_pos = x_inter
+
 				x_inter += 17
 				x_pos = x_inter
 				i += 1
 		
 
 
-
 			x_pos = 0 
 			x_inter = 0
+			total_count_5 = max_5[sample]*1.1
+			total_count_3 = max_3[sample]*1.1
+			ratio_5 = total_count_5/total_count_sample
+			ratio_3 = total_count_3/total_count_sample
+
 			for key in mutations_5[sample]:
 				y_pos = 3
 				for penta in mutations_5[sample][key]:
+					# total_count_5 = total_counts_5[sample][penta]
+					# total_count_3 = total_counts_3[sample][penta]
+
 					ylabels_5.append(penta + "---N" )
 					ylabels_3.append("N---" + penta)
 					for tri in mutations_5[sample][key][penta]:
-						mut_count = mut_count = int(int(25 * round(float(mutations_5[sample][key][penta][tri]))/25)/25)
-						mut_count_3 = int(int(25 * round(float(mutations_3[sample][key][penta][tri]))/25)/25)
+						mut_count = int(int(20 * round(float(mutations_5[sample][key][penta][tri])/total_count_sample/ratio_5*100)/20)/20)
+						mut_count_3 = int(int(20 * round(float(mutations_3[sample][key][penta][tri])/total_count_sample/ratio_3*100)/20)/20)
 						rectangle=mplpatches.Rectangle((x_pos, y_pos), 1, 1,\
 														linewidth=1,\
 														facecolor=(colors_heat_compact[0][mut_count], colors_heat_compact[1][mut_count], colors_heat_compact[2][mut_count]))
@@ -1064,21 +1105,21 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			y_tick_grad = max_count[sample]/2
 		
 			# scale numbers for bottom 1536 plot
-			plt.text(.9825, .0677, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.9825, .2012, '0.5', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.9825, .325, '1', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .0677, '0', fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .2012, str(ratio/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .325, str(ratio)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 			y = int(ymax*1.25)
 
 			# scale numbers for top 1536 plot
 			plt.text(.9825, .5, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.9825, .56675, '0.5', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.9825, .625, '1', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .56675, str(ratio_5/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .625, str(ratio_5)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 			y = int(ymax*1.25)
 
 			# scale numbers for middle 1536 plot
 			plt.text(.9825, .35, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.9825, .41675, '0.5', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-			plt.text(.9825, .475, '1', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .41675, str(ratio_3/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+			plt.text(.9825, .475, str(ratio_3)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 			y = int(ymax*1.25)
 
 			x = .033
@@ -1273,7 +1314,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			if sig_probs:
 				panel2.text(0.04, 0.875, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 			else:
-				panel2.text(0.04, 0.875, sample + ": " + "{:,}".format(int(total_count)) + " subs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+				panel2.text(0.04, 0.875, sample + ": " + "{:,}".format(int(total_count_sample)) + " subs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 
 			panel2.grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
@@ -3003,14 +3044,14 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 # def main():
-# 	#plotSBS("/Users/ebergstr/Desktop/AID/output/SBS/AID.SBS384.all", "/Users/ebergstr/Desktop/", "AID", '384', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
-# 	#plotID("/Users/ebergstr/Desktop/BRCA/output/INDEL/BRCA.INDEL96.all", "/Users/ebergstr/Desktop/", "BRCA", '96', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
-# 	#plotDBS("/Users/ebergstr/Desktop/BRCA/output/DINUC/BRCA.DBS78.all", "/Users/ebergstr/Desktop/", "BRCA", '78', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
+# # 	#plotSBS("/Users/ebergstr/Desktop/AID/output/SBS/AID.SBS384.all", "/Users/ebergstr/Desktop/", "AID", '384', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
+# # 	#plotID("/Users/ebergstr/Desktop/BRCA/output/INDEL/BRCA.INDEL96.all", "/Users/ebergstr/Desktop/", "BRCA", '96', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
+# # 	#plotDBS("/Users/ebergstr/Desktop/BRCA/output/DINUC/BRCA.DBS78.all", "/Users/ebergstr/Desktop/", "BRCA", '78', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
 
-# 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'], custom_text_bottom=['Stability: 0.98'])
-# 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'])
+# # 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'], custom_text_bottom=['Stability: 0.98'])
+# 	plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'])
 
-# 	#plotDBS("/Users/ebergstr/Downloads/Biliary-AdenoCA.dinucs.csv", "/Users/ebergstr/Desktop/", "test", '78', False)
+# # 	#plotDBS("/Users/ebergstr/Downloads/Biliary-AdenoCA.dinucs.csv", "/Users/ebergstr/Desktop/", "test", '78', False)
 
 # if __name__ == '__main__':
 # 	main()
