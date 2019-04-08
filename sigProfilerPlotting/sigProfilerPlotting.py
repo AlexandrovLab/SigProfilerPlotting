@@ -1055,9 +1055,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				for seq in mutations_96[sample][key]:
 					xlabels.append(seq[0]+seq[2]+seq[6])
 					if percentage:	
-						panel2.bar(x, mutations_96[sample][key][seq]/total_count*100,width=0.5,color=colors[i],align='center', zorder=1000)
-						if mutations_96[sample][key][seq]/total_count*100 > ymax:
-							ymax = mutations_96[sample][key][seq]/total_count*100
+						panel2.bar(x, mutations_96[sample][key][seq]/total_count_sample*100,width=0.5,color=colors[i],align='center', zorder=1000)
+						if mutations_96[sample][key][seq]/total_count_sample*100 > ymax:
+							ymax = mutations_96[sample][key][seq]/total_count_sample*100
 					else:
 						panel2.bar(x, mutations_96[sample][key][seq],width=0.5,color=colors[i],align='center', zorder=1000)
 						if mutations_96[sample][key][seq] > ymax:
