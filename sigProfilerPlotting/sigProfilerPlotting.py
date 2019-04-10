@@ -1390,8 +1390,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				sys.exit("The matrix does not match the correct ID96 format. Please check you formatting and rerun this plotting function.")
 		pp = PdfPages(output_path + 'ID_83_plots_' + project + '.pdf')
 	
-		indel_types = ['1:Del:C:1', '1:Del:C:2', '1:Del:C:3', '1:Del:C:4', '1:Del:C:5', '1:Del:C:6'
-					   '1:Del:T:1', '1:Del:T:2', '1:Del:T:3', '1:Del:T:4', '1:Del:T:5', '1:Del:T:6'
+		indel_types = ['1:Del:C:0', '1:Del:C:1', '1:Del:C:2', '1:Del:C:3', '1:Del:C:4', '1:Del:C:5',
+					   '1:Del:T:0', '1:Del:T:1', '1:Del:T:2', '1:Del:T:3', '1:Del:T:4', '1:Del:T:5',
 					   '1:Ins:C:0', '1:Ins:C:1', '1:Ins:C:2', '1:Ins:C:3', '1:Ins:C:4', '1:Ins:C:5',
 					   '1:Ins:T:0', '1:Ins:T:1', '1:Ins:T:2', '1:Ins:T:3', '1:Ins:T:4', '1:Ins:T:5', 
 							# >1bp INDELS
@@ -1475,6 +1475,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 						continue
 					sample_index += 1
 
+		print(mutations)
 		sample_count = 0
 		for sample in mutations.keys():
 			total_count = sum(sum(nuc) for nuc in mutations[sample].values())
@@ -3051,14 +3052,14 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 # def main():
-# # 	#plotSBS("/Users/ebergstr/Desktop/AID/output/SBS/AID.SBS384.all", "/Users/ebergstr/Desktop/", "AID", '384', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
-# 	plotID("/Users/ebergstr/Desktop/BRCA/output/INDEL/BRCA.INDEL415.all", "/Users/ebergstr/Desktop/", "BRCA", '96', True, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
-# # 	plotDBS("/Users/ebergstr/Desktop/Mel/output/DINUC/Mel.DBS186.all", "/Users/ebergstr/Desktop/", "Mel", '186', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
+# # # 	#plotSBS("/Users/ebergstr/Desktop/AID/output/SBS/AID.SBS384.all", "/Users/ebergstr/Desktop/", "AID", '384', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
+# 	plotID("/Users/ebergstr/Desktop/BRCA/output/INDEL/BRCA.INDEL83.all", "/Users/ebergstr/Desktop/", "BRCA", '83', True, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
+# # # 	plotDBS("/Users/ebergstr/Desktop/Mel/output/DINUC/Mel.DBS186.all", "/Users/ebergstr/Desktop/", "Mel", '186', False, custom_text_upper=['Similarity to PCAWG: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7'], custom_text_middle=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'], custom_text_bottom=['Stability: 0.98', 'Similarity to PCAWG: 0.9', 'Similarity to PCAWG: 0.7', 'Similarity to PCAWG: 0.9'])
 
-# # # 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'], custom_text_bottom=['Stability: 0.98'])
-# # 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'])
+# # # # 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'], custom_text_bottom=['Stability: 0.98'])
+# # # 	#plotSBS("/Users/ebergstr/Desktop/BRCA/output/SBS/BRCA.SBS1536.all", "/Users/ebergstr/Desktop/", "BRCA", '1536', False, custom_text_upper=['Similarity to PCAWG: 0.98'], custom_text_middle= ['Similarity to PCAWG: 0.98'])
 
-# # 	# plotDBS("/Users/ebergstr/Downloads/Biliary-AdenoCA.dinucs.csv", "/Users/ebergstr/Desktop/", "test", '78', False)
+# # # 	# plotDBS("/Users/ebergstr/Downloads/Biliary-AdenoCA.dinucs.csv", "/Users/ebergstr/Desktop/", "test", '78', False)
 
 # if __name__ == '__main__':
 # 	main()
