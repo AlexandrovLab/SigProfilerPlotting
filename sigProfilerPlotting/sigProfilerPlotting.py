@@ -1475,7 +1475,6 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 						continue
 					sample_index += 1
 
-		print(mutations)
 		sample_count = 0
 		for sample in mutations.keys():
 			total_count = sum(sum(nuc) for nuc in mutations[sample].values())
