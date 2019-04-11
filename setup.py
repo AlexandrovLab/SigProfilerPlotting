@@ -1,12 +1,32 @@
 from setuptools import setup
 from setuptools.command.install import install
 import warnings
+import os
+import shutil
 
+#remove the dist folder first if exists
+if os.path.exists("dist"):
+    shutil.rmtree("dist")
 
 def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
+VERSION = '0.1.31'
+
+def write_version_py(filename='sigProfilerPlotting/version.py'):
+    # Copied from numpy setup.py
+    cnt = """
+# THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
+short_version = '%(version)s'
+version = '%(version)s'
+    
+    """
+    fh = open(filename, 'w')
+    fh.write(cnt % {'version': VERSION,})
+    fh.close()
+
+write_version_py()
 
 #Set up the machinery to install custom fonts.  Subclass the setup tools install 
 #class in order to run custom commands during installation.  
@@ -47,7 +67,7 @@ class move_ttf(install):
 
 
 setup(name='sigProfilerPlotting',
-		version='0.1.30',
+		version=VERSION,
 		description='SigProfiler plotting tool',
 		url='',
 		author='Erik Bergstrom',
