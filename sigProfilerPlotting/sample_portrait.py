@@ -657,65 +657,65 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 
 ########################### DBS-78 ################################################
-	#try:
-	dinucs = ['TT>GG','TT>CG','TT>AG','TT>GC','TT>CC','TT>AC','TT>GA','TT>CA','TT>AA','AC>CA','AC>CG','AC>CT','AC>GA',
-			  'AC>GG','AC>GT','AC>TA','AC>TG','AC>TT','CT>AA','CT>AC','CT>AG','CT>GA','CT>GC','CT>GG','CT>TG','CT>TC',
-			  'CT>TA','AT>CA','AT>CC','AT>CG','AT>GA','AT>GC','AT>TA','TG>GT','TG>CT','TG>AT','TG>GC','TG>CC','TG>AC',
-			  'TG>GA','TG>CA','TG>AA','CC>AA','CC>AG','CC>AT','CC>GA','CC>GG','CC>GT','CC>TA','CC>TG','CC>TT','CG>AT',
-			  'CG>GC','CG>GT','CG>TC','CG>TA','CG>TT','TC>GT','TC>CT','TC>AT','TC>GG','TC>CG','TC>AG','TC>GA','TC>CA',
-			  'TC>AA','GC>AA','GC>AG','GC>AT','GC>CA','GC>CG','GC>TA','TA>GT','TA>CT','TA>AT','TA>GG','TA>CG','TA>GC']
+	try:
+		dinucs = ['TT>GG','TT>CG','TT>AG','TT>GC','TT>CC','TT>AC','TT>GA','TT>CA','TT>AA','AC>CA','AC>CG','AC>CT','AC>GA',
+				  'AC>GG','AC>GT','AC>TA','AC>TG','AC>TT','CT>AA','CT>AC','CT>AG','CT>GA','CT>GC','CT>GG','CT>TG','CT>TC',
+				  'CT>TA','AT>CA','AT>CC','AT>CG','AT>GA','AT>GC','AT>TA','TG>GT','TG>CT','TG>AT','TG>GC','TG>CC','TG>AC',
+				  'TG>GA','TG>CA','TG>AA','CC>AA','CC>AG','CC>AT','CC>GA','CC>GG','CC>GT','CC>TA','CC>TG','CC>TT','CG>AT',
+				  'CG>GC','CG>GT','CG>TC','CG>TA','CG>TT','TC>GT','TC>CT','TC>AT','TC>GG','TC>CG','TC>AG','TC>GA','TC>CA',
+				  'TC>AA','GC>AA','GC>AG','GC>AT','GC>CA','GC>CG','GC>TA','TA>GT','TA>CT','TA>AT','TA>GG','TA>CG','TA>GC']
 
-	revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
-	mutations = OrderedDict()
-	with open (sample_matrices_path + "DBS/" + project + ".DBS78." + file_extension) as f:
-		first_line = f.readline()
-		for sample in samples:
-			mutations_78[sample] = OrderedDict()
-			mutations_78[sample]['AC'] = OrderedDict()
-			mutations_78[sample]['AT'] = OrderedDict()
-			mutations_78[sample]['CC'] = OrderedDict()
-			mutations_78[sample]['CG'] = OrderedDict()
-			mutations_78[sample]['CT'] = OrderedDict()
-			mutations_78[sample]['GC'] = OrderedDict()
-			mutations_78[sample]['TA'] = OrderedDict()
-			mutations_78[sample]['TC'] = OrderedDict()
-			mutations_78[sample]['TG'] = OrderedDict()
-			mutations_78[sample]['TT'] = OrderedDict()
-
-
-		for lines in f:
-			if pcawg:
-				line = lines.strip().split(",")
-				line = [x.replace('"','') for x in line]
-				mut = line[0] + ">" + line[1]
-				nuc = line[1]
-				mut_type = line[0]
-				if mut not in dinucs:
-					nuc = revcompl(nuc)
-					mut_type = revcompl(mut_type)
-				sample_index = 2
-			else:
-				line = lines.strip().split()
-				mut = line[0]
-				nuc = line[0][3:]
-				mut_type = line[0][0:2]
-				if mut not in dinucs:
-					nuc = revcompl(nuc)
-					mut_type = revcompl(mut_type)
-				sample_index = 1
-
+		revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
+		mutations = OrderedDict()
+		with open (sample_matrices_path + "DBS/" + project + ".DBS78." + file_extension) as f:
+			first_line = f.readline()
 			for sample in samples:
-				if percentage:
-					mutCount = float(line[sample_index])
-					if mutCount < 1 and mutCount > 0:
-						sig_probs = True
+				mutations_78[sample] = OrderedDict()
+				mutations_78[sample]['AC'] = OrderedDict()
+				mutations_78[sample]['AT'] = OrderedDict()
+				mutations_78[sample]['CC'] = OrderedDict()
+				mutations_78[sample]['CG'] = OrderedDict()
+				mutations_78[sample]['CT'] = OrderedDict()
+				mutations_78[sample]['GC'] = OrderedDict()
+				mutations_78[sample]['TA'] = OrderedDict()
+				mutations_78[sample]['TC'] = OrderedDict()
+				mutations_78[sample]['TG'] = OrderedDict()
+				mutations_78[sample]['TT'] = OrderedDict()
+
+
+			for lines in f:
+				if pcawg:
+					line = lines.strip().split(",")
+					line = [x.replace('"','') for x in line]
+					mut = line[0] + ">" + line[1]
+					nuc = line[1]
+					mut_type = line[0]
+					if mut not in dinucs:
+						nuc = revcompl(nuc)
+						mut_type = revcompl(mut_type)
+					sample_index = 2
 				else:
-					mutCount = int(line[sample_index])
-				mutations_78[sample][mut_type][nuc] = mutCount
-				sample_index += 1
-	# except:
-	# 	DBS78 = False
-	# 	print("No DBS78 provided")
+					line = lines.strip().split()
+					mut = line[0]
+					nuc = line[0][3:]
+					mut_type = line[0][0:2]
+					if mut not in dinucs:
+						nuc = revcompl(nuc)
+						mut_type = revcompl(mut_type)
+					sample_index = 1
+
+				for sample in samples:
+					if percentage:
+						mutCount = float(line[sample_index])
+						if mutCount < 1 and mutCount > 0:
+							sig_probs = True
+					else:
+						mutCount = int(line[sample_index])
+					mutations_78[sample][mut_type][nuc] = mutCount
+					sample_index += 1
+	except:
+		DBS78 = False
+		print("No DBS78 provided")
 
 
 
