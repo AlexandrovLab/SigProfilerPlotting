@@ -16,7 +16,7 @@ import os
 import sys
 import argparse
 from collections import OrderedDict
-import pandas as pd
+#import pandas as pd
 import numpy as np
 
 
@@ -2563,6 +2563,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
 				panel1.set_xlabel('')
 				panel1.set_ylabel('')
+				panel1.legend(handles=[trans, untrans], prop={'size':30})
+
 
 				if percentage:
 					plt.ylabel("Percentage of Indels", fontsize=35, fontname="Times New Roman", weight = 'bold')
