@@ -657,65 +657,65 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 
 ########################### DBS-78 ################################################
-	try:
-		dinucs = ['TT>GG','TT>CG','TT>AG','TT>GC','TT>CC','TT>AC','TT>GA','TT>CA','TT>AA','AC>CA','AC>CG','AC>CT','AC>GA',
-				  'AC>GG','AC>GT','AC>TA','AC>TG','AC>TT','CT>AA','CT>AC','CT>AG','CT>GA','CT>GC','CT>GG','CT>TG','CT>TC',
-				  'CT>TA','AT>CA','AT>CC','AT>CG','AT>GA','AT>GC','AT>TA','TG>GT','TG>CT','TG>AT','TG>GC','TG>CC','TG>AC',
-				  'TG>GA','TG>CA','TG>AA','CC>AA','CC>AG','CC>AT','CC>GA','CC>GG','CC>GT','CC>TA','CC>TG','CC>TT','CG>AT',
-				  'CG>GC','CG>GT','CG>TC','CG>TA','CG>TT','TC>GT','TC>CT','TC>AT','TC>GG','TC>CG','TC>AG','TC>GA','TC>CA',
-				  'TC>AA','GC>AA','GC>AG','GC>AT','GC>CA','GC>CG','GC>TA','TA>GT','TA>CT','TA>AT','TA>GG','TA>CG','TA>GC']
+	#try:
+	dinucs = ['TT>GG','TT>CG','TT>AG','TT>GC','TT>CC','TT>AC','TT>GA','TT>CA','TT>AA','AC>CA','AC>CG','AC>CT','AC>GA',
+			  'AC>GG','AC>GT','AC>TA','AC>TG','AC>TT','CT>AA','CT>AC','CT>AG','CT>GA','CT>GC','CT>GG','CT>TG','CT>TC',
+			  'CT>TA','AT>CA','AT>CC','AT>CG','AT>GA','AT>GC','AT>TA','TG>GT','TG>CT','TG>AT','TG>GC','TG>CC','TG>AC',
+			  'TG>GA','TG>CA','TG>AA','CC>AA','CC>AG','CC>AT','CC>GA','CC>GG','CC>GT','CC>TA','CC>TG','CC>TT','CG>AT',
+			  'CG>GC','CG>GT','CG>TC','CG>TA','CG>TT','TC>GT','TC>CT','TC>AT','TC>GG','TC>CG','TC>AG','TC>GA','TC>CA',
+			  'TC>AA','GC>AA','GC>AG','GC>AT','GC>CA','GC>CG','GC>TA','TA>GT','TA>CT','TA>AT','TA>GG','TA>CG','TA>GC']
 
-		revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
-		mutations = OrderedDict()
-		with open (sample_matrices_path + "DBS/" + project + ".DBS78." + file_extension) as f:
-			first_line = f.readline()
+	revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
+	mutations = OrderedDict()
+	with open (sample_matrices_path + "DBS/" + project + ".DBS78." + file_extension) as f:
+		first_line = f.readline()
+		for sample in samples:
+			mutations_78[sample] = OrderedDict()
+			mutations_78[sample]['AC'] = OrderedDict()
+			mutations_78[sample]['AT'] = OrderedDict()
+			mutations_78[sample]['CC'] = OrderedDict()
+			mutations_78[sample]['CG'] = OrderedDict()
+			mutations_78[sample]['CT'] = OrderedDict()
+			mutations_78[sample]['GC'] = OrderedDict()
+			mutations_78[sample]['TA'] = OrderedDict()
+			mutations_78[sample]['TC'] = OrderedDict()
+			mutations_78[sample]['TG'] = OrderedDict()
+			mutations_78[sample]['TT'] = OrderedDict()
+
+
+		for lines in f:
+			if pcawg:
+				line = lines.strip().split(",")
+				line = [x.replace('"','') for x in line]
+				mut = line[0] + ">" + line[1]
+				nuc = line[1]
+				mut_type = line[0]
+				if mut not in dinucs:
+					nuc = revcompl(nuc)
+					mut_type = revcompl(mut_type)
+				sample_index = 2
+			else:
+				line = lines.strip().split()
+				mut = line[0]
+				nuc = line[0][3:]
+				mut_type = line[0][0:2]
+				if mut not in dinucs:
+					nuc = revcompl(nuc)
+					mut_type = revcompl(mut_type)
+				sample_index = 1
+
 			for sample in samples:
-				mutations_78[sample] = OrderedDict()
-				mutations_78[sample]['AC'] = OrderedDict()
-				mutations_78[sample]['AT'] = OrderedDict()
-				mutations_78[sample]['CC'] = OrderedDict()
-				mutations_78[sample]['CG'] = OrderedDict()
-				mutations_78[sample]['CT'] = OrderedDict()
-				mutations_78[sample]['GC'] = OrderedDict()
-				mutations_78[sample]['TA'] = OrderedDict()
-				mutations_78[sample]['TC'] = OrderedDict()
-				mutations_78[sample]['TG'] = OrderedDict()
-				mutations_78[sample]['TT'] = OrderedDict()
-
-
-			for lines in f:
-				if pcawg:
-					line = lines.strip().split(",")
-					line = [x.replace('"','') for x in line]
-					mut = line[0] + ">" + line[1]
-					nuc = line[1]
-					mut_type = line[0]
-					if mut not in dinucs:
-						nuc = revcompl(nuc)
-						mut_type = revcompl(mut_type)
-					sample_index = 2
+				if percentage:
+					mutCount = float(line[sample_index])
+					if mutCount < 1 and mutCount > 0:
+						sig_probs = True
 				else:
-					line = lines.strip().split()
-					mut = line[0]
-					nuc = line[0][3:]
-					mut_type = line[0][0:2]
-					if mut not in dinucs:
-						nuc = revcompl(nuc)
-						mut_type = revcompl(mut_type)
-					sample_index = 1
-
-				for sample in samples:
-					if percentage:
-						mutCount = float(line[sample_index])
-						if mutCount < 1 and mutCount > 0:
-							sig_probs = True
-					else:
-						mutCount = int(line[sample_index])
-					mutations_78[sample][mut_type][nuc] = mutCount
-					sample_index += 1
-	except:
-		DBS78 = False
-		print("No DBS78 provided")
+					mutCount = int(line[sample_index])
+				mutations_78[sample][mut_type][nuc] = mutCount
+				sample_index += 1
+	# except:
+	# 	DBS78 = False
+	# 	print("No DBS78 provided")
 
 
 
@@ -850,9 +850,30 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 						  ytick_offest*3, ytick_offest*4]		
 
 			labs = np.arange(0.375,96.375,1)
-
 			if not percentage:
 				ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+				if len(ylabels[-1]) > 3:
+					ylabels_temp = []
+					if len(ylabels[-1]) > 7:
+						for label in ylabels:
+							if len(label) > 7:
+								ylabels_temp.append(label[0:-8] + "m")
+							elif len(label) > 3:
+								ylabels_temp.append(label[0:-4] + "k")
+							else:
+								ylabels_temp.append(label)
+
+					else:
+						for label in ylabels:
+							if len(label) > 3:
+								ylabels_temp.append(label[0:-4] + "k")
+							else:
+								ylabels_temp.append(label)
+					ylabels = ylabels_temp
+
+
+			# if not percentage:
+			# 	ylabels = ['{:,}'.format(int(x)) for x in ylabels]
 
 			panel3.set_xlim([0, 96])
 			panel3.set_ylim([0, y])
@@ -919,8 +940,31 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			xlabels= [0, xtick_offest, xtick_offest*2, 
 					  xtick_offest*3, xtick_offest*4]	
 
+
 		if not percentage:
 			xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+			if len(xlabels[-1]) > 3:
+				xlabels_temp = []
+				if len(xlabels[-1]) > 7:
+					for label in xlabels:
+						if len(label) > 7:
+							xlabels_temp.append(label[0:-8] + "m")
+						elif len(label) > 3:
+							xlabels_temp.append(label[0:-4] + "k")
+						else:
+							xlabels_temp.append(label)
+
+				else:
+					for label in xlabels:
+						if len(label) > 3:
+							xlabels_temp.append(label[0:-4] + "k")
+						else:
+							xlabels_temp.append(label)
+				xlabels = xlabels_temp
+
+
+		# if not percentage:
+		# 	xlabels = ['{:,}'.format(int(x)) for x in xlabels]
 
 		ylabs = np.arange(-5.5, 0.5, 1)
 		ylabels = (['T>G','T>C','T>A','C>T','C>G','C>A'])
@@ -996,9 +1040,30 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			xlabs = [0, xtick_offest, xtick_offest*2, xtick_offest*3, xtick_offest*4]
 			xlabels= [0, xtick_offest, xtick_offest*2, 
 					  xtick_offest*3, xtick_offest*4]
-
 		if not percentage:
 			xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+			if len(xlabels[-1]) > 3:
+				xlabels_temp = []
+				if len(xlabels[-1]) > 7:
+					for label in xlabels:
+						if len(label) > 7:
+							xlabels_temp.append(label[0:-8] + "m")
+						elif len(label) > 3:
+							xlabels_temp.append(label[0:-4] + "k")
+						else:
+							xlabels_temp.append(label)
+
+				else:
+					for label in xlabels:
+						if len(label) > 3:
+							xlabels_temp.append(label[0:-4] + "k")
+						else:
+							xlabels_temp.append(label)
+				xlabels = xlabels_temp
+
+
+		# if not percentage:
+		# 	xlabels = ['{:,}'.format(int(x)) for x in xlabels]
 		ylabs = np.arange(2.15, 13, 2)
 		ylabels = (['T>G','T>C','T>A','C>T','C>G','C>A'])
 		panel2.set_xlim([0, x])
@@ -1099,9 +1164,28 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 					  ytick_offest*3, ytick_offest*4]
 
 		labs = np.arange(0.750,192.750,1)
-
 		if not percentage:
 			ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+			if len(ylabels[-1]) > 3:
+				ylabels_temp = []
+				if len(ylabels[-1]) > 7:
+					for label in ylabels:
+						if len(label) > 7:
+							ylabels_temp.append(label[0:-8] + "m")
+						elif len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+
+				else:
+					for label in ylabels:
+						if len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+				ylabels = ylabels_temp
+		# if not percentage:
+		# 	ylabels = ['{:,}'.format(int(x)) for x in ylabels]
 		panel4.set_xlim([0, 96])
 		panel4.set_ylim([0, y])
 		panel4.set_xticks(labs)
@@ -1528,9 +1612,28 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 					  ytick_offest*3, ytick_offest*4]
 
 		labs = np.arange(0.375,83.375,1)
+		# if not percentage:
+		# 	ylabels = ['{:,}'.format(int(x)) for x in ylabels]
 		if not percentage:
 			ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+			if len(ylabels[-1]) > 3:
+				ylabels_temp = []
+				if len(ylabels[-1]) > 7:
+					for label in ylabels:
+						if len(label) > 7:
+							ylabels_temp.append(label[0:-8] + "m")
+						elif len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
 
+				else:
+					for label in ylabels:
+						if len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+				ylabels = ylabels_temp
 
 		panel9.set_xlim([0, 83])
 		panel9.set_ylim([0, y])
@@ -1852,9 +1955,28 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
 			ylabels= [0, ytick_offest, ytick_offest*2, 
 					  ytick_offest*3, ytick_offest*4]
-
 		if not percentage:
 			ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+			if len(ylabels[-1]) > 3:
+				ylabels_temp = []
+				if len(ylabels[-1]) > 7:
+					for label in ylabels:
+						if len(label) > 7:
+							ylabels_temp.append(label[0:-8] + "m")
+						elif len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+
+				else:
+					for label in ylabels:
+						if len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+				ylabels = ylabels_temp
+		# if not percentage:
+		# 	ylabels = ['{:,}'.format(int(x)) for x in ylabels]
 		panel11.set_xlim([0, 28])
 		panel11.set_ylim([0, y])
 		panel11.set_yticks(ylabs)	
@@ -1963,9 +2085,28 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			y = 4
 		
 		plt.text(0.53, 0.91, "DBS-78", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
-
 		if not percentage:
 			ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+			if len(ylabels[-1]) > 3:
+				ylabels_temp = []
+				if len(ylabels[-1]) > 7:
+					for label in ylabels:
+						if len(label) > 7:
+							ylabels_temp.append(label[0:-8] + "m")
+						elif len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+
+				else:
+					for label in ylabels:
+						if len(label) > 3:
+							ylabels_temp.append(label[0:-4] + "k")
+						else:
+							ylabels_temp.append(label)
+				ylabels = ylabels_temp
+		# if not percentage:
+		# 	ylabels = ['{:,}'.format(int(x)) for x in ylabels]
 		labs = np.arange(0.44,78.44,1)
 		panel7.set_xlim([0, 78])
 		panel7.set_ylim([0, y])
@@ -2147,7 +2288,7 @@ def main():
 
 	# 	print("Context not supported.")
 	#plotSBS("/Users/ebergstr/Desktop/Perl_tests/testCode/simulation_code_python/mutation_simulation/references/matrix/BRCA_test/BRCA_test.SBS96.all", "/Users/ebergstr/Desktop/", "test", '96', False)
-	samplePortrait("/Users/ebergstr/Desktop/BRCA/", "/Users/ebergstr/Desktop/BRCA/output/plots/", "BRCA")
+	samplePortrait("/Users/ebergstr/Desktop/Mel/", "/Users/ebergstr/Desktop/Mel/output/plots/", "Mel")
 	#plotDBS("/Users/ebergstr/Downloads/Biliary-AdenoCA.dinucs.csv", "/Users/ebergstr/Desktop/", "test", '78', False)
 
 if __name__ == '__main__':

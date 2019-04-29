@@ -605,8 +605,29 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					xlabels= [0, xtick_offest, xtick_offest*2, 
 							  xtick_offest*3, xtick_offest*4]	
 
+				# if not percentage:
+				# 	xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+
 				if not percentage:
 					xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+					if len(xlabels[-1]) > 3:
+						xlabels_temp = []
+						if len(xlabels[-1]) > 7:
+							for label in xlabels:
+								if len(label) > 7:
+									xlabels_temp.append(label[0:-8] + "m")
+								elif len(label) > 3:
+									xlabels_temp.append(label[0:-4] + "k")
+								else:
+									xlabels_temp.append(label)
+
+						else:
+							for label in xlabels:
+								if len(label) > 3:
+									xlabels_temp.append(label[0:-4] + "k")
+								else:
+									xlabels_temp.append(label)
+						xlabels = xlabels_temp
 
 				ylabs = np.arange(-5.5, 0.5, 1)
 				ylabels = (['T>G','T>C','T>A','C>T','C>G','C>A'])
@@ -742,9 +763,28 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					xlabs = [0, xtick_offest, xtick_offest*2, xtick_offest*3, xtick_offest*4]
 					xlabels= [0, xtick_offest, xtick_offest*2, 
 							  xtick_offest*3, xtick_offest*4]
-
 				if not percentage:
 					xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+					if len(xlabels[-1]) > 3:
+						xlabels_temp = []
+						if len(xlabels[-1]) > 7:
+							for label in xlabels:
+								if len(label) > 7:
+									xlabels_temp.append(label[0:-8] + "m")
+								elif len(label) > 3:
+									xlabels_temp.append(label[0:-4] + "k")
+								else:
+									xlabels_temp.append(label)
+
+						else:
+							for label in xlabels:
+								if len(label) > 3:
+									xlabels_temp.append(label[0:-4] + "k")
+								else:
+									xlabels_temp.append(label)
+						xlabels = xlabels_temp
+				# if not percentage:
+				# 	xlabels = ['{:,}'.format(int(x)) for x in xlabels]
 				ylabs = np.arange(2.15, 13, 2)
 				ylabels = (['T>G','T>C','T>A','C>T','C>G','C>A'])
 				#labs = np.arange(0,12.485,)
