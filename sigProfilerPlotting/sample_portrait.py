@@ -779,12 +779,15 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 		panel4 = plt.axes([0.035, 0.05, 0.394, 0.114]) # SBS-384
 
-		panel7 = plt.axes([0.528, 0.756, 0.455, 0.125]) # DBS-78
-		panel8 = plt.axes([0.783, 0.53, 0.2, 0.15]) # DBS-312
+		panel7 = plt.axes([0.528, 0.776, 0.455, 0.125]) # DBS-78
+		#panel7 = plt.axes([0.528, 0.756, 0.455, 0.125]) # DBS-78
+		#panel8 = plt.axes([0.783, 0.53, 0.2, 0.15]) # DBS-312
+		panel8 = plt.axes([0.783, 0.55, 0.2, 0.15]) # DBS-312
 
 		panel9 = plt.axes([0.528, 0.3, 0.455, 0.155]) # ID-78
 		panel10 = plt.axes([0.528, 0.05, 0.455, 0.155]) # ID-96
-		panel11 = plt.axes([0.528, 0.53, 0.15, 0.15]) # ID-simple
+		# panel11 = plt.axes([0.528, 0.53, 0.15, 0.15]) # ID-simple
+		panel11 = plt.axes([0.528, 0.55, 0.15, 0.15]) # ID-simple
 
 		panel12 = plt.axes([0.035, 0.352, 0.394, 0.0485]) # 1536-middle
 		panel13 = plt.axes([0.035, 0.406, 0.394, 0.0485]) # 1536-top
@@ -1457,7 +1460,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 
 
-		panel2.text(0.04, 0.6, "SBS-96/SBS-1536", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+		panel2.text(0.04, 0.6, "SBS-96 and SBS-1536", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 
 
@@ -1640,7 +1643,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		panel9.set_xticks(labs)
 		panel9.set_yticks(ylabs)	
 
-		plt.text(0.528, 0.487, "ID-83", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+		plt.text(0.528, 0.48 + 0.01, "ID-83", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 		panel9.set_yticklabels(ylabels, fontsize=8)
 		panel9.yaxis.grid(True)
@@ -1880,8 +1883,8 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			if i < 4:
 				i += 1
 		x = .529
-		y_top = .6825
-		y_bottom = .5175
+		y_top = .6825 + 0.02
+		y_bottom = .5175 + 0.02
 		y = int(ymax*1.25)
 		y2 = y+2
 	
@@ -1981,7 +1984,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		panel11.set_ylim([0, y])
 		panel11.set_yticks(ylabs)	
 
-		plt.text(0.528, 0.71, "ID-simple", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+		plt.text(0.528, 0.71 + 0.02, "ID-28", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 		panel11.set_yticklabels(ylabels, fontsize=8)
 		panel11.yaxis.grid(True)
@@ -2033,7 +2036,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			i += 1
 
 		x = .5
-		y3 = .8825
+		y3 = .8825 + 0.02
 		y = ymax*1.25
 		y2 = y+2
 		i = 0
@@ -2084,7 +2087,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		if y < 4:
 			y = 4
 		
-		plt.text(0.53, 0.91, "DBS-78", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+		plt.text(0.53, 0.91+0.02, "DBS-78", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 		if not percentage:
 			ylabels = ['{:,}'.format(int(x)) for x in ylabels]
 			if len(ylabels[-1]) > 3:
@@ -2179,13 +2182,13 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			i += 1
 
 
-		y3 = .6825
+		y3 = .6825 + 0.02
 		y = int(ymax*1.25)
 
 		panel8.add_patch(plt.Rectangle((.785,y3), .0475, .01, facecolor=colors[0], clip_on=False, transform=plt.gcf().transFigure)) 
-		panel8.add_patch(plt.Rectangle((.834,y3), .0475, .01, facecolor=colors[2], clip_on=False, transform=plt.gcf().transFigure)) 
-		panel8.add_patch(plt.Rectangle((.883,y3), .0475, .01, facecolor=colors[4], clip_on=False, transform=plt.gcf().transFigure)) 
-		panel8.add_patch(plt.Rectangle((.932,y3), .0475, .01, facecolor=colors[7], clip_on=False, transform=plt.gcf().transFigure)) 
+		panel8.add_patch(plt.Rectangle((.834,y3), .0475, .01, facecolor=colors[4], clip_on=False, transform=plt.gcf().transFigure)) 
+		panel8.add_patch(plt.Rectangle((.883,y3), .0475, .01, facecolor=colors[7], clip_on=False, transform=plt.gcf().transFigure)) 
+		panel8.add_patch(plt.Rectangle((.932,y3), .0475, .01, facecolor=colors[9], clip_on=False, transform=plt.gcf().transFigure)) 
 
 		yText = y3 + .0125
 		plt.text(.795, yText, 'CC>NN', fontsize=7, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
@@ -2203,11 +2206,11 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		x_shaded = 0
 		panel8.add_patch(plt.Rectangle((x_shaded,0), 8.9, y, facecolor=colors[0], zorder=0, alpha = 0.25, edgecolor='grey'))
 		x_shaded += 8.9
-		panel8.add_patch(plt.Rectangle((x_shaded,0), 9, y, facecolor=colors[2], zorder=0, alpha = 0.25, edgecolor='grey'))
-		x_shaded += 9
 		panel8.add_patch(plt.Rectangle((x_shaded,0), 9, y, facecolor=colors[4], zorder=0, alpha = 0.25, edgecolor='grey'))
 		x_shaded += 9
-		panel8.add_patch(plt.Rectangle((x_shaded,0), 9.1, y, facecolor=colors[7], zorder=0, alpha = 0.25, edgecolor='grey'))
+		panel8.add_patch(plt.Rectangle((x_shaded,0), 9, y, facecolor=colors[7], zorder=0, alpha = 0.25, edgecolor='grey'))
+		x_shaded += 9
+		panel8.add_patch(plt.Rectangle((x_shaded,0), 9.1, y, facecolor=colors[9], zorder=0, alpha = 0.25, edgecolor='grey'))
 
 
 		if percentage:
@@ -2223,7 +2226,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 					  ytick_offest*3, ytick_offest*4]
 
 
-		plt.text(0.78, 0.71, "DBS-186", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
+		plt.text(0.78, 0.71+0.02, "DBS-186", fontsize=10, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 		if not percentage:
 			ylabels = ['{:,}'.format(int(x)) for x in ylabels]
