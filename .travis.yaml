@@ -1,8 +1,12 @@
+if: type = push
+
 language: python
+
 python:
-  - "3.4"
-  
+  - '3.4'
+
 install:
   - pip install .
 
 script: python3 SigProfilerPlotting/plot_example.py
+
