@@ -6,7 +6,7 @@ python:
   - '3.4'
 
 install:
-  -pip install -q matplotlib
+  - pip install -q matplotlib
   - pip install .
 
 script: python3 SigProfilerPlotting/plot_example.py
