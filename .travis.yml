@@ -7,5 +7,5 @@ install:
   - pip install -q matplotlib
   - pip install .
 
-script: python3 SigProfilerPlotting/plot_example.py
+script: python3 plot_example.py
 
