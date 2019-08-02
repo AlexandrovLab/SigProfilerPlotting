@@ -1076,6 +1076,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				total_count_3 = max_3[sample]*1.1
 				ratio_5 = total_count_5/total_count_sample
 				ratio_3 = total_count_3/total_count_sample
+				ratio_total = max(ratio_5, ratio_3)
 
 				for key in mutations_5[sample]:
 					y_pos = 3
@@ -1086,8 +1087,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						ylabels_5.append(penta + "---N" )
 						ylabels_3.append("N---" + penta)
 						for tri in mutations_5[sample][key][penta]:
-							mut_count = int(int(20 * round(float(mutations_5[sample][key][penta][tri])/total_count_sample/ratio_5*100)/20)/20)
-							mut_count_3 = int(int(20 * round(float(mutations_3[sample][key][penta][tri])/total_count_sample/ratio_3*100)/20)/20)
+							mut_count = int(int(20 * round(float(mutations_5[sample][key][penta][tri])/total_count_sample/ratio_total*100)/20)/20)
+							mut_count_3 = int(int(20 * round(float(mutations_3[sample][key][penta][tri])/total_count_sample/ratio_total*100)/20)/20)
 							rectangle=mplpatches.Rectangle((x_pos, y_pos), 1, 1,\
 															linewidth=1,\
 															facecolor=(colors_heat_compact[0][mut_count], colors_heat_compact[1][mut_count], colors_heat_compact[2][mut_count]))
@@ -1171,14 +1172,14 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 				# scale numbers for top 1536 plot
 				plt.text(.9825, .5, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-				plt.text(.9825, .56675, str(ratio_5/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
-				plt.text(.9825, .625, str(ratio_5)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+				plt.text(.9825, .56675, str(ratio_total/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+				plt.text(.9825, .625, str(ratio_total)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 				y = int(ymax*1.25)
 
 				# scale numbers for middle 1536 plot
 				plt.text(.9825, .35, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
-				plt.text(.9825, .41675, str(ratio_3/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
-				plt.text(.9825, .475, str(ratio_3)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+				plt.text(.9825, .41675, str(ratio_total/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
+				plt.text(.9825, .475, str(ratio_total)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 				y = int(ymax*1.25)
 
 				x = .033
