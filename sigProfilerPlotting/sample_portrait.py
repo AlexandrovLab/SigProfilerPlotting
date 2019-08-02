@@ -49,7 +49,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 	# if '.DS_Store' in file_example:
 	# 	file_example.remove('.DS_Store')
 	file_extension = file_example.split(".")[-1]
-
+	file_extension = "all"
 	SBS96 = True
 	SBS6 = True
 	SBS24 = True
@@ -123,7 +123,8 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 
 	########################### SBS-6 ################################################
-	try:
+	if True:
+	#try:
 		with open (sample_matrices_path + "SBS/" + project + ".SBS6." + file_extension) as f:
 			first_line = f.readline()
 			for sample in samples:
@@ -151,9 +152,9 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 					mutations_6[sample][mut_type] = mutCount
 					sample_index += 1
 
-	except:
-		SBS6 = False
-		print("No SBS-6 provided")
+	#except:
+	#	SBS6 = False
+	#	print("No SBS-6 provided")
 
 		########################### SBS-24 ################################################
 	try:
