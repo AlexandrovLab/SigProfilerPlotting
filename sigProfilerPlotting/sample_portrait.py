@@ -45,7 +45,9 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 	mutations_simple = OrderedDict()
 
 
-	file_example = os.listdir(sample_matrices_path + "SBS/")[0]
+	file_example = os.listdir(sample_matrices_path + "SBS/")[1]
+	# if '.DS_Store' in file_example:
+	# 	file_example.remove('.DS_Store')
 	file_extension = file_example.split(".")[-1]
 
 	SBS96 = True
@@ -534,9 +536,10 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 				samples = first_line.strip().split(",")
 				samples = samples[4:]
 				samples = [x.replace('"','') for x in samples]
-			else:			
-				samples = first_line.strip().split("\t")
-				samples = samples[1:]
+			else:
+				pass			
+				#samples = first_line.strip().split("\t")
+				#samples = samples[1:]
 			for sample in samples:
 				mutations_ID96[sample] = OrderedDict()
 				mutations_ID96[sample]['1DelC'] = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
@@ -724,8 +727,8 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
 		with open (sample_matrices_path + "DBS/" + project + ".DBS186." + file_extension) as f:
 			first_line = f.readline()
-			samples = first_line.strip().split("\t")
-			samples = samples[1:]
+			#samples = first_line.strip().split("\t")
+			#samples = samples[1:]
 			for sample in samples:
 				mutations_312[sample] = OrderedDict()
 				mutations_312[sample]['CC'] = OrderedDict()
@@ -1287,6 +1290,7 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		total_count_3 = max_3[sample]*1.1
 		ratio_5 = total_count_5/total_count_sample
 		ratio_3 = total_count_3/total_count_sample
+		ratio_total = max(ratio_5, ratio_3)
 
 		for key in mutations_5[sample]:
 			y_pos = 3
@@ -1294,8 +1298,8 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 				ylabels_5.append(penta + "---N" )
 				ylabels_3.append("N---" + penta)
 				for tri in mutations_5[sample][key][penta]:
-					mut_count = int(int(20 * round(float(mutations_5[sample][key][penta][tri])/total_count_sample/ratio_5*100)/20)/20)
-					mut_count_3 = int(int(20 * round(float(mutations_3[sample][key][penta][tri])/total_count_sample/ratio_3*100)/20)/20)
+					mut_count = int(int(20 * round(float(mutations_5[sample][key][penta][tri])/total_count_sample/ratio_total*100)/20)/20)
+					mut_count_3 = int(int(20 * round(float(mutations_3[sample][key][penta][tri])/total_count_sample/ratio_total*100)/20)/20)
 					rectangle=mplpatches.Rectangle((x_pos, y_pos), 1, 1,\
 													linewidth=1,\
 													facecolor=(colors_heat_compact[0][mut_count], colors_heat_compact[1][mut_count], colors_heat_compact[2][mut_count]))
@@ -1364,14 +1368,14 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 		# scale numbers for top 1536 plot
 		plt.text(.439, .406, '0', fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
-		plt.text(.439, .426, str(ratio_5/2)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
-		plt.text(.439, .448, str(ratio_5)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
+		plt.text(.439, .426, str(ratio_total/2)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
+		plt.text(.439, .448, str(ratio_total)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
 		y = int(ymax*1.25)
 
 		# scale numbers for middle 1536 plot
 		plt.text(.439, .3525, '0', fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
-		plt.text(.439, .375, str(ratio_3/2)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
-		plt.text(.439, .395, str(ratio_3)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
+		plt.text(.439, .375, str(ratio_total/2)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
+		plt.text(.439, .395, str(ratio_total)[:5], fontsize=5, fontweight='bold', transform=plt.gcf().transFigure)
 		y = int(ymax*1.25)
 
 		if y <= 4:
