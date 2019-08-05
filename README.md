@@ -5,7 +5,7 @@ SigProfilerPlotting provides a standard tool for displaying all types of mutatio
 
 **INTRODUCTION**
 
-The purpose of this document is to provide a guide for using the SigProfilerPlotting framework and associated functions/tools to visualize the output from SigProfilerExtraction and SigProfilerSimulator. An extensive Wiki page detailing the usage of this tool can be found at https://osf.io/2aj6t/wiki/home.
+The purpose of this document is to provide a guide for using the SigProfilerPlotting framework and associated functions/tools to visualize the output from SigProfilerExtraction and SigProfilerSimulator. An extensive Wiki page detailing the usage of this tool can be found at https://osf.io/2aj6t/wiki/home. For users that prefer working in an R environment , wrapper packages are provided that can be found and installed from: https://github.com/AlexandrovLab/SigProfilerPlottingR
 
 **PREREQUISITES**
 
@@ -17,39 +17,24 @@ The framework is written in PYTHON, however, it also requires the following soft
 **QUICK START GUIDE**
 
 This section will guide you through the minimum steps required to plot mutational matrices:
- 1. Before you download and install sigProfilerPlotting, first create a GitHub account at the following link: https://help.github.com/articles/signing-up-for-a-new-github-account/
- 2. Configure your GitHub account to use SSH using the following link: https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/
- 3. To download the current version of the tool to your local computer or server you need to clone the repository using the following command:
- ```
- git clone ssh://git@github.com/AlexandrovLab/SigProfilerPlotting 
- ```
- 4. Using a terminal or command line on your computer/server, enter the sigProfilerPlotting directory
- ```
- cd sigProfilerPlotting/
- ```
- 5. Install the tool using the following command:
- ```
- pip install .
- ```
- 6.	After a successful installation, this package can now be imported at the top of python scripts as follows:
- ```
- import sigProfilerPlotting as sigPlt 
- ```
- The available functions are listed below. 
-
- 7. The final plots are saved into the user-provided output folder. 
-
-**ALTERNATE INSTALLATION METHOD**
-
-SigProfilerPlotting can also be installed from pypi. Use the following command:
+1. Install the python package using pip:
 ```
-pip install sigProfilerPlotting
+                          pip install SigProfilePlotting
 ```
 
-This tool can also be installed from the Anaconda Cloud as a conda package. Use the following command:
-```
-conda install -c ebergstr sigprofilerplotting
-```
+2. From within a python session, you can now plot your mutational matrices as follows:
+ ```
+$ python3
+>> import sigProfilerPlotting as sigPlt 
+>> sigPlt.plotSBS(matrix_path, output_path, project, plot_type, percentage=False)
+ ```
+ The available functions are listed below and the layout of the required parameters are as follows:
+  
+      sigPlt.plotSBS(matrix_path, output_path, project, plot_type,)
+      
+where matrix_path, output_path, project, and plot_type must be strings (surrounded by quotation marks, ex: "/Users/ebergstr/Desktop/test_sample").   
+
+ 3. The final plots are saved into the user-provided output folder. 
 
 **AVAILABLE FUNCTIONS**
 
