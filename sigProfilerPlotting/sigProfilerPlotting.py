@@ -1392,27 +1392,27 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 				panel1.axis('off')
-				panel1.tick_params(axis=None,which='both',\
+				panel1.tick_params(axis='both',which='both',\
 								   bottom=False, labelbottom=False,\
 								   left=False, labelleft=False,\
 								   right=False, labelright=False,\
 								   top=False, labeltop=False,\
 								   direction='in', length=25, colors='white', width=2)
-				panel2.tick_params(axis=None,which='both',\
+				panel2.tick_params(axis='both',which='both',\
 								   bottom=False, labelbottom=False,\
 								   left=False, labelleft=False,\
 								   right=True, labelright=False,\
 								   top=False, labeltop=False,\
 								   direction='in', length=25, colors='white', width=2)
 				panel3.axis('off')
-				panel3.tick_params(axis=None,which='both',\
+				panel3.tick_params(axis='both',which='both',\
 								   bottom=False, labelbottom=False,\
 								   left=False, labelleft=False,\
 								   right=True, labelright=False,\
 								   top=False, labeltop=False,\
 								   direction='in', length=25, colors='white', width=2)
 				panel4.axis('off')
-				panel4.tick_params(axis=None,which='both',\
+				panel4.tick_params(axis='both',which='both',\
 								   bottom=False, labelbottom=False,\
 								   left=False, labelleft=False,\
 								   right=True, labelright=False,\

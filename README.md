@@ -30,7 +30,7 @@ $ python3
  ```
  The available functions are listed below and the layout of the required parameters are as follows:
   
-      sigPlt.plotSBS(matrix_path, output_path, project, plot_type,)
+      sigPlt.plotSBS(matrix_path, output_path, project, plot_type)
       
 where matrix_path, output_path, project, and plot_type must be strings (surrounded by quotation marks, ex: "/Users/ebergstr/Desktop/test_sample").   
 
