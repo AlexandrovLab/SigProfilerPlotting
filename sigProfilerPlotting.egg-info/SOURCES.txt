@@ -7,6 +7,7 @@ fonts/Courier New Bold.ttf
 fonts/Courier New.ttf
 fonts/Times New Roman Bold.ttf
 fonts/Times New Roman.ttf
+fonts/__init__.py
 sigProfilerPlotting/__init__.py
 sigProfilerPlotting/sample_portrait.py
 sigProfilerPlotting/sigProfilerPlotting.py

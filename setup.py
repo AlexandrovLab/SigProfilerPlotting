@@ -12,7 +12,7 @@ def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
-VERSION = '1.0.6'
+VERSION = '1.0.8'
 
 def write_version_py(filename='sigProfilerPlotting/version.py'):
     # Copied from numpy setup.py
@@ -76,6 +76,7 @@ setup(name='sigProfilerPlotting',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
 			"matplotlib"],
+        package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
 	    cmdclass={'install' : move_ttf},
