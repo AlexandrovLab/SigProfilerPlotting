@@ -815,10 +815,11 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			for key in mutations_96[sample]:
 				for seq in mutations_96[sample][key]:
 					xlabels.append(seq[0]+seq[2]+seq[6])
-					if percentage:	
-						panel3.bar(x, mutations_96[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-						if mutations_96[sample][key][seq]/total_count*100 > ymax:
-							ymax = mutations_96[sample][key][seq]/total_count*100
+					if percentage:
+						if total_count > 0:	
+							panel3.bar(x, mutations_96[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+							if mutations_96[sample][key][seq]/total_count*100 > ymax:
+								ymax = mutations_96[sample][key][seq]/total_count*100
 					else:
 						panel3.bar(x, mutations_96[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
 						if mutations_96[sample][key][seq] > ymax:
@@ -920,9 +921,10 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		for key in mutations_6[sample]:
 			xlabels.append(key)
 			if percentage:	
-				panel1.barh(y, mutations_6[sample][key]/total_count*100,height=0.7,color=colors[i],align='center', zorder=1000)
-				if mutations_6[sample][key]/total_count*100 > xmax:
-					xmax = mutations_6[sample][key]/total_count*100
+				if total_count > 0:
+					panel1.barh(y, mutations_6[sample][key]/total_count*100,height=0.7,color=colors[i],align='center', zorder=1000)
+					if mutations_6[sample][key]/total_count*100 > xmax:
+						xmax = mutations_6[sample][key]/total_count*100
 			else:
 				panel1.barh(y, mutations_6[sample][key],height=0.7,color=colors[i],align='center', zorder=1000)
 				if mutations_6[sample][key] > xmax:
@@ -1011,14 +1013,15 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 		xmax = 0
 		for key in mutations_24[sample]:
 			if percentage:
-				trans = panel2.barh(y, mutations_24[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-				y -= 0.75
-				untrans = panel2.barh(y, mutations_24[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
-				y -= .2475
-				if mutations_24[sample][key][0]/total_count*100 > xmax:
-						xmax = mutations_24[sample][key][0]/total_count*100
-				if mutations_24[sample][key][1]/total_count*100 > xmax:
-						xmax = mutations_24[sample][key][1]/total_count*100
+				if total_count > 0:
+					trans = panel2.barh(y, mutations_24[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+					y -= 0.75
+					untrans = panel2.barh(y, mutations_24[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+					y -= .2475
+					if mutations_24[sample][key][0]/total_count*100 > xmax:
+							xmax = mutations_24[sample][key][0]/total_count*100
+					if mutations_24[sample][key][1]/total_count*100 > xmax:
+							xmax = mutations_24[sample][key][1]/total_count*100
 
 			else:
 				trans = panel2.barh(y, mutations_24[sample][key][0],height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
@@ -1114,14 +1117,15 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			for seq in mutations_384[sample][key]:
 				xlabels.append(seq[0]+seq[2]+seq[6])
 				if percentage:
-					trans = panel4.bar(x, mutations_384[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-					x += 0.75
-					untrans = panel4.bar(x, mutations_384[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
-					x += .2475
-					if mutations_384[sample][key][seq][0]/total_count*100 > ymax:
-							ymax = mutations_384[sample][key][seq][0]/total_count*100
-					if mutations_384[sample][key][seq][1]/total_count*100 > ymax:
-							ymax = mutations_384[sample][key][seq][1]/total_count*100
+					if total_count > 0:
+						trans = panel4.bar(x, mutations_384[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+						x += 0.75
+						untrans = panel4.bar(x, mutations_384[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+						x += .2475
+						if mutations_384[sample][key][seq][0]/total_count*100 > ymax:
+								ymax = mutations_384[sample][key][seq][0]/total_count*100
+						if mutations_384[sample][key][seq][1]/total_count*100 > ymax:
+								ymax = mutations_384[sample][key][seq][1]/total_count*100
 
 				else:
 					trans = panel4.bar(x, mutations_384[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
@@ -1512,9 +1516,10 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			for seq in mutations_83[sample][key]:
 				xlabels.append(l)
 				if percentage:
-					panel9.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-					if seq/total_count*100 > ymax:
-						ymax = seq/total_count*100
+					if total_count > 0:
+						panel9.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if seq/total_count*100 > ymax:
+							ymax = seq/total_count*100
 				else:
 					panel9.bar(x, seq,width=0.4,color=colors[i],align='center', zorder=1000)
 					if seq > ymax:
@@ -1688,13 +1693,14 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			for seq in mutations_ID96[sample][key]:
 				xlabels.append(l)
 				if percentage:
-					trans = panel10.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-					x += 0.2
-					untrans = panel10.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
-					if seq[0]/total_count*100 > ymax:
-							ymax = seq[0]/total_count*100
-					if seq[1]/total_count*100 > ymax:
-							ymax = seq[1]/total_count*100
+					if total_count > 0:
+						trans = panel10.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+						x += 0.2
+						untrans = panel10.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+						if seq[0]/total_count*100 > ymax:
+								ymax = seq[0]/total_count*100
+						if seq[1]/total_count*100 > ymax:
+								ymax = seq[1]/total_count*100
 
 				else:
 					trans = panel10.bar(x, seq[0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
@@ -1876,9 +1882,10 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			for seq in mutations_simple[sample][key]:
 				xlabels.append(l)
 				if percentage:
-					panel11.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-					if seq/total_count*100 > ymax:
-						ymax = seq/total_count*100
+					if total_count > 0:
+						panel11.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if seq/total_count*100 > ymax:
+							ymax = seq/total_count*100
 				else:
 					panel11.bar(x, seq,width=0.4,color=colors[i],align='center', zorder=1000)
 					if seq > ymax:
@@ -2030,9 +2037,10 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 			for seq in muts:
 				xlabels.append(seq)
 				if percentage:	
-					panel7.bar(x, mutations_78[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-					if mutations_78[sample][key][seq]/total_count*100 > ymax:
-							ymax = mutations_78[sample][key][seq]/total_count*100					
+					if total_count > 0:
+						panel7.bar(x, mutations_78[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+						if mutations_78[sample][key][seq]/total_count*100 > ymax:
+								ymax = mutations_78[sample][key][seq]/total_count*100					
 				else:
 					panel7.bar(x, mutations_78[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
 					if mutations_78[sample][key][seq] > ymax:
