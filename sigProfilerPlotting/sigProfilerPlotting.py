@@ -98,10 +98,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				for key in mutations[sample]:
 					for seq in mutations[sample][key]:
 						xlabels.append(seq[0]+seq[2]+seq[6])
-						if percentage:	
-							plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-							if mutations[sample][key][seq]/total_count*100 > ymax:
-								ymax = mutations[sample][key][seq]/total_count*100
+						if percentage:
+							if total_count > 0:	
+								plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+								if mutations[sample][key][seq]/total_count*100 > ymax:
+									ymax = mutations[sample][key][seq]/total_count*100
 						else:
 							plt.bar(x, mutations[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
 							if mutations[sample][key][seq] > ymax:
@@ -348,14 +349,15 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					for seq in mutations[sample][key]:
 						xlabels.append(seq[0]+seq[2]+seq[6])
 						if percentage:
-							trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-							x += 0.75
-							untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
-							x += .2475
-							if mutations[sample][key][seq][0]/total_count*100 > ymax:
-									ymax = mutations[sample][key][seq][0]/total_count*100
-							if mutations[sample][key][seq][1]/total_count*100 > ymax:
-									ymax = mutations[sample][key][seq][1]/total_count*100
+							if total_count > 0:
+								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+								x += 0.75
+								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								x += .2475
+								if mutations[sample][key][seq][0]/total_count*100 > ymax:
+										ymax = mutations[sample][key][seq][0]/total_count*100
+								if mutations[sample][key][seq][1]/total_count*100 > ymax:
+										ymax = mutations[sample][key][seq][1]/total_count*100
 
 						else:
 							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
@@ -576,10 +578,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				i = 0
 				for key in mutations[sample]:
 					xlabels.append(key)
-					if percentage:	
-						plt.barh(y, mutations[sample][key]/total_count*100,height=0.7,color=colors[i],align='center', zorder=1000)
-						if mutations[sample][key]/total_count*100 > xmax:
-							xmax = mutations[sample][key]/total_count*100
+					if percentage:
+						if total_count > 0:	
+							plt.barh(y, mutations[sample][key]/total_count*100,height=0.7,color=colors[i],align='center', zorder=1000)
+							if mutations[sample][key]/total_count*100 > xmax:
+								xmax = mutations[sample][key]/total_count*100
 					else:
 						plt.barh(y, mutations[sample][key],height=0.7,color=colors[i],align='center', zorder=1000)
 						if mutations[sample][key] > xmax:
@@ -727,14 +730,15 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				xmax = 0
 				for key in mutations[sample]:
 					if percentage:
-						trans = plt.barh(y, mutations[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-						y -= 0.75
-						untrans = plt.barh(y, mutations[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
-						y -= .2475
-						if mutations[sample][key][0]/total_count*100 > xmax:
-								xmax = mutations[sample][key][0]/total_count*100
-						if mutations[sample][key][1]/total_count*100 > xmax:
-								xmax = mutations[sample][key][1]/total_count*100
+						if total_count > 0:
+							trans = plt.barh(y, mutations[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+							y -= 0.75
+							untrans = plt.barh(y, mutations[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+							y -= .2475
+							if mutations[sample][key][0]/total_count*100 > xmax:
+									xmax = mutations[sample][key][0]/total_count*100
+							if mutations[sample][key][1]/total_count*100 > xmax:
+									xmax = mutations[sample][key][1]/total_count*100
 
 					else:
 						trans = plt.barh(y, mutations[sample][key][0],height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
@@ -1114,10 +1118,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				for key in mutations_96[sample]:
 					for seq in mutations_96[sample][key]:
 						xlabels.append(seq[0]+seq[2]+seq[6])
-						if percentage:	
-							panel2.bar(x, mutations_96[sample][key][seq]/total_count_sample*100,width=0.5,color=colors[i],align='center', zorder=1000)
-							if mutations_96[sample][key][seq]/total_count_sample*100 > ymax:
-								ymax = mutations_96[sample][key][seq]/total_count_sample*100
+						if percentage:
+							if total_count_sample > 0:	
+								panel2.bar(x, mutations_96[sample][key][seq]/total_count_sample*100,width=0.5,color=colors[i],align='center', zorder=1000)
+								if mutations_96[sample][key][seq]/total_count_sample*100 > ymax:
+									ymax = mutations_96[sample][key][seq]/total_count_sample*100
 						else:
 							panel2.bar(x, mutations_96[sample][key][seq],width=0.5,color=colors[i],align='center', zorder=1000)
 							if mutations_96[sample][key][seq] > ymax:
@@ -1561,9 +1566,10 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 					for seq in mutations[sample][key]:
 						xlabels.append(l)
 						if percentage:
-							plt.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-							if seq/total_count*100 > ymax:
-								ymax = seq/total_count*100
+							if total_count > 0:
+								plt.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+								if seq/total_count*100 > ymax:
+									ymax = seq/total_count*100
 						else:
 							plt.bar(x, seq,width=0.4,color=colors[i],align='center', zorder=1000)
 							if seq > ymax:
@@ -2110,9 +2116,10 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 					for seq in mutations[sample][key]:
 						xlabels.append(l)
 						if percentage:
-							plt.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-							if seq/total_count*100 > ymax:
-								ymax = seq/total_count*100
+							if total_count > 0:
+								plt.bar(x, seq/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+								if seq/total_count*100 > ymax:
+									ymax = seq/total_count*100
 						else:
 							plt.bar(x, seq,width=0.4,color=colors[i],align='center', zorder=1000)
 							if seq > ymax:
@@ -2400,13 +2407,14 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 					for seq in mutations[sample][key]:
 						xlabels.append(l)
 						if percentage:
-							trans = plt.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-							x += 0.2
-							untrans = plt.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
-							if seq[0]/total_count*100 > ymax:
-									ymax = seq[0]/total_count*100
-							if seq[1]/total_count*100 > ymax:
-									ymax = seq[1]/total_count*100
+							if total_count > 0:
+								trans = plt.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+								x += 0.2
+								untrans = plt.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								if seq[0]/total_count*100 > ymax:
+										ymax = seq[0]/total_count*100
+								if seq[1]/total_count*100 > ymax:
+										ymax = seq[1]/total_count*100
 
 						else:
 							trans = plt.bar(x, seq[0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
@@ -2741,9 +2749,10 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					for seq in muts:
 						xlabels.append(seq)
 						if percentage:	
-							plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
-							if mutations[sample][key][seq]/total_count*100 > ymax:
-									ymax = mutations[sample][key][seq]/total_count*100					
+							if total_count > 0:
+								plt.bar(x, mutations[sample][key][seq]/total_count*100,width=0.4,color=colors[i],align='center', zorder=1000)
+								if mutations[sample][key][seq]/total_count*100 > ymax:
+										ymax = mutations[sample][key][seq]/total_count*100					
 						else:
 							plt.bar(x, mutations[sample][key][seq],width=0.4,color=colors[i],align='center', zorder=1000)
 							if mutations[sample][key][seq] > ymax:
