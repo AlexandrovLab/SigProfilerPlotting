@@ -9,7 +9,7 @@ The purpose of this document is to provide a guide for using the SigProfilerPlot
 
 For users that prefer working in an R environment, a wrapper package is provided and can be found and installed from: https://github.com/AlexandrovLab/SigProfilerPlottingR
 
-![schematic](schematic.pdf)
+![schematic](schematic.png)
 
 **PREREQUISITES**
 
