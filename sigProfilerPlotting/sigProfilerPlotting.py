@@ -77,7 +77,10 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 							if mutCount < 1 and mutCount > 0:
 								sig_probs = True
 						else:
-							mutCount = int(line[sample_index])
+							try:
+								mutCount = int(line[sample_index])
+							except:
+								print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
 						mutations[sample][mut_type][nuc] = mutCount
 						sample_index += 1
 
@@ -262,7 +265,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				sample_count += 1
 			pp.close()
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_96_plots_' + project + '.pdf')
 
 	elif plot_type == '192' or plot_type == '96SB' or plot_type == '384':
@@ -323,7 +326,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 								if mutCount < 1 and mutCount > 0:
 									sig_probs = True
 							else:
-								mutCount = int(line[sample_index])
+								try:
+									mutCount = int(line[sample_index])
+								except:
+									print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+								# mutCount = int(line[sample_index])
 							if nuc not in mutations[sample][mut_type].keys():
 								mutations[sample][mut_type][nuc] = [0,0]
 							if bias == 'T':
@@ -519,7 +527,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			pp.close()
 
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_384_plots_' + project + '.pdf')
 
 	elif plot_type == '6':
@@ -560,7 +568,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 							if mutCount < 1 and mutCount > 0:
 								sig_probs = True
 						else:
-							mutCount = int(line[sample_index])
+							try:
+								mutCount = int(line[sample_index])
+							except:
+								print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+							# mutCount = int(line[sample_index])
 						mutations[sample][mut_type] = mutCount
 						sample_index += 1
 
@@ -670,7 +683,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			pp.close()
 
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_6_plots_' + project + '.pdf')
 
 	elif plot_type == '12' or plot_type == '6SB' or plot_type == '24':
@@ -713,7 +726,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 								if mutCount < 1 and mutCount > 0:
 									sig_probs = True
 							else:
-								mutCount = int(line[sample_index])						
+								try:
+									mutCount = int(line[sample_index])
+								except:
+									print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+								# mutCount = int(line[sample_index])						
 							if bias == 'T':
 								mutations[sample][nuc][0] = mutCount
 							else:
@@ -827,7 +845,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			pp.close()
 
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_24_plots_' + project + '.pdf')
 
 
@@ -988,7 +1006,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 							if mutCount < 1 and mutCount > 0:
 								sig_probs = True
 						else:
-							mutCount = int(line[sample_index])
+							try:
+								mutCount = int(line[sample_index])
+							except:
+								print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+							# mutCount = int(line[sample_index])
 
 						if pcawg:
 							sample_ref = sample_index - 2
@@ -1430,7 +1453,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				sample_count += 1
 			pp.close()
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_1536_plots_' + project + '.pdf')
 	
 	else:
@@ -1538,7 +1561,12 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 								if mutCount < 1 and mutCount > 0:
 									sig_probs = True
 							else:
-								mutCount = int(line[sample_index])
+								try:
+									mutCount = int(line[sample_index])
+								except:
+									print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+								# mutCount = int(line[sample_index])
 							mutations[sample][mut_type][repeat_size] = mutCount
 						else:
 							continue
@@ -1781,7 +1809,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				sample_count += 1
 			pp.close()
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'ID_83_plots_' + project + '.pdf')
 
 	# =======================================OLD INDEL-TSB PLOT==================================================================================
@@ -2072,7 +2100,12 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 								if mutCount < 1 and mutCount > 0:
 									sig_probs = True
 							else:
-								mutCount = int(line[sample_index])
+								try:
+									mutCount = int(line[sample_index])
+								except:
+									print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+								# mutCount = int(line[sample_index])
 							mutations[sample][mut_type][repeat_size] = mutCount
 
 						# else:
@@ -2268,7 +2301,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 			pp.close()
 
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'ID_simple_plots_' + project + '.pdf')
 
 	elif plot_type == '96' or plot_type == 'ID96' or plot_type == '96ID' or plot_type == 'IDSB' or plot_type == '415':
@@ -2376,7 +2409,12 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 								if mutCount < 1 and mutCount > 0:
 									sig_probs = True
 							else:
-								mutCount = int(line[sample_index])
+								try:
+									mutCount = int(line[sample_index])
+								except:
+									print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+								# mutCount = int(line[sample_index])
 							if bias == 'T':
 								mutations[sample][mut_type][repeat_size][0] = mutCount
 							else:
@@ -2635,7 +2673,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 			pp.close()
 
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'ID_TSB_plots_' + project + '.pdf')
 
 
@@ -2723,7 +2761,12 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 							if mutCount < 1 and mutCount > 0:
 								sig_probs = True
 						else:
-							mutCount = int(line[sample_index])
+							try:
+								mutCount = int(line[sample_index])
+							except:
+								print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
+							# mutCount = int(line[sample_index])
 						mutations[sample][mut_type][nuc] = mutCount
 						sample_index += 1
 
@@ -2762,7 +2805,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 				x = .043
 				y3 = .87
-				y = ymax*1.25
+				y = int(ymax*1.25)
 				y2 = y+2
 				i = 0
 				panel1.add_patch(plt.Rectangle((.043,y3), .101, .05, facecolor=colors[0], clip_on=False, transform=plt.gcf().transFigure)) 
@@ -2791,28 +2834,20 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				if y <= 4:
 					y += 4
 
+				while y%4 != 0:
+					y += 1
+				ytick_offest = int(y/4)
+
+
 				if percentage:
-					ytick_offest = round((y/4), 1)
 					ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 					ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
 							  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
 				else:
-					# if y < 10:
-					# 	if y/4 - int(y/4) > 0.5:
-					# 		ytick_offest = int(y/4) + 1
-					# 	else:
-					# 		ytick_offest = int(y/4)
-					if y < 4:
-						y = 4
-					#else:
-					ytick_offest = int(y/4)
-					if ytick_offest == 0:
-						ytick_offest = 1
 					ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
 					ylabels= [0, ytick_offest, ytick_offest*2, 
-							  ytick_offest*3, ytick_offest*4]
-				if y < 4:
-					y = 4
+							  ytick_offest*3, ytick_offest*4]	
+							  
 				
 				if sig_probs:
 					plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
@@ -2925,7 +2960,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				sample_count += 1
 			pp.close()
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'DBS_78_plots_' + project + '.pdf')
 
 	elif plot_type == '312' or plot_type == '78SB' or plot_type == 'SB78' or plot_type == '186':
@@ -2981,7 +3016,12 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 								if mutCount < 1 and mutCount > 0:
 									sig_probs = True
 							else:
-								mutCount = int(line[sample_index])
+								# mutCount = int(line[sample_index])
+								try:
+									mutCount = int(line[sample_index])
+								except:
+									print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
+
 							if nuc not in mutations[sample][mut_type]:
 								mutations[sample][mut_type][nuc] = [0,0]
 							if bias == 'T':
@@ -3142,7 +3182,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				plt.close()
 			pp.close()
 		except:
-			print("There may be an issue with the formatting of you matrix file.")
+			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'DBS_186_plots_' + project + '.pdf')
 			
 	else:
