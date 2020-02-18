@@ -73,11 +73,12 @@ This example will create plots for each context for each of the included four sa
 
 **CITATION**
 
-E.N. Bergstrom, M.N. Huang, U. Mahto, M. Barnes, M.R. Stratton, S.G. Rozen, and L.B. Alexandrov (2019) SigProfilerMatrixGenerator: a tool for visualizing and exploring patterns of small mutational events. https://www.biorxiv.org/content/10.1101/653097v2
+Bergstrom EN, Huang MN, Mahto U, Barnes M, Stratton MR, Rozen SG, Alexandrov LB: SigProfilerMatrixGenerator: a tool for visualizing and exploring patterns of small mutational events. BMC Genomics 2019, 20:685
+https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-6041-2
 
 **COPYRIGHT**
 
-Copyright (c) 2019, Erik Bergstrom [Alexandrov Lab] All rights reserved.
+Copyright (c) 2020, Erik Bergstrom [Alexandrov Lab] All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
