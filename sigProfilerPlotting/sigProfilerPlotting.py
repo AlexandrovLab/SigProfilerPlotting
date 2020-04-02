@@ -1037,6 +1037,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			sample_count = 0
 			for sample in mutations.keys():
 				total_count_sample = sum(sum(nuc.values()) for nuc in mutations_96[sample].values())
+				if total_count_sample == 0:
+					continue
 				total_count = max_all[sample]*1.1
 				ratio = total_count/total_count_sample
 				plt.rcParams['axes.linewidth'] = 2
@@ -1196,13 +1198,13 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				plt.text(.9825, .0677, '0', fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 				plt.text(.9825, .2012, str(ratio/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 				plt.text(.9825, .325, str(ratio)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
-				y = int(ymax*1.25)
+				# y = int(ymax*1.25)
 
 				# scale numbers for top 1536 plot
 				plt.text(.9825, .5, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
 				plt.text(.9825, .56675, str(ratio_total/2)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
 				plt.text(.9825, .625, str(ratio_total)[:5], fontsize=15, fontweight='bold', transform=plt.gcf().transFigure)
-				y = int(ymax*1.25)
+				# y = int(ymax*1.25)
 
 				# scale numbers for middle 1536 plot
 				plt.text(.9825, .35, '0', fontsize=20, fontweight='bold', transform=plt.gcf().transFigure)
@@ -1228,12 +1230,25 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 
-				if y <= 4:
-					y += 4
+				# if y <= 4:
+				# 	y += 4
 
-				while y%4 != 0:
-					y += 1
-				ytick_offest = int(y/4)
+				# while y%4 != 0:
+				# 	y += 1
+				# ytick_offest = int(y/4)
+
+				y = ymax/1.025
+				ytick_offest = float(y/3)
+
+				# ylabels_96 = []
+				# if percentage:
+				# 	ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
+				# 	ylabels_96= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%", 
+				# 			  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
+				# else:
+				# 	ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
+				# 	ylabels_96= [0, ytick_offest, ytick_offest*2, 
+				# 			  ytick_offest*3, ytick_offest*4]		
 
 				ylabels_96 = []
 				if percentage:
@@ -1245,11 +1260,16 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					ylabels_96= [0, ytick_offest, ytick_offest*2, 
 							  ytick_offest*3, ytick_offest*4]		
 
+
+
 				font_label_size = 25
 				if not percentage:
 					if int(ylabels_96[3]) >= 1000:
 						font_label_size = 20
 
+				if percentage:
+					if len(ylabels_96) > 2:
+						font_label_size = 20
 
 				if not percentage:
 					ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
@@ -1406,7 +1426,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 				panel2.grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
-				panel2.set_yticklabels(ylabels_96, fontsize=font_label_size)
+				# panel2.set_yticklabels(ylabels_96, fontsize=font_label_size, color='black')
 				panel1.set_xlabel('')
 				panel1.set_ylabel('')
 				panel1.set_yticklabels([])
@@ -1414,9 +1434,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				panel2.set_xticklabels([])
 
 				if percentage:
-					panel2.set_ylabel("Percentage of Single Base Substitutions", fontsize=25, fontname="Times New Roman", weight = 'bold')
+					panel2.set_ylabel("Percentage of Single Base Substitutions", fontsize=28, fontname="Times New Roman", weight = 'bold')
 				else:
-					panel2.set_ylabel("Number of Single Base Substitutions", fontsize=25, fontname="Times New Roman", weight = 'bold')
+					panel2.set_ylabel("Number of Single Base Substitutions", fontsize=28, fontname="Times New Roman", weight = 'bold')
 
 
 				panel1.axis('off')
@@ -1428,7 +1448,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 								   direction='in', length=25, colors='white', width=2)
 				panel2.tick_params(axis='both',which='both',\
 								   bottom=False, labelbottom=False,\
-								   left=False, labelleft=False,\
+								   left=True, labelleft=True,\
 								   right=True, labelright=False,\
 								   top=False, labeltop=False,\
 								   direction='in', length=25, colors='white', width=2)
@@ -1447,7 +1467,15 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 								   top=False, labeltop=False,\
 								   direction='in', length=25, colors='white', width=2)
 
+
+
+				# [i.set_color("black") for i in panel2.gca().get_yticklabels()]
 			# 	[i.set_color("black") for i in plt.gca().get_yticklabels()]
+				if percentage:
+					panel2.set_yticklabels(ylabels_96, fontsize=font_label_size-1, color='black')
+				else:
+					panel2.set_yticklabels(ylabels_96, fontsize=font_label_size, color='black')
+
 				pp.savefig(plot1)
 				plt.close()
 				sample_count += 1
@@ -2214,15 +2242,15 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 						plt.text(x, yText_labels_bottom, '5+', fontsize=25, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 						x += 0.037
 
-				yText_labels_bottom += 0.01
+				yText_labels_bottom += 0.0
 				plt.text(x, yText_labels_bottom, 'Del', fontsize=17, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
 				x += 0.026
 				plt.text(x, yText_labels_bottom, 'Ins', fontsize=17, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
 				x += 0.0295
-				yText_labels_bottom += 0.003
+				yText_labels_bottom -= 0.001
 				plt.text(x, yText_labels_bottom, 'MH', fontsize=17, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
 				x += 0.0295
-				yText_labels_bottom += 0.005
+				yText_labels_bottom -= 0.002
 				plt.text(x, yText_labels_bottom, 'COMP', fontsize=10, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure, rotation='vertical')
 			
 				if y <= 4:
