@@ -820,7 +820,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
 				panel1.set_xlabel('')
 				panel1.set_ylabel('')
-				plt.legend(handles=[trans, untrans, nontrans], prop={'size':30})
+				plt.legend(handles=[trans, untrans, nontrans], prop={'size':20}, loc='upper right')
 				if percentage:
 					plt.ylabel("Percentage of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
 				else:
