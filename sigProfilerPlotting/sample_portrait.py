@@ -1473,21 +1473,21 @@ def samplePortrait (sample_matrices_path, output_path, project, percentage=False
 
 
 
-		panel5.tick_params(axis=None,which='both',\
+		panel5.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=False,\
 						   left=False, labelleft=False,\
 						   right=True, labelright=False,\
 						   top=False, labeltop=False,\
 						   direction='in', length=25, colors='white', width=2)
 		panel13.axis('off')
-		panel13.tick_params(axis=None,which='both',\
+		panel13.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=False,\
 						   left=False, labelleft=False,\
 						   right=True, labelright=False,\
 						   top=False, labeltop=False,\
 						   direction='in', length=25, colors='white', width=2)
 		panel12.axis('off')
-		panel12.tick_params(axis=None,which='both',\
+		panel12.tick_params(axis='both',which='both',\
 						   bottom=False, labelbottom=False,\
 						   left=False, labelleft=False,\
 						   right=True, labelright=False,\
