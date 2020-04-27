@@ -23,7 +23,7 @@ The framework is written in PYTHON, however, it also requires the following soft
 This section will guide you through the minimum steps required to plot mutational matrices:
 1. Install the python package using pip:
 ```
-                          pip install SigProfilePlotting
+                          pip install SigProfilerPlotting
 ```
 
 2. From within a python session, you can now plot your mutational matrices as follows:
