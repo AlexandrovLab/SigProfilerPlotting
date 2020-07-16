@@ -48,6 +48,7 @@ import sigProfilerPlotting as sigPlt
 sigPlt.plotSBS(matrix_path, output_path, project, plot_type, percentage=False)
 sigPlt.plotDBS(matrix_path, output_path, project, plot_type, percentage=False)
 sigPlt.plotID(matrix_path, output_path, project, plot_type, percentage=False)
+sigPlt.plotCNV(matrix_path, output_path, project, plot_type, percentage=False)
 ```
 matrix_path -> path to the mutational matrix of interest
 
