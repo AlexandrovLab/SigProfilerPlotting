@@ -70,7 +70,7 @@ setup(name='sigProfilerPlotting',
 		author='Erik Bergstrom',
 		author_email='ebergstr@eng.ucsd.edu',
 		license='UCSD',
-		packages=setuptools.find_packages(),
+		packages=['sigProfilerPlotting'],
 		install_requires =[
 			"matplotlib", "pandas", "seaborn", "string"],
         package_data={'':['fonts/*.ttf']},
