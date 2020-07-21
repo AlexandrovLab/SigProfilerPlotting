@@ -72,7 +72,7 @@ setup(name='sigProfilerPlotting',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
-			"matplotlib", "pandas", "seaborn", "string"],
+			"matplotlib", "pandas", "seaborn"],
         package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
