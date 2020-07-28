@@ -192,6 +192,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
 
         hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
         hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
+        patch_colors = ['green', 'purple', 'darkorange', 'fuchsia', 'slategrey', 'green', 'purple', 'darkorange', 'fuchsia', 'slateblue']
 
         N=48
         ticks = np.arange(N)
@@ -234,7 +235,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         left_edge = 0.151 #placement of left edge of patch
         y_pos = 0.95#placement of patch on y-axis
         text_height = 0.96
-        patch_colors = ['maroon', 'darkorange', 'slateblue', 'green', 'maroon', 'darkorange', 'slateblue', 'green', 'slategrey', 'blue']
+        
         categories = het_sub_class + loh_subclass + ['Hom' + '\n' + 'Del']
 
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
