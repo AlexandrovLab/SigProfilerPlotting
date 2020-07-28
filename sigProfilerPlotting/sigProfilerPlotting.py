@@ -23,6 +23,8 @@ from collections import defaultdict
 import pandas as pd
 import numpy as np
 import string
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False):
@@ -178,15 +180,15 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
             counts = [(x/sum(counts))*100 for x in counts]
 
         super_class = ['Het', 'LOH', "Hom del"]
-        het_sub_class = ['amp+', 'amp', 'gain', 'neut']
-        loh_subclass = ['amp+', 'amp', 'gain', 'neut', "del"]
         hom_del_class = ['0-100kb', '100kb-1Mb', '>1Mb']
+        loh_subclass = ["1", '2', '3-4', '5-8', '9+']
+        het_sub_class = ['2', '3-4', '5-8', '9+']
         x_labels = ['0-100kb', '100kb-1Mb', '1Mb-10Mb', '10Mb-40Mb','>40Mb']
-        color_mapping = {'amp+':{'>40Mb':"deeppink", '10Mb-40Mb':"hotpink", '1Mb-10Mb':"palevioletred", '100kb-1Mb':"lightpink", '0-100kb':"lavenderblush"},
-                     'amp':{'>40Mb':"saddlebrown", '10Mb-40Mb':"sienna", '1Mb-10Mb': "peru", '100kb-1Mb':"sandybrown", '0-100kb':"linen"},
-                     'gain':{'>40Mb': "rebeccapurple", '10Mb-40Mb':"blueviolet", '1Mb-10Mb':"mediumorchid", '100kb-1Mb':"plum", '0-100kb':"thistle"},
-                     'neut':{'>40Mb':"olive", '10Mb-40Mb':"olivedrab", '1Mb-10Mb':"yellowgreen", '100kb-1Mb':"lawngreen", '0-100kb':"greenyellow"},
-                     'del':{'>40Mb':"dimgray", '10Mb-40Mb':"darkgrey", '1Mb-10Mb':"silver", '100kb-1Mb':"lightgray", '0-100kb':"whitesmoke"}}
+        color_mapping = {'9+':{'>40Mb':"deeppink", '10Mb-40Mb':"hotpink", '1Mb-10Mb':"palevioletred", '100kb-1Mb':"lightpink", '0-100kb':"lavenderblush"},
+                     '5-8':{'>40Mb':"saddlebrown", '10Mb-40Mb':"sienna", '1Mb-10Mb': "peru", '100kb-1Mb':"sandybrown", '0-100kb':"linen"},
+                     '3-4':{'>40Mb': "rebeccapurple", '10Mb-40Mb':"blueviolet", '1Mb-10Mb':"mediumorchid", '100kb-1Mb':"plum", '0-100kb':"thistle"},
+                     '2':{'>40Mb':"olive", '10Mb-40Mb':"olivedrab", '1Mb-10Mb':"yellowgreen", '100kb-1Mb':"lawngreen", '0-100kb':"greenyellow"},
+                     '1':{'>40Mb':"dimgray", '10Mb-40Mb':"darkgrey", '1Mb-10Mb':"silver", '100kb-1Mb':"lightgray", '0-100kb':"whitesmoke"}}
 
         hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
         hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
@@ -241,7 +243,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         line_locs = [] # for recording positions of top evel patches and separation lines
         for i, loc in enumerate(patch_locs): #add 10 patches
             ax.add_patch(plt.Rectangle((loc-0.5, 1), patch_width, patch_height, clip_on=False, facecolor=patch_colors[i], transform=trans))
-            plt.text(loc, 1.05, categories[i].capitalize(), fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
+            plt.text(loc+0.5, 1.1, categories[i].capitalize(), fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
             if i == 4:
                 ax.axvline(x=loc-0.5, color='black', linewidth=2)
                 line_locs.append(loc-0.5)
@@ -259,8 +261,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         ax.add_patch(plt.Rectangle((line_locs[0], 1.2), patch_width*5, patch_height, clip_on=False, facecolor='black', transform=trans))
         plt.text(line_locs[0]+10, 1.2+.05, "LOH", fontsize=42, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
 
-
-
         ax.set_xticks(xticks);
         ax.set_xticklabels(x_labels * 9 + hom_del_class, rotation=90, weight="bold", fontsize = 16);
         ax.tick_params(labelleft=True, left=False, bottom=False)
@@ -271,10 +271,10 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         # plt.gca().get_yaxis().set_ticklabels([])
 
 
-        # if percentage:
-        #   ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
-        # else:
-        #   ax.set_ylabel("Frequency", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
+        if percentage:
+          ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
+        else:
+          ax.set_ylabel("Frequency", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
 
         # if aggregate:
         #  ax.set_title(sample, loc='center', y=1.3)
@@ -287,7 +287,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
 
         # ax.tick_params(axis=u'both', which=u'both',length=0)
         # plt.savefig(output_path + sample + str(i) + '.png', dpi=300, bbox_inches='tight')
-        ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
         ax.yaxis.labelpad = 1
         #fig.savefig(output_path + project + '_CNV_aggregated_counts.png', dpi=600, bbox_inches='tight')
         pp.savefig(fig, dpi=600, bbox_inches='tight')
@@ -314,16 +313,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
     for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
         counts = list(df[col])
         plot(counts, labels, sample, project, percentage)
-
-    #plotting routines
-    # if input == "counts":
-    #   plotMutationDistribution(df, output_path, project)
-    # if input == "exposures":
-    #   plotExposuresHeatmap(df, output_path, project)
-    #   plotSignatureDistribution(df, output_path, project) #how many CNV signatures are present across samples
-    # if input == "signatures":
-    #   plotSignaturesHeatmap(df, output_path, project)
-    #   plotCosineSimilarities(df, output_path, project) #plot pairwise cosine similarity histogram
 
     pp.close()
 

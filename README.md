@@ -48,8 +48,22 @@ import sigProfilerPlotting as sigPlt
 sigPlt.plotSBS(matrix_path, output_path, project, plot_type, percentage=False)
 sigPlt.plotDBS(matrix_path, output_path, project, plot_type, percentage=False)
 sigPlt.plotID(matrix_path, output_path, project, plot_type, percentage=False)
-sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False)
-sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=False)
+
+**Copy Number and Structural Variant Plotting**
+
+```
+import sigProfilerPlotting as sigPlt
+
+matrix_path = "./input/examples/samples/breast_cancer_samples_example.CNV48.all/" #Output of CNVMatrixGenerator
+output_path = "./input/examples/samples/"
+project = "Breast"
+
+sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=True) #plotting of CNV signatures
+sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=True) #plotting of SV signatures
+
+sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False) #plotting of CNV counts
+sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=False) #plotting of SV counts
+
 ```
 matrix_path -> path to the mutational matrix of interest
 
