@@ -191,7 +191,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
                      '1':{'>40Mb':"dimgray", '10Mb-40Mb':"darkgrey", '1Mb-10Mb':"silver", '100kb-1Mb':"lightgray", '0-100kb':"whitesmoke"}}
 
         hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
-        hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
+        hom_del_color_mapping = {'0-100kb':"cornflowerblue", '100kb-1Mb':"mediumblue", '>1Mb':"darkblue"}
         patch_colors = ['green', 'purple', 'darkorange', 'fuchsia', 'slategrey', 'green', 'purple', 'darkorange', 'fuchsia', 'slateblue']
 
         N=48
