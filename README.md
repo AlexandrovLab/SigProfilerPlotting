@@ -54,7 +54,7 @@ sigPlt.plotID(matrix_path, output_path, project, plot_type, percentage=False)
 ```
 import sigProfilerPlotting as sigPlt
 
-matrix_path = "./input/examples/samples/breast_cancer_samples_example.CNV48.all/" #Output of CNVMatrixGenerator
+matrix_path = "./input/examples/samples/ASCAT_NGS.CNV.matrix.tsv" #Output of CNVMatrixGenerator
 output_path = "./input/examples/samples/"
 project = "Breast"
 
