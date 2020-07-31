@@ -58,11 +58,17 @@ matrix_path = "./input/examples/samples/ASCAT_NGS.CNV.matrix.tsv" #Output of CNV
 output_path = "./input/examples/samples/"
 project = "Breast"
 
-sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=True) #plotting of CNV signatures
-sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=True) #plotting of SV signatures
+*MULTI-PAGE PDF OF CNV or SV SIGNATURES*
+sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=True, aggregate=False) #plotting of CNV signatures
+sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=True, aggregate=False) #plotting of SV signatures
 
-sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False) #plotting of CNV counts
-sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=False) #plotting of SV counts
+*MULTI-PAGE PDF OF CNV or SV FREQUENCIES*
+sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False, aggregate=False) #plotting of CNV counts
+sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=False, aggregate=False) #plotting of SV counts
+
+*SINGLE PDF OF CNV OR SV COUNTS PER SAMPLE FOR A GIVEN CANCER TYPE/PROJECT*
+sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False, aggregate=True) #plotting of CNV counts
+sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage, aggregate=True) #plotting of SV counts
 
 ```
 matrix_path -> path to the mutational matrix of interest
