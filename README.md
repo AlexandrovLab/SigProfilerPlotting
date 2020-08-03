@@ -22,9 +22,8 @@ The framework is written in PYTHON, however, it also requires the following soft
 
 This section will guide you through the minimum steps required to plot mutational matrices:
 1. Install the python package using pip:
-```python
+
                           pip install SigProfilerPlotting
-```
 
 2. From within a python session, you can now plot your mutational matrices as follows:
  ```python
@@ -63,6 +62,7 @@ output_path = "./input/examples/samples/"
 project = "Breast"
 
 ```
+**AVAILABLE FUNCTIONS**
 
 *Multi-page pdf of CNV or SV signatures*
 
@@ -105,7 +105,7 @@ sP.samplePortrait(sample_matrices_path, output_path, project, percentage=False)
 **EXAMPLE**
 
 This package comes with an example test for each plot type. Run the script plot_example.py from within the downloaded repo after installation:
-```python
+```
 python3 plot_example.py
 ```
 
