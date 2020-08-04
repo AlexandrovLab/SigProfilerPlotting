@@ -63,9 +63,6 @@ class move_ttf(install):
 
         
 
-
-
-
 setup(name='sigProfilerPlotting',
 		version=VERSION,
 		description='SigProfiler plotting tool',
@@ -75,7 +72,7 @@ setup(name='sigProfilerPlotting',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
-			"matplotlib"],
+			"matplotlib", "pandas", "seaborn"],
         package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
