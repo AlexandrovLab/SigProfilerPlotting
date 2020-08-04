@@ -11,6 +11,7 @@ fonts/__init__.py
 sigProfilerPlotting/__init__.py
 sigProfilerPlotting/sample_portrait.py
 sigProfilerPlotting/sigProfilerPlotting.py
+sigProfilerPlotting/sigProfilerPlotting_old.py
 sigProfilerPlotting/version.py
 sigProfilerPlotting.egg-info/PKG-INFO
 sigProfilerPlotting.egg-info/SOURCES.txt
