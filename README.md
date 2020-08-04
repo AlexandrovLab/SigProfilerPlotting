@@ -22,7 +22,7 @@ The framework is written in PYTHON, however, it also requires the following soft
 
 This section will guide you through the minimum steps required to plot mutational matrices:
 1. Install the python package using pip:
-```python
+```
                           pip install SigProfilerPlotting
 ```
 
@@ -58,11 +58,13 @@ sigPlt.plotID(matrix_path, output_path, project, plot_type, percentage=False)
 ```python
 import sigProfilerPlotting as sigPlt
 
-matrix_path = "./input/examples/samples/ASCAT_NGS.CNV.matrix.tsv" #Output of CNVMatrixGenerator
-output_path = "./input/examples/samples/"
+matrix_path = "./input/examples/samples/breast_cancer_samples_example.CNV48.all" #Output of CNVMatrixGenerator
+output_path = "./output/examples/samples/"
 project = "Breast"
 
 ```
+
+**AVAILABLE FUNCTIONS**
 
 *Multi-page pdf of CNV or SV signatures*
 
