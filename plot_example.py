@@ -2,15 +2,7 @@ import sigProfilerPlotting as sigPlt
 import os
 
 matrix_path = "input/examples/samples/"
-output_path = "output/examples/samples"
-
-cnv_matrix_path = ""
-sv_Matrix_path = ""
-
-#matrix_path = ''
-#output_path = ''
-
-
+output_path = "output/examples/"
 
 sigPlt.plotSBS(matrix_path + "breast_cancer_samples_example.SBS96.all", output_path,"BRCA_example", "96")
 sigPlt.plotSBS(matrix_path + "breast_cancer_samples_example.SBS192.all", output_path, "BRCA_example", "192")
