@@ -12,7 +12,7 @@ def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
-VERSION = '1.1.7'
+VERSION = '1.1.6'
 
 def write_version_py(filename='sigProfilerPlotting/version.py'):
     # Copied from numpy setup.py
@@ -63,9 +63,6 @@ class move_ttf(install):
 
         
 
-
-
-
 setup(name='sigProfilerPlotting',
 		version=VERSION,
 		description='SigProfiler plotting tool',
@@ -75,7 +72,7 @@ setup(name='sigProfilerPlotting',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
-			"matplotlib>=3.3.0"],
+			"matplotlib", "pandas", "seaborn"],
         package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
