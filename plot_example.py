@@ -1,7 +1,7 @@
 import sigProfilerPlotting as sigPlt
 import os
 
-matrix_path = "input/examples/"
+matrix_path = "input/examples/samples/"
 output_path = "output/examples/"
 
 #matrix_path = ''
