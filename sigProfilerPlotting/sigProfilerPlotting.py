@@ -372,7 +372,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         else: #input == counts
             print("The only plot type supported at this time is pdf")
 
-        print("line 333")
         #each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
