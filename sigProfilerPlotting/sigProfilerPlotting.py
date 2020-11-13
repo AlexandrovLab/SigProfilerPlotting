@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.patches as mplpatches
-from matplotlib.ticker import FixedLocator, FixedFormatter
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+import matplotlib.ticker as ticker
+from matplotlib.ticker import LinearLocator
 import matplotlib.lines as lines
 import matplotlib.transforms as transforms
 import re
@@ -124,8 +124,8 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         ax.add_patch(plt.Rectangle((18-0.5, 1.2), (patch_width*3)+3, patch_height, clip_on=False, facecolor='black', transform=trans));
         plt.text(23, 1.2+.05, "Non-Clustered", fontsize=42, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
 
-        ax.set_xticks(xticks);
-        ax.set_xticklabels(x_labels * 3 + [' '] + x_labels * 3 + [' '], rotation=90, weight="bold", fontsize = 16);
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(x_labels * 3 + [' '] + x_labels * 3 + [' '], rotation=90, weight="bold", fontsize = 16)
         ax.tick_params(labelleft=True, left=False, bottom=False)
         ax.tick_params(axis='y', which='major', pad=0, labelsize=30)
 
@@ -194,25 +194,49 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
 
     #inner function to construct plot
     def plot(counts, labels, sample, project, percentage, aggregate=False):
+        counts_ordered = list()
+        labels_ordered = labels.copy()
+        labels_updated = list()
+        # index order will be: homdel, LOH, then het
+        for i in range(0, len(labels)):
+            labels_ordered[i] = str(counts[i]) + ":" + labels[i]
+        l2 = pd.Series(sorted(labels_ordered.values, key = lambda x: x.split(":", 3)[2]))
+        lab_homdel=l2[l2.str.contains(":homdel:")]
+        lab_homdel.index = [homdel for homdel in range(0, len(lab_homdel))]
+        lab_LOH=l2[l2.str.contains(":LOH:")]
+        lab_LOH.index = [loh for loh in range(len(lab_homdel), len(lab_homdel)+len(lab_LOH))]
+        lab_het=l2[l2.str.contains(":het:")]
+        lab_het.index = [het for het in range(len(lab_homdel)+len(lab_LOH), len(lab_homdel)+len(lab_LOH)+len(lab_het))]
+        labels_ordered = lab_homdel.append(lab_LOH.append(lab_het))
+        for i in labels_ordered:
+                tmp_count=i.split(":", 1)
+                counts_ordered.append(float(tmp_count[0]))
+                labels_updated.append(tmp_count[1])
+            
+        labels = pd.Series(labels_updated)
+        counts = counts_ordered
+
         if input=="exposures":
             return
         if percentage:
             counts = [(x/sum(counts))*100 for x in counts]
 
         super_class = ['Het', 'LOH', "Hom del"]
-        hom_del_class = ['0-100kb', '100kb-1Mb', '>1Mb']
+        hom_del_class = ['0 - 100kb', '100kb - 1Mb', '>1Mb']
         loh_subclass = ["1", '2', '3-4', '5-8', '9+']
         het_sub_class = ['2', '3-4', '5-8', '9+']
-        x_labels = ['0-100kb', '100kb-1Mb', '1Mb-10Mb', '10Mb-40Mb','>40Mb']
-        color_mapping = {'9+':{'>40Mb':"deeppink", '10Mb-40Mb':"hotpink", '1Mb-10Mb':"palevioletred", '100kb-1Mb':"lightpink", '0-100kb':"lavenderblush"},
-                     '5-8':{'>40Mb':"saddlebrown", '10Mb-40Mb':"sienna", '1Mb-10Mb': "peru", '100kb-1Mb':"sandybrown", '0-100kb':"linen"},
-                     '3-4':{'>40Mb': "rebeccapurple", '10Mb-40Mb':"blueviolet", '1Mb-10Mb':"mediumorchid", '100kb-1Mb':"plum", '0-100kb':"thistle"},
-                     '2':{'>40Mb':"olive", '10Mb-40Mb':"olivedrab", '1Mb-10Mb':"yellowgreen", '100kb-1Mb':"lawngreen", '0-100kb':"greenyellow"},
-                     '1':{'>40Mb':"dimgray", '10Mb-40Mb':"darkgrey", '1Mb-10Mb':"silver", '100kb-1Mb':"lightgray", '0-100kb':"whitesmoke"}}
-
-        hom_del_color_mapping = {'0-100kb':"darkblue", '100kb-1Mb':"mediumblue", '>1Mb':"cornflowerblue"}
-        hom_del_color_mapping = {'0-100kb':"cornflowerblue", '100kb-1Mb':"mediumblue", '>1Mb':"darkblue"}
-        patch_colors = ['green', 'purple', 'darkorange', 'fuchsia', 'slategrey', 'green', 'purple', 'darkorange', 'fuchsia', 'slateblue']
+        x_labels = ['0 - 100kb', '100kb - 1Mb', '1Mb - 10Mb', '10Mb - 40Mb','>40Mb']
+        #color_mapping = {'9+':[236/256,199/256,197/256], '5-8':[162/256,207/256,99/256], '3-4':[203/256,202/256,202/256], '2':[228/256,41/256,38/256], '1':[1/256,1/256,1/256], 'homdel':[3/256,189/256,239/256
+        color_mapping = {'0:0-100kb':'#F0F8FF', '0:100kb-1Mb':'#787CE6', '0:>1Mb':'#0000CD', \
+            '1:0-100kb':'#EBEBEB', '1:100kb-1Mb':'#C5C5C5', '1:1Mb-10Mb':'#9F9F9F', '1:10Mb-40Mb':'#797979', \
+            '1:>40Mb':'#545454', '2:0-100kb':'#F5FFFA', '2:100kb-1Mb':'#C0E2C3', \
+            '2:1Mb-10Mb':'#8BC48E', '2:10Mb-40Mb':'#56A858', '2:>40Mb':'#228B22', \
+            '3-4:0-100kb':'#FFF0F5', '3-4:100kb-1Mb':'#DEBDEB', '3-4:1Mb-10Mb':'#BE8BE1', \
+            '3-4:10Mb-40Mb':'#9D58D7', '3-4:>40Mb':'#7D26CD', '5-8:0-100kb':'#FFFAF0', \
+            '5-8:100kb-1Mb':'#F2DCB3', '5-8:1Mb-10Mb':'#E6BF78', '5-8:10Mb-40Mb':'#D9A23C', \
+            '5-8:>40Mb':'#CD8500', '9+:0-100kb':'#FFE4E1', '9+:100kb-1Mb':'#E2ADBC', \
+            '9+:1Mb-10Mb':'#C47798', '9+:10Mb-40Mb':'#A84074', '9+:>40Mb':'#8B0A50'}
+        colors = ['#0000CD', '#545454', '#228B22', '#7D26CD','#CD8500', '#8B0A50']
 
         N=48
         ticks = np.arange(N)
@@ -220,93 +244,111 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         xticks = []
         i = -1 #used to distinguish first bar from the rest
 
+        # create the subplot
         fig, ax = plt.subplots(figsize=(16,10))
+        # Create the plot layout (axis and grid lines)
+        plt.gca().yaxis.grid(True)
+        plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
+        ax.yaxis.set_major_locator(ticker.LinearLocator(5))
+        ax.spines["bottom"].set_color("black")
+        ax.spines["top"].set_color("black")
+        ax.spines["right"].set_color("black")
+        ax.spines["left"].set_color("black")
+        plt.xlim(xmin=-.5,xmax=len(labels)-.5)
+        tmp_max=max(counts)
+        plt.ylim(ymax=1.25*tmp_max)
 
         for count, label in zip(counts, labels):
+            tmp=label.split(":", 2)[1]
             categories = label.split(':')
             cnv_class = categories[0]
             size_class = categories[2]
-
             #hom del has different color scheme and size classification
             hom_del = False
             if categories[1] == "homdel":
                 hom_del = True
             i += 1 #position of bar
-            if i == 0: #very first bar
-                if count > 0:
-                    if hom_del:
-                        ax.bar(ticks[i], count, color=hom_del_color_mapping[size_class], edgecolor='black')
-                    else:
-                        ax.bar(ticks[i], count, color=color_mapping[cnv_class][size_class], edgecolor='black')
-                xticks.append(ticks[i])
-            else: #all the bars besides the first bar
-                if count > 0:
-                    if hom_del:
-                        ax.bar(ticks[i], count, color=hom_del_color_mapping[size_class], edgecolor='black')
-                    else:
-                        ax.bar(ticks[i], count, color=color_mapping[cnv_class][size_class], edgecolor='black')
-
-                xticks.append(ticks[i])
-
+            
+            ax.bar(ticks[i], count, color=color_mapping[cnv_class+":"+size_class], edgecolor='black', align='center')
+                
+            xticks.append(ticks[i])
+        
         #ADD PATCHES AND TEXT
-        patch_height = 0.2
-        patch_width = 5
-        left_edge = 0.151 #placement of left edge of patch
-        y_pos = 0.95#placement of patch on y-axis
-        text_height = 0.96
-
+        patch_height = 0.05
+        patch_width = 2.8
+        loh_width= 2.5
+        loh_len = 4.85
+        
+        # add vertical black lines
+        ax.axvline(x=2.5, color='black', linewidth=1)
+        ax.axvline(x=patch_width + loh_len*5.09, color='black', linewidth=1)
+        #ax.axvline(x=2.5, color='black', linewidth=.5)
+        
         categories = het_sub_class + loh_subclass + ['Hom' + '\n' + 'Del']
-
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
 
         patch_locs = np.arange(0, 45, 5) #position of patches in data coordinates
         line_locs = [] # for recording positions of top evel patches and separation lines
-        for i, loc in enumerate(patch_locs): #add 10 patches
-            ax.add_patch(plt.Rectangle((loc-0.5, 1), patch_width, patch_height, clip_on=False, facecolor=patch_colors[i], transform=trans))
-            plt.text(loc+0.5, 1.1, categories[i].capitalize(), fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
-            if i == 4:
-                ax.axvline(x=loc-0.5, color='black', linewidth=2)
-                line_locs.append(loc-0.5)
+        
+        # homdel patch
+        ax.add_patch(plt.Rectangle((-.5, 1.065), 2.925, patch_height, clip_on=False, facecolor='#a9a9a9', transform=trans))
+        ax.add_patch(plt.Rectangle((-.5, 1.01), 2.925, patch_height, clip_on=False, facecolor=colors[0], transform=trans))
+        plt.text(.65, 1.02, "0", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        plt.text(.15, 1.075, "HD", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
 
-        #add final patch for hom del
-        y_text = 0.095
-        ax.add_patch(plt.Rectangle((45-0.5, 1), 4, patch_height*2, clip_on=False, facecolor='blue', transform=trans)) #for hom del
-        ax.axvline(x=45-0.5, color='black', linewidth=2)
-        plt.text(45-0.5, 1.2+.05, "Hom-", fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
-        plt.text(45, 1.05, "Del", fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
+        # LOH Patches
+        ax.add_patch(plt.Rectangle((patch_width - .25, 1.065), 24.85, patch_height, clip_on=False, facecolor='#a9a9a9', transform=trans))
+        plt.text(patch_width + loh_len*2.25, 1.075, "LOH", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((patch_width -.25, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[1], transform=trans))
+        plt.text(4.725, 1.02, "1", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((7.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[2], transform=trans))
+        plt.text(9.725, 1.02, "2", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((12.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[3], transform=trans))
+        plt.text(14, 1.02, "3-4", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((17.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[4], transform=trans))
+        plt.text(19.025, 1.02, "5-8", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((22.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[5], transform=trans))
+        plt.text(24.375, 1.02, "9+", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
 
-        #manually add top level patches(het and LOH) and text inside patches
-        ax.add_patch(plt.Rectangle((-0.5, 1.2), patch_width*4, patch_height, clip_on=False, facecolor='gray', transform=trans))
-        plt.text(8.5, 1.2+.05, "Het", fontsize=42, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((line_locs[0], 1.2), patch_width*5, patch_height, clip_on=False, facecolor='black', transform=trans))
-        plt.text(line_locs[0]+10, 1.2+.05, "LOH", fontsize=42, fontname='Times New Roman', fontweight='bold', color='white', transform=trans)
+        # Heterozygous patches
+        ax.add_patch(plt.Rectangle((27.55, 1.065), loh_len*4.0938, patch_height, clip_on=False, facecolor='#a9a9a9', transform=trans))
+        plt.text(33.25, 1.075, "Heterozygous", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((27.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[2], transform=trans))
+        plt.text(29.75, 1.02, "2", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((32.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[3], transform=trans))
+        plt.text(34.25, 1.02, "3-4", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((37.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[4], transform=trans))
+        plt.text(39.175, 1.02, "5-8", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((42.55, 1.01), loh_len, patch_height, clip_on=False, facecolor=colors[5], transform=trans))
+        plt.text(44.525, 1.02, "9+", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
 
-        ax.set_xticks(xticks);
-        ax.set_xticklabels(x_labels * 9 + hom_del_class, rotation=90, weight="bold", fontsize = 16);
+        # This is the x-axis
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(hom_del_class + x_labels * 9, rotation=90, weight="bold", fontsize = 16, fontname='Arial', color='black')
         ax.tick_params(labelleft=True, left=False, bottom=False)
-        ax.tick_params(axis='y', which='major', pad=0, labelsize=30)
+        ax.tick_params(axis='y', which='major', pad=0, labelsize=60)
+        
+        # format the y-axis labels
+        if percentage:
+            tmp_y_labels =['{0:0.1f}%'.format(round(x,1)) for x in ax.get_yticks().tolist()]
+        else:
+            tmp_y_labels =[round(x,1) for x in ax.get_yticks().tolist()]
+            
+        # set the y-axis labels
+        ax.set_yticklabels(tmp_y_labels, fontname='Arial', weight='bold', fontsize=16, color='black')
 
-        #hide y-axis ticks and labels
-        # plt.gca().get_yaxis().set_ticks([])
-        # plt.gca().get_yaxis().set_ticklabels([])
-
-        #y-axis label
+        
+        # y-axis title
         if aggregate:
-            ax.set_ylabel("# of events per sample", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
+            ax.set_ylabel("Number of Events Per Sample", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
         elif percentage:
-            ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
-            ax.yaxis.labelpad = 1
+            ax.set_ylabel("Percentage of Copy Number Segments", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
         else:
-            ax.set_ylabel("# of events", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
+            ax.set_ylabel("Number of Events", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
 
-        #TITLE
-        if not aggregate:
-            plt.text(0, 0.90, sample, fontsize=20, fontname='Times New Roman', fontweight='bold', color='black', transform=trans)
-        else:
-            plt.text(0, 0.90, project, fontsize=20, fontname='Times New Roman', fontweight='bold', color='black', transform=trans)
-
-        plt.tight_layout()
-        plt.rcParams["font.weight"] = "bold"
+        # Add the sample name
+        plt.text(3, 0.90, sample, fontsize=20, fontname='Arial', fontweight='bold', color='black', transform=trans)
+        
         pp.savefig(fig, dpi=600, bbox_inches='tight')
         return fig
 
@@ -330,6 +372,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         else: #input == counts
             print("The only plot type supported at this time is pdf")
 
+        print("line 333")
         #each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
