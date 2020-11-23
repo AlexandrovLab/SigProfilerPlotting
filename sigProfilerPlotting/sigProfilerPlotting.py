@@ -252,7 +252,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         # Create the plot layout (axis and grid lines)
         plt.gca().yaxis.grid(True)
         plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
-        plt.rcParams['axes.linewidth'] = 2
+        plt.rcParams['axes.linewidth'] = 1
         ax.yaxis.set_major_locator(ticker.LinearLocator(5))
         ax.spines["bottom"].set_color("black")
         ax.spines["top"].set_color("black")
@@ -375,10 +375,10 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         df['total_count'] = df.sum(axis=1) / num_samples #NORMALIZE BY # of SAMPLES
         counts = list(df['total_count'])
         sample = ''
-        pp = PdfPages(output_path + project + '_CNV48_counts_aggregated' + '.pdf')
+        if write_to_file:
+            pp = PdfPages(output_path + project + '_CNV48_counts_aggregated' + '.pdf')
         buff_list=plot(counts, labels, sample, project, percentage, aggregate=True, write_to_file=write_to_file)
     else:
-        # Note: Rewrite this code so that string for file name is selected, then use pp = PdfPages() once
         file_name=""
         if plot_type == 'pdf' and percentage:
             file_name=output_path + project + '_CNV48_signatures' + '.pdf'
