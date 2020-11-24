@@ -12,7 +12,7 @@ def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
-VERSION = '1.1.8'
+VERSION = '1.1.9'
 
 def write_version_py(filename='sigProfilerPlotting/version.py'):
     # Copied from numpy setup.py
@@ -78,4 +78,3 @@ setup(name='sigProfilerPlotting',
 	    #Specify the custom install class
 	    cmdclass={'install' : move_ttf},
 		zip_safe=False)
-
