@@ -24,7 +24,6 @@ import pandas as pd
 import numpy as np
 import io
 
-
 import string
 import warnings
 warnings.filterwarnings("ignore")
@@ -271,7 +270,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
             categories = label.split(':')
             cnv_class = categories[0]
             size_class = categories[2]
-
             #hom del has different color scheme and size classification
             hom_del = False
             if categories[1] == "homdel":
@@ -293,7 +291,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         ax.axvline(x=patch_width+loh_len*5.09, color='black', linewidth=1)
         
         categories = het_sub_class + loh_subclass + ['Hom' + '\n' + 'Del']
-
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
 
         patch_locs = np.arange(0, 45, 5) #position of patches in data coordinates
@@ -367,14 +364,12 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
             plt.close()
             return buffer
 
-
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor'] = 'white'
     df = pd.read_csv(matrix_path, sep=None, engine='python') #flexible reading of tsv or csv
     label = df.columns[0]
     labels = df[label]
     buff_list = dict()
-
     if aggregate:
         num_samples = len(df.columns) - 1
         df['total_count'] = df.sum(axis=1) / num_samples #NORMALIZE BY # of SAMPLES
@@ -3761,13 +3756,13 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				plt.text(.21, yText_labels_top, '1bp Insertion', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.375, yText_labels_top, '>1bp Deletion at Repeats\n      (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.64, yText_labels_top, '>1bp Insertions at Repeats\n       (Insertion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-				plt.text(.85, yText_labels_top, ' Mircohomology\n(Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+				plt.text(.85, yText_labels_top, ' Microhomology\n(Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 				plt.text(.058, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
 				plt.text(.19, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.39, yText_labels_bottom_sec, 'Number of Repeat Units', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.65, yText_labels_bottom_sec, 'Number of Repeat Units', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-				plt.text(.85, yText_labels_bottom_sec, 'Mircohomology Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+				plt.text(.85, yText_labels_bottom_sec, 'Microhomology Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 				x = .0477
 				for i in range (0, 8, 1):
@@ -4622,13 +4617,13 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				plt.text(.21, yText_labels_top, '1bp Insertion', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.375, yText_labels_top, '>1bp Deletion at Repeats\n      (Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.64, yText_labels_top, '>1bp Insertions at Repeats\n       (Insertion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-				plt.text(.85, yText_labels_top, ' Mircohomology\n(Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+				plt.text(.85, yText_labels_top, ' Microhomology\n(Deletion Length)', fontsize=40, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 				plt.text(.058, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontname='Times New Roman', weight='bold', color='black', transform=plt.gcf().transFigure)
 				plt.text(.19, yText_labels_bottom_sec, 'Homopolymer Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.39, yText_labels_bottom_sec, 'Number of Repeat Units', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 				plt.text(.65, yText_labels_bottom_sec, 'Number of Repeat Units', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
-				plt.text(.85, yText_labels_bottom_sec, 'Mircohomology Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
+				plt.text(.85, yText_labels_bottom_sec, 'Microhomology Length', fontsize=35, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
 				x = .0477
 				for i in range (0, 8, 1):
