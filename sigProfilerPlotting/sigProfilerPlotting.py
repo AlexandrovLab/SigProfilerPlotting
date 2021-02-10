@@ -103,44 +103,33 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         patch_height = 0.05
         patch_width = 2.8
         loh_width= 2.5
-        loh_len = 4.9
+        loh_len = 4.8
 
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
         
-        ## CLUSTERED X-COORDINATES
-        # -.5 - 4.4
-        # 4.6 - 9.5
-        # 9.7 - 14.6 // 9.6 - 14.4
-        # 14.8 - 15.5
-        
         #### CLUSTERED PATCHES ####
-        ax.add_patch(plt.Rectangle((-.5, 1.095), 16-.1, patch_height*1.5, clip_on=False, facecolor='gray', transform=trans))
+        ax.add_patch(plt.Rectangle((-.5, 1.095), 15.9, patch_height*1.5, clip_on=False, facecolor='gray', transform=trans))
         plt.text(6, 1.1125, "Clustered", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((-.5, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='maroon', transform=trans))
+        ax.add_patch(plt.Rectangle((-.5, 1.01), loh_len+.1, patch_height*1.5, clip_on=False, facecolor='maroon', transform=trans))
         plt.text(1.3, 1.03, "Del", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((4.6, 1.01), loh_len-.1, patch_height*1.5, clip_on=False, facecolor='darkorange', transform=trans))
+        ax.add_patch(plt.Rectangle((4.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='darkorange', transform=trans))
         plt.text(6.27, 1.03, "Tds", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((9.6, 1.01), loh_len-.1, patch_height*1.5, clip_on=False, facecolor='slateblue', transform=trans))
+        ax.add_patch(plt.Rectangle((9.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='slateblue', transform=trans))
         plt.text(11.35, 1.03, "Inv", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
         ax.add_patch(plt.Rectangle((14.6, 1.01), .8, patch_height*1.5, clip_on=False, facecolor='dimgray', transform=trans))
         plt.text(14.75, 1.03, "T", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
         
         # add vertical black lines
         ax.axvline(x=15.5, color='black', linewidth=1)
-        ## NON-CLUSTERED X-coordinates
-        # 15.7 - 20.6
-        # 20.8 - 25.7
-        # 25.9 - 30.8
-        # 31 - 35.9
-        
+
         #### NON-CLUSTERED PATCHES ####
-        ax.add_patch(plt.Rectangle((15.7-.1, 1.095), 16-.1, patch_height*1.5, clip_on=False, facecolor='black', transform=trans))
+        ax.add_patch(plt.Rectangle((15.6, 1.095), 15.9, patch_height*1.5, clip_on=False, facecolor='black', transform=trans))
         plt.text(21, 1.1125, "Non-Clustered", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((15.7-.1, 1.01), loh_len-.1, patch_height*1.5, clip_on=False, facecolor='maroon', transform=trans))
+        ax.add_patch(plt.Rectangle((15.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='maroon', transform=trans))
         plt.text(17.35, 1.03, "Del", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((20.8-.2, 1.01), loh_len-.1, patch_height*1.5, clip_on=False, facecolor='darkorange', transform=trans))
+        ax.add_patch(plt.Rectangle((20.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='darkorange', transform=trans))
         plt.text(22.25, 1.03, "Tds", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
-        ax.add_patch(plt.Rectangle((25.9-.3, 1.01), loh_len-.1, patch_height*1.5, clip_on=False, facecolor='slateblue', transform=trans))
+        ax.add_patch(plt.Rectangle((25.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='slateblue', transform=trans))
         plt.text(27.37, 1.03, "Inv", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
         ax.add_patch(plt.Rectangle((30.6, 1.01), .9, patch_height*1.5, clip_on=False, facecolor='dimgray', transform=trans))
         plt.text(30.82, 1.03, "T", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
