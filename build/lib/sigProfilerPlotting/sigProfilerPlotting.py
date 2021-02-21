@@ -48,20 +48,37 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         if percentage:
             counts = [(x/sum(counts))*100 for x in counts]
 
-        color_mapping = {'del':{'>10Mb':"deeppink", '1Mb-10Mb':"hotpink", '10-100Kb':"palevioletred", '100Kb-1Mb':"lightpink", '1-10Kb':"lavenderblush"},
-                     'tds':{'>10Mb':"saddlebrown", '1Mb-10Mb':"sienna", '10-100Kb':"peru", '100Kb-1Mb':"sandybrown", '1-10Kb':"linen"},
-                     'inv':{'>10Mb':"rebeccapurple", '1Mb-10Mb':"blueviolet", '10-100Kb':"mediumorchid", '100Kb-1Mb':"plum", '1-10Kb':"thistle"}}
+        color_mapping = {'del':{'>10Mb':"deeppink", '1Mb-10Mb':"hotpink", '10-100Kb':"lightpink", '100Kb-1Mb':"palevioletred", '1-10Kb':"lavenderblush"},
+                     'tds':{'>10Mb':"saddlebrown", '1Mb-10Mb':"sienna", '10-100Kb':"sandybrown", '100Kb-1Mb':"peru", '1-10Kb':"linen"},
+                     'inv':{'>10Mb':"rebeccapurple", '1Mb-10Mb':"blueviolet", '10-100Kb':"plum", '100Kb-1Mb':"mediumorchid", '1-10Kb':"thistle"}}
 
         alpha_dict = dict(enumerate(string.ascii_lowercase))
         x_labels = ['1-10kb', '10-100kb', '100kb-1Mb', '1Mb-10Mb','>10Mb']
         super_class = ['clustered', 'non-clustered']
         sub_class = ['del', 'tds', 'inv', 'trans']
         N=32
-        ticks = [0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 16, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34]
+        ticks = [0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
         width = 0.27
         xticks = []
         i = -1 #used to distinguish first bar from the rest
         fig, ax = plt.subplots(figsize=(16,8))
+        
+        # Custom Formatting
+        plt.style.use('ggplot')
+        plt.rcParams['axes.facecolor'] = 'white'
+        plt.gca().yaxis.grid(True)
+        plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
+        ax.set_axisbelow(True)
+        ax.yaxis.set_major_locator(ticker.LinearLocator(5))
+        ax.spines["bottom"].set_color("black")
+        ax.spines["top"].set_color("black")
+        ax.spines["right"].set_color("black")
+        ax.spines["left"].set_color("black")
+        plt.xlim(xmin=-.5,xmax=len(labels)-.5)
+        tmp_max=max(counts)
+        plt.ylim(ymax=1.25*tmp_max)
+        # Add light gray horizontal lines at y-ticks
+        ax.grid(linestyle='-', linewidth=1, color='#EDEDED', axis='y')
 
         for count, label in zip(counts, labels):
             categories = label.split('_')
@@ -70,88 +87,82 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
                 size_class = categories[2]
             i += 1 #position of bar
             #print (categories)
-            if i == 0: #very first bar
-                if count >= 0:
-                    if len(categories) == 2: #clustered translocation or non-clustered translocation
-                        ax.bar(ticks[i], count, color="dimgray", edgecolor='black'); #translocation only has one color
-                    else:
-                        ax.bar(ticks[i], count, color=color_mapping[rearrangement_class][size_class], edgecolor='black');
-            else: #all the bars besides the first bar
-                if count >= 0:
-                    if len(categories) == 2: #clustered translocation or non-clustered translocation
-                        ax.bar(ticks[i], count, color="dimgray", edgecolor='black'); #translocation only has one color
-                    else:
-                        ax.bar(ticks[i], count, color=color_mapping[rearrangement_class][size_class], edgecolor='black');
+
+            if len(categories) == 2: #clustered translocation or non-clustered translocation
+                ax.bar(ticks[i], count, color="dimgray", edgecolor='black') #translocation only has one color
+            else:
+                ax.bar(ticks[i], count, color=color_mapping[rearrangement_class][size_class], edgecolor='black')
+
             xticks.append(ticks[i])
-        ax.set_xticks(xticks);
-        ax.set_xticklabels(x_labels * 3 + [' '] + x_labels * 3 + [' '], rotation=90);
-
-        #ADD PATCHES AND TEXT
-        patch_height = 0.2
-        patch_width = 5
-        left_edge = 0.151 #placement of left edge of patch
-        y_pos = 0.95 #placement of patch on y-axis
-        text_height = 0.96
-        patch_colors = ['maroon', 'darkorange', 'slateblue', 'green', 'maroon', 'darkorange', 'slateblue', 'green']
-        classes = sub_class + sub_class
-
-        trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
-        patch_locs = np.arange(0, 40, 5)
-        patch_locs1 = [0, 5, 10]
-        line_locs = [] # for recording positions of top level patches and separation lines
-
-        for i, loc in enumerate(patch_locs1): #add first 3 patches
-            ax.add_patch(plt.Rectangle((loc-0.5, 1), patch_width, patch_height, clip_on=False, facecolor=patch_colors[i], transform=trans));
-            plt.text(loc+1, 1.05, classes[i].capitalize(), fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
-
-        t="trans"
-        ax.add_patch(plt.Rectangle((15-0.5, 1), 3, patch_height, clip_on=False, facecolor='dimgray', transform=trans)); #patch for trans
-        plt.text(15-0.3, 1.05, t.capitalize(), fontsize=30, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
-
-        ax.axvline(x=18-0.5, color='black', linewidth=2);
-        line_locs.append(loc-0.5)
-
-        patch_locs2 = [18, 23, 28]
-        for i, loc in enumerate(patch_locs2): #add next 3 patches
-            ax.add_patch(plt.Rectangle((loc-0.5, 1), patch_width, patch_height, clip_on=False, facecolor=patch_colors[i], transform=trans));
-            plt.text(loc+1, 1.05, classes[i].capitalize(), fontsize=36, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
-
-        ax.add_patch(plt.Rectangle((33-0.5, 1), 3, patch_height, clip_on=False, facecolor='dimgray', transform=trans)); #patch for trans
-        plt.text(33-0.3, 1.05, t.capitalize(), fontsize=30, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
-
-        #manually add top level patches(het and LOH) and text inside patches
-        ax.add_patch(plt.Rectangle((-0.5, 1.2), patch_width*4, patch_height, clip_on=False, facecolor='gray', transform=trans));
-        plt.text(6.25, 1.2+.05, "Clustered", fontsize=42, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
-        ax.add_patch(plt.Rectangle((18-0.5, 1.2), (patch_width*3)+3, patch_height, clip_on=False, facecolor='black', transform=trans));
-        plt.text(23, 1.2+.05, "Non-Clustered", fontsize=42, fontname='Times New Roman', fontweight='bold', color='white', transform=trans);
-
-        ax.set_xticks(xticks);
-        ax.set_xticklabels(x_labels * 3 + [' '] + x_labels * 3 + [' '], rotation=90, weight="bold", fontsize = 16);
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(x_labels * 3 + [' '] + x_labels * 3 + [' '], rotation=90, weight="bold", fontsize = 16, fontname='Arial', color='black')
         ax.tick_params(labelleft=True, left=False, bottom=False)
         ax.tick_params(axis='y', which='major', pad=0, labelsize=30)
 
-        #y-axis label
-        if aggregate:
-            ax.set_ylabel("# of events per sample", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
-        elif percentage:
-            ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
-            ax.yaxis.labelpad = 1
+        #ADD PATCHES AND TEXT
+        patch_height = 0.05
+        patch_width = 2.8
+        loh_width= 2.5
+        loh_len = 4.8
+
+        trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+        
+        #### CLUSTERED PATCHES ####
+        ax.add_patch(plt.Rectangle((-.5, 1.095), 15.9, patch_height*1.5, clip_on=False, facecolor='gray', transform=trans))
+        plt.text(6, 1.1125, "Clustered", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((-.5, 1.01), loh_len+.1, patch_height*1.5, clip_on=False, facecolor='maroon', transform=trans))
+        plt.text(1.3, 1.03, "Del", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((4.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='darkorange', transform=trans))
+        plt.text(6.27, 1.03, "Tds", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((9.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='slateblue', transform=trans))
+        plt.text(11.35, 1.03, "Inv", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((14.6, 1.01), .8, patch_height*1.5, clip_on=False, facecolor='dimgray', transform=trans))
+        plt.text(14.75, 1.03, "T", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        
+        # add vertical black lines
+        ax.axvline(x=15.5, color='black', linewidth=1)
+
+        #### NON-CLUSTERED PATCHES ####
+        ax.add_patch(plt.Rectangle((15.6, 1.095), 15.9, patch_height*1.5, clip_on=False, facecolor='black', transform=trans))
+        plt.text(21, 1.1125, "Non-Clustered", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((15.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='maroon', transform=trans))
+        plt.text(17.35, 1.03, "Del", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((20.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='darkorange', transform=trans))
+        plt.text(22.25, 1.03, "Tds", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((25.6, 1.01), loh_len, patch_height*1.5, clip_on=False, facecolor='slateblue', transform=trans))
+        plt.text(27.37, 1.03, "Inv", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+        ax.add_patch(plt.Rectangle((30.6, 1.01), .9, patch_height*1.5, clip_on=False, facecolor='dimgray', transform=trans))
+        plt.text(30.82, 1.03, "T", fontsize=23, fontname='Arial', fontweight='bold', color='white', transform=trans)
+
+        
+        # format the set_yticklabels labels
+        if percentage:
+            tmp_y_labels =['{0:0.1f}%'.format(round(x,1)) for x in ax.get_yticks().tolist()]
         else:
-            ax.set_ylabel("# of events", fontsize=24, fontname="Times New Roman", weight = 'bold', labelpad = 8)
+            tmp_y_labels =[round(x,1) for x in ax.get_yticks().tolist()]
+        #ax.yaxis.labelpad = 300
+            
+        # set the y-axis labels
+        ax.set_yticklabels(tmp_y_labels, fontname='Arial', weight='bold', fontsize=16, color='black')
+
+        #y-axis titles
+        if aggregate:
+            ax.set_ylabel("# of events per sample", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+        elif percentage:
+            ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+            #ax.yaxis.labelpad = 1
+        else:
+            ax.set_ylabel("# of events", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
 
         #TITLE
         if not aggregate:
-            plt.text(0, 0.90, sample, fontsize=20, fontname='Times New Roman', fontweight='bold', color='black', transform=trans)
+            plt.text(0, 0.90, sample, fontsize=20, fontname='Arial', fontweight='bold', color='black', transform=trans)
         else:
-            plt.text(0, 0.90, project, fontsize=20, fontname='Times New Roman', fontweight='bold', color='black', transform=trans)
-
-        plt.tight_layout()
-        plt.rcParams["font.weight"] = "bold"
+            plt.text(0, 0.90, project, fontsize=20, fontname='Arial', fontweight='bold', color='black', transform=trans)
 
         pp.savefig(fig, dpi=600, bbox_inches='tight')
-
-    plt.style.use('ggplot')
-    plt.rcParams['axes.facecolor'] = 'white'
+    
+    
     df = pd.read_csv(matrix_path, sep=None, engine='python') #flexible reading of tsv or csv
     label = df.columns[0]
     labels = df[label]
