@@ -1,6 +1,6 @@
 
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
-short_version = '1.1.11'
-version = '1.1.11'
+short_version = '1.1.14'
+version = '1.1.14'
     
     
