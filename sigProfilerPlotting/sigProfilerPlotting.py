@@ -411,7 +411,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
             counts = list(df[col])
-            if percentage:
+            if percentage and sum(counts)!=0:
                 counts = [(x/sum(counts))*100 for x in counts]
             assert(len(counts) == 48)
             assert(len(labels) == 48)
