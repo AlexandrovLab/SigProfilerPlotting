@@ -775,9 +775,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						xlabels.append(seq[0]+seq[2]+seq[6])
 						if percentage:
 							if total_count > 0:
-								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 								x += 0.75
-								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 								x += .2475
 								if mutations[sample][key][seq][0]/total_count*100 > ymax:
 										ymax = mutations[sample][key][seq][0]/total_count*100
@@ -785,9 +785,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 										ymax = mutations[sample][key][seq][1]/total_count*100
 
 						else:
-							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 							x += 0.75
-							untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+							untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 							x += .2475
 							if mutations[sample][key][seq][0] > ymax:
 									ymax = mutations[sample][key][seq][0]
@@ -1062,11 +1062,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						xlabels.append(seq[0]+seq[2]+seq[6])
 						if percentage:
 							if total_count > 0:
-								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 								x += 0.75
-								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 								x += 0.75
-								nontrans = plt.bar(x, mutations[sample][key][seq][2]/total_count*100,width=0.75,color='green',align='center', zorder=1000, label='Nontranscribed')
+								nontrans = plt.bar(x, mutations[sample][key][seq][2]/total_count*100,width=0.75,color='green',align='center', zorder=1000, label='Intergenic')
 								x += .2475
 								if mutations[sample][key][seq][0]/total_count*100 > ymax:
 										ymax = mutations[sample][key][seq][0]/total_count*100
@@ -1076,11 +1076,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 										ymax = mutations[sample][key][seq][2]/total_count*100
 
 						else:
-							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 							x += 0.75
-							untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+							untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 							x += 0.75
-							nontrans = plt.bar(x, mutations[sample][key][seq][2],width=0.75,color='green',align='center', zorder=1000, label='Nontranscribed')
+							nontrans = plt.bar(x, mutations[sample][key][seq][2],width=0.75,color='green',align='center', zorder=1000, label='Intergenic')
 							x += .2475
 							if mutations[sample][key][seq][0] > ymax:
 									ymax = mutations[sample][key][seq][0]
@@ -1475,9 +1475,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				for key in mutations[sample]:
 					if percentage:
 						if total_count > 0:
-							trans = plt.barh(y, mutations[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+							trans = plt.barh(y, mutations[sample][key][0]/total_count*100,height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 							y -= 0.75
-							untrans = plt.barh(y, mutations[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+							untrans = plt.barh(y, mutations[sample][key][1]/total_count*100,height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 							y -= .2475
 							if mutations[sample][key][0]/total_count*100 > xmax:
 									xmax = mutations[sample][key][0]/total_count*100
@@ -1485,9 +1485,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 									xmax = mutations[sample][key][1]/total_count*100
 
 					else:
-						trans = plt.barh(y, mutations[sample][key][0],height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+						trans = plt.barh(y, mutations[sample][key][0],height=0.75,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 						y -= 0.75
-						untrans = plt.barh(y, mutations[sample][key][1],height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+						untrans = plt.barh(y, mutations[sample][key][1],height=0.75,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 						y -= .2475
 						if mutations[sample][key][0] > xmax:
 								xmax = mutations[sample][key][0]
@@ -2831,11 +2831,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					i = 0
 					for tsb in mutations_TSB[sample][mut]:
 						if tsb == "T":
-							label = "Transcribed"
+							label = "Genic-transcribed"
 						elif tsb == "U":
-							label = "Untranscribed"
+							label = "Genic-untranscribed"
 						else:
-							label = "Nontranscribed"
+							label = "Intergenic"
 						if percentage:
 							if total_count > 0:
 								panel5.barh(yp2, mutations_TSB[sample][mut][tsb]/total_count*100,color=tsbColors[i], label=label)
@@ -3543,14 +3543,14 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					labels.append(mut)
 					if True:
 						totalMuts = sum([mutations_TSB[sample][mut][x] for x in mutations_TSB[sample][mut]])
-						panel2.barh(yp2, mutations_TSB[sample][mut]["N"]/totalMuts*100, 1.25, color=tsbColors[2], label="Nontranscribed", zorder=0)
-						panel2.barh(yp2, (mutations_TSB[sample][mut]["N"] + mutations_TSB[sample][mut]["T"] +  mutations_TSB[sample][mut]["U"])/totalMuts*100, 1.25, color="purple", label="Transcribed Regions", zorder=-1)
+						panel2.barh(yp2, mutations_TSB[sample][mut]["N"]/totalMuts*100, 1.25, color=tsbColors[2], label="Intergenic", zorder=0)
+						panel2.barh(yp2, (mutations_TSB[sample][mut]["N"] + mutations_TSB[sample][mut]["T"] +  mutations_TSB[sample][mut]["U"])/totalMuts*100, 1.25, color="purple", label="Genic-transcribed Regions", zorder=-1)
 
 						yp2 -= 1.25
 
 						transcribedTotal = mutations_TSB[sample][mut]["T"] + mutations_TSB[sample][mut]["U"]
 						panel2.barh(yp2, mutations_TSB[sample][mut]["T"]/transcribedTotal*100, 1.25, color=tsbColors[0], label="Transcribed strand", zorder=0)
-						panel2.barh(yp2, (mutations_TSB[sample][mut]["T"] + mutations_TSB[sample][mut]["U"])/transcribedTotal*100, 1.25, color=tsbColors[1], label="Untranscribed strand", zorder=-1)
+						panel2.barh(yp2, (mutations_TSB[sample][mut]["T"] + mutations_TSB[sample][mut]["U"])/transcribedTotal*100, 1.25, color=tsbColors[1], label="Genic-untranscribed strand", zorder=-1)
 
 						yp2 -= 1.25
 					yp2 -=1.25
@@ -4562,18 +4562,18 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 						xlabels.append(l)
 						if percentage:
 							if total_count > 0:
-								trans = plt.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+								trans = plt.bar(x, seq[0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 								x += 0.2
-								untrans = plt.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								untrans = plt.bar(x, seq[1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 								if seq[0]/total_count*100 > ymax:
 										ymax = seq[0]/total_count*100
 								if seq[1]/total_count*100 > ymax:
 										ymax = seq[1]/total_count*100
 
 						else:
-							trans = plt.bar(x, seq[0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+							trans = plt.bar(x, seq[0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 							x += 0.2
-							untrans = plt.bar(x, seq[1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+							untrans = plt.bar(x, seq[1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 							if seq[0] > ymax:
 									ymax = seq[0]
 							if seq[1] > ymax:
@@ -5168,22 +5168,22 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						xlabels.append(seq)
 						if percentage:
 							try:
-								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+								trans = plt.bar(x, mutations[sample][key][seq][0]/total_count*100,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 								x += 0.2
-								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								untrans = plt.bar(x, mutations[sample][key][seq][1]/total_count*100,width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 								x += .8
 								if mutations[sample][key][seq][0]/total_count*100 > ymax:
 										ymax = mutations[sample][key][seq][0]/total_count*100
 								if mutations[sample][key][seq][1]/total_count*100 > ymax:
 										ymax = mutations[sample][key][seq][1]/total_count*100
 							except:
-								trans = plt.bar(x, 0,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
-								untrans = plt.bar(x, 0, width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+								trans = plt.bar(x, 0,width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
+								untrans = plt.bar(x, 0, width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 
 						else:
-							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Transcribed Strand')
+							trans = plt.bar(x, mutations[sample][key][seq][0],width=0.2,color=[1/256,70/256,102/256],align='center', zorder=1000, label='Genic-transcribed Strand')
 							x += 0.2
-							untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Untranscribed Strand')
+							untrans = plt.bar(x, mutations[sample][key][seq][1],width=0.2,color=[228/256,41/256,38/256],align='center', zorder=1000, label='Genic-untranscribed Strand')
 							x += .8
 							if mutations[sample][key][seq][0] > ymax:
 									ymax = mutations[sample][key][seq][0]
