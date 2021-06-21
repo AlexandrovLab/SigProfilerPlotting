@@ -3187,11 +3187,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					i = 0
 					for tsb in mutations_TSB[sample][mut]:
 						if tsb == "T":
-							label = "Transcribed"
+							label = "Genic-transcribed"
 						elif tsb == "U":
-							label = "Untranscribed"
+							label = "Genic-untranscribed"
 						else:
-							label = "Nontranscribed"
+							label = "Intergenic"
 						if percentage:
 							if total_count > 0:
 								panel2.barh(yp2, mutations_TSB[sample][mut][tsb]/total_count*100,color=tsbColors[i], label=label)

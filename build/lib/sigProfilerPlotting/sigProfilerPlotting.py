@@ -45,9 +45,6 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
     #inner function to construct plot
     def plot(counts, labels, sample, project, percentage, aggregate=False):
 
-        if percentage:
-            counts = [(x/sum(counts))*100 for x in counts]
-
         color_mapping = {'del':{'>10Mb':"deeppink", '1Mb-10Mb':"hotpink", '10-100Kb':"lightpink", '100Kb-1Mb':"palevioletred", '1-10Kb':"lavenderblush"},
                      'tds':{'>10Mb':"saddlebrown", '1Mb-10Mb':"sienna", '10-100Kb':"sandybrown", '100Kb-1Mb':"peru", '1-10Kb':"linen"},
                      'inv':{'>10Mb':"rebeccapurple", '1Mb-10Mb':"blueviolet", '10-100Kb':"plum", '100Kb-1Mb':"mediumorchid", '1-10Kb':"thistle"}}
@@ -146,14 +143,15 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         ax.set_yticklabels(tmp_y_labels, fontname='Arial', weight='bold', fontsize=16, color='black')
 
         #y-axis titles
-        if aggregate:
-            ax.set_ylabel("# of events per sample", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
-        elif percentage:
+        if aggregate and not percentage:
+            ax.set_ylabel("Number of events per sample", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+        elif aggregate and percentage:
+            ax.set_ylabel("Percentage of SV's", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+        elif not aggregate and not percentage:
+            ax.set_ylabel("Number of events", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+        elif not aggregate and percentage:
             ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
-            #ax.yaxis.labelpad = 1
-        else:
-            ax.set_ylabel("# of events", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
-
+            
         #TITLE
         if not aggregate:
             plt.text(0, 0.90, sample, fontsize=20, fontname='Arial', fontweight='bold', color='black', transform=trans)
@@ -170,6 +168,8 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         num_samples = len(df.columns) - 1
         df['total_count'] = df.sum(axis=1) / num_samples #NORMALIZE BY # of SAMPLES
         counts = list(df['total_count'])
+        if percentage and sum(counts)!=0:
+            counts = [(x/sum(counts))*100 for x in counts]
         sample = ''
         pp = PdfPages(output_path + project + '_RS32_counts_aggregated' + '.pdf')
         plot(counts, labels, sample, project, percentage, aggregate=True)
@@ -178,14 +178,15 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
             pp = PdfPages(output_path + project + '_RS32_signatures' + '.pdf')
         elif plot_type == 'pdf' and percentage==False:
             pp = PdfPages(output_path + project + '_RS32_counts' + '.pdf')
-        else: #input == counts
+        else:
             print("The only plot type supported at this time is pdf")
 
         #each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
             counts = list(df[col])
-            counts = [(x/sum(counts))*100 for x in counts]
+            if percentage and sum(counts)!=0:
+                counts = [(x/sum(counts))*100 for x in counts]
             assert(len(counts)) == 32
             assert(len(labels)) == 32
             plot(counts, labels, sample, project, percentage)
@@ -206,6 +207,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
     """
     # inner function to construct plot
     def plot(counts, labels, sample, project, percentage, aggregate=False, write_to_file=True):
+
         counts_ordered = list()
         labels_ordered = list()
         labels_updated = list()
@@ -226,14 +228,9 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
                 tmp_count=i.split(":", 1)
                 counts_ordered.append(float(tmp_count[0]))
                 labels_updated.append(tmp_count[1])
-            
+
         labels = pd.Series(labels_updated)
         counts = counts_ordered
-
-        if input=="exposures":
-            return
-        if percentage:
-            counts = [(x/sum(counts))*100 for x in counts]
 
         super_class = ['Het', 'LOH', "Hom del"]
         hom_del_class = ['0 - 100kb', '100kb - 1Mb', '>1Mb']
@@ -362,7 +359,8 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         elif not aggregate and not percentage:
             ax.set_ylabel("Number of Events", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
         elif aggregate and percentage:
-            ax.set_ylabel("Percentage of Copy Number Segments Per Sample", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+            ax.set_ylabel("Percentage of Copy Number Segments", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
+
 
         # Add the sample name
         plt.text(3, 0.90, sample, fontsize=20, fontname='Arial', fontweight='bold', color='black', transform=trans)
@@ -391,6 +389,8 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         num_samples = len(df.columns) - 1
         df['total_count'] = df.sum(axis=1) / num_samples #NORMALIZE BY # of SAMPLES
         counts = list(df['total_count'])
+        if percentage and sum(counts)!=0:
+            counts = [(x/sum(counts))*100 for x in counts]
         sample = ''
         if write_to_file:
             pp = PdfPages(output_path + project + '_CNV48_counts_aggregated' + '.pdf')
@@ -401,7 +401,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
             file_name=output_path + project + '_CNV48_signatures' + '.pdf'
         elif plot_type == 'pdf' and percentage==False:
             file_name= output_path + project + '_CNV48_counts' + '.pdf'
-        else: #input == counts
+        else:
             print("The only plot type supported at this time is pdf")
         
         if write_to_file:
@@ -411,7 +411,8 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
             counts = list(df[col])
-            counts = [(x/sum(counts))*100 for x in counts]
+            if percentage and sum(counts)!=0:
+                counts = [(x/sum(counts))*100 for x in counts]
             assert(len(counts) == 48)
             assert(len(labels) == 48)
             if write_to_file:
@@ -3186,11 +3187,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					i = 0
 					for tsb in mutations_TSB[sample][mut]:
 						if tsb == "T":
-							label = "Transcribed"
+							label = "Genic-transcribed"
 						elif tsb == "U":
-							label = "Untranscribed"
+							label = "Genic-untranscribed"
 						else:
-							label = "Nontranscribed"
+							label = "Intergenic"
 						if percentage:
 							if total_count > 0:
 								panel2.barh(yp2, mutations_TSB[sample][mut][tsb]/total_count*100,color=tsbColors[i], label=label)
