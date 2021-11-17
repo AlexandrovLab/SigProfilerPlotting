@@ -4,7 +4,6 @@
 
 #Contact: ebergstr@eng.ucsd.edu
 
-
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -23,10 +22,33 @@ from collections import OrderedDict
 import pandas as pd
 import numpy as np
 import io
-
 import string
 import warnings
 warnings.filterwarnings("ignore")
+
+def getylabels(ylabels):
+	if max(ylabels) >=10**9:
+		ylabels = ["{:.2e}".format(x) for x in ylabels]
+	else:
+		if max(ylabels)< 10**5:
+			ylabels = ['{:,.2f}'.format(x/1000)+'k' for x in ylabels]
+		elif max(ylabels)>= 10**5:
+			ylabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in ylabels]
+	ylabels[0] = '0.00'
+	return ylabels
+
+def getxlabels(xlabels):
+	if max(xlabels) >=10**10:
+		xlabels = ["{:.2e}".format(x) for x in xlabels]
+	else:
+		if max(xlabels)< 10**6:
+			xlabels = ['{:,.2f}'.format(x/1000)+'k' for x in xlabels]
+		elif max(xlabels)>= 10**6:
+			xlabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in xlabels]
+	xlabels[0] = '0.00'
+	return xlabels
+
+
 
 def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False, aggregate=False):
     """Outputs a pdf containing Rearrangement signature plots
@@ -566,25 +588,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						font_label_size = 20
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels= getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 96])
 				panel1.set_ylim([0, y])
@@ -848,25 +871,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						font_label_size = 20
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels= getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 96])
 				panel1.set_ylim([0, y])
@@ -1143,25 +1167,31 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						font_label_size = 20
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels = getylabels(ylabels)
+					#ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if max(ylabels)< 10**5:
+					# 	ylabels = ['{:,.2f}'.format(x/1000)+'k' for x in ylabels]
+					# elif max(ylabels)<= 10**9:
+					# 	ylabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in ylabels]
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 264])
 				panel1.set_ylim([0, y])
@@ -1976,25 +2006,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						font_label_size = 20
 
 				if not percentage:
-					ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
-					if len(ylabels_96[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels_96[-1]) > 7:
-							for label in ylabels_96:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels_96 = getylabels(ylabels_96)
+					# ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
+					# if len(ylabels_96[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels_96[-1]) > 7:
+					# 		for label in ylabels_96:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels_96:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels_96 = ylabels_temp
+					# 	else:
+					# 		for label in ylabels_96:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels_96 = ylabels_temp
 
 
 				# Set all panel limits
@@ -2352,7 +2383,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						sample_index = 1
 						tsb = nuc[0]
 						tri = line[0][3:10]
-
+					
 					for sample in samples:
 						if tri not in mutations_96[sample][mut_type]:
 							mutations_96[sample][mut_type][tri] = 0
@@ -2365,7 +2396,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 								mutCount = int(line[sample_index])
 							except:
 								print("It appears that the provided matrix does not contain mutation counts.\n\tIf you have provided a signature activity matrix, please change the percentage parameter to True.\n\tOtherwise, ", end='')
-
+								print("There may be an issue with the formatting of your matrix file.")
+								sys.exit(0)
 
 						if pcawg:
 							sample_ref = sample_index - 2
@@ -2609,25 +2641,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						font_label_size = 20
 
 				if not percentage:
-					ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
-					if len(ylabels_96[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels_96[-1]) > 7:
-							for label in ylabels_96:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels_96 = getylabels(ylabels_96)
+					# ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
+					# if len(ylabels_96[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels_96[-1]) > 7:
+					# 		for label in ylabels_96:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels_96:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels_96 = ylabels_temp
+					# 	else:
+					# 		for label in ylabels_96:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels_96 = ylabels_temp
 
 
 				# Set all panel limits
@@ -2837,10 +2870,10 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						else:
 							label = "Intergenic"
 						if percentage:
-							if total_count > 0:
-								panel5.barh(yp2, mutations_TSB[sample][mut][tsb]/total_count*100,color=tsbColors[i], label=label)
-								if mutations_TSB[sample][mut][tsb]/total_count*100 > y2max:
-									y2max = mutations_TSB[sample][mut][tsb]/total_count*100
+							if total_count_sample > 0:
+								panel5.barh(yp2, mutations_TSB[sample][mut][tsb]/total_count_sample*100,color=tsbColors[i], label=label)
+								if mutations_TSB[sample][mut][tsb]/total_count_sample*100 > y2max:
+									y2max = mutations_TSB[sample][mut][tsb]/total_count_sample*100
 						else:
 							if mutations_TSB[sample][mut][tsb] > y2max:
 								y2max = mutations_TSB[sample][mut][tsb]
@@ -2849,7 +2882,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						yp2 -= 1
 						i += 1
 					yp2 -=1
-
 				y = int(y2max*1.1)
 				if y <= 4:
 					y += 4
@@ -2857,7 +2889,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				while y%4 != 0:
 					y += 1
 				ytick_offest = int(y/4)
-
 				if percentage:
 					xlabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 					xlabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%",
@@ -2869,25 +2900,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 				if not percentage:
-					xlabels = ['{:,}'.format(int(x)) for x in xlabels]
-					if len(xlabels[-1]) > 3:
-						xlabels_temp = []
-						if len(xlabels[-1]) > 7:
-							for label in xlabels:
-								if len(label) > 7:
-									xlabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									xlabels_temp.append(label[0:-4] + "k")
-								else:
-									xlabels_temp.append(label)
+					xlabels = getxlabels(xlabels)
+					# xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+					# if len(xlabels[-1]) > 3:
+					# 	xlabels_temp = []
+					# 	if len(xlabels[-1]) > 7:
+					# 		for label in xlabels:
+					# 			if len(label) > 7:
+					# 				xlabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				xlabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				xlabels_temp.append(label)
 
-						else:
-							for label in xlabels:
-								if len(label) > 3:
-									xlabels_temp.append(label[0:-4] + "k")
-								else:
-									xlabels_temp.append(label)
-						xlabels = xlabels_temp
+					# 	else:
+					# 		for label in xlabels:
+					# 			if len(label) > 3:
+					# 				xlabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				xlabels_temp.append(label)
+					# 	xlabels = xlabels_temp
 				panel5.spines['right'].set_visible(False)
 				panel5.spines['top'].set_visible(False)
 				labels.reverse()
@@ -3063,25 +3095,39 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				labs = np.arange(0.375,96.375,1)
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels= getylabels(ylabels)
+					#ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if max(ylabels)< 10**5:
+					# 	ylabels = ['{:,.2f}'.format(x/1000)+'k' for x in ylabels]
+					# elif max(ylabels)>= 10**5:
+					# 	ylabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in ylabels]
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# if max(ylabels) >=10**9:
+					# 	ylabels = ["{:.2e}".format(x) for x in ylabels]
+					# else:
+					# 	if max(ylabels)< 10**5:
+					# 		ylabels = ['{:,.2f}'.format(x/1000)+'k' for x in ylabels]
+					# 	elif max(ylabels)>= 10**5:
+					# 		ylabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in ylabels]
+
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 96])
 				panel1.set_ylim([0, y])
@@ -3205,11 +3251,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 						yp2 -= 1
 						i += 1
 					yp2 -=1
-
 				y = int(y2max*1.1)
 				if y <= 4:
 					y += 4
-
 				while y%4 != 0:
 					y += 1
 				ytick_offest = int(y/4)
@@ -3225,25 +3269,40 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 				if not percentage:
-					xlabels = ['{:,}'.format(int(x)) for x in xlabels]
-					if len(xlabels[-1]) > 3:
-						xlabels_temp = []
-						if len(xlabels[-1]) > 7:
-							for label in xlabels:
-								if len(label) > 7:
-									xlabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									xlabels_temp.append(label[0:-4] + "k")
-								else:
-									xlabels_temp.append(label)
+					xlabels = getxlabels(xlabels)
 
-						else:
-							for label in xlabels:
-								if len(label) > 3:
-									xlabels_temp.append(label[0:-4] + "k")
-								else:
-									xlabels_temp.append(label)
-						xlabels = xlabels_temp
+					# if max(xlabels) >=10**10:
+					# 	xlabels = ["{:.2e}".format(x) for x in xlabels]
+					# else:
+					# 	if max(xlabels)< 10**5:
+					# 		xlabels = ['{:,.2f}'.format(x/1000)+'k' for x in xlabels]
+					# 	elif max(xlabels)>= 10**5:
+					# 		xlabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in xlabels]
+
+					# 	import pdb
+					# 	pdb.set_trace()
+					# 	from decimal import Decimal
+					# 	xlabels = [str('%.2E') % Decimal(x) for x in xlabels]
+						#'%.2E' % Decimal('40800000000.00000000000000')
+					# xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+					# if len(xlabels[-1]) > 3:
+					# 	xlabels_temp = []
+					# 	if len(xlabels[-1]) > 7:
+					# 		for label in xlabels:
+					# 			if len(label) > 7:
+					# 				xlabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				xlabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				xlabels_temp.append(label)
+
+					# 	else:
+					# 		for label in xlabels:
+					# 			if len(label) > 3:
+					# 				xlabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				xlabels_temp.append(label)
+					# 	xlabels = xlabels_temp
 				panel2.spines['right'].set_visible(False)
 				panel2.spines['top'].set_visible(False)
 				labels.reverse()
@@ -3420,25 +3479,26 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				labs = np.arange(0.375,96.375,1)
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels = getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 96])
 				panel1.set_ylim([0, y])
@@ -3822,25 +3882,26 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				labs = np.arange(0.375,83.375,1)
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels=getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 83])
 				panel1.set_ylim([0, y])
@@ -4359,25 +4420,26 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels = getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 
 
@@ -4683,25 +4745,26 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				labs = np.arange(0.375,83.375,1)
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels = getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 83])
 				panel1.set_ylim([0, y])
@@ -5022,25 +5085,26 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels =getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 
 				labs = np.arange(0.44,78.44,1)
@@ -5242,25 +5306,26 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					plt.text(0.08, 0.8, sample + ": " + "{:,}".format(int(total_count)) + " transcribed double subs", fontsize=35, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 
 				if not percentage:
-					ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					if len(ylabels[-1]) > 3:
-						ylabels_temp = []
-						if len(ylabels[-1]) > 7:
-							for label in ylabels:
-								if len(label) > 7:
-									ylabels_temp.append(label[0:-8] + "m")
-								elif len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
+					ylabels= getylabels(ylabels)
+					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
+					# if len(ylabels[-1]) > 3:
+					# 	ylabels_temp = []
+					# 	if len(ylabels[-1]) > 7:
+					# 		for label in ylabels:
+					# 			if len(label) > 7:
+					# 				ylabels_temp.append(label[0:-8] + "m")
+					# 			elif len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
 
-						else:
-							for label in ylabels:
-								if len(label) > 3:
-									ylabels_temp.append(label[0:-4] + "k")
-								else:
-									ylabels_temp.append(label)
-						ylabels = ylabels_temp
+					# 	else:
+					# 		for label in ylabels:
+					# 			if len(label) > 3:
+					# 				ylabels_temp.append(label[0:-4] + "k")
+					# 			else:
+					# 				ylabels_temp.append(label)
+					# 	ylabels = ylabels_temp
 
 
 				labs = np.arange(0.55,36.44,1)
