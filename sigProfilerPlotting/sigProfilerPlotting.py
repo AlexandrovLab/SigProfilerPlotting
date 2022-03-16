@@ -27,26 +27,36 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def getylabels(ylabels):
-	if max(ylabels) >=10**9:
-		ylabels = ["{:.2e}".format(x) for x in ylabels]
-	else:
-		if max(ylabels)< 10**5:
-			ylabels = ['{:,.2f}'.format(x/1000)+'k' for x in ylabels]
-		elif max(ylabels)>= 10**5:
-			ylabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in ylabels]
-	ylabels[0] = '0.00'
-	return ylabels
+    if max(ylabels) >=10**9:
+        ylabels = ["{:.2e}".format(x) for x in ylabels]
+        ylabels[0] = '0.00'
+    else:
+        if max(ylabels)<= 1000:
+            ylabels = ['{:,.0f}'.format(x) for x in ylabels]
+            ylabels[0] = '0'
+        elif max(ylabels)< 10**5 and max(ylabels) > 1000:
+            ylabels = ['{:,.0f}'.format(x/1000)+'k' for x in ylabels]
+            ylabels[0] = '0'
+        else:#if max(ylabels)>= 10**5:
+            ylabels = ['{:,.0f}'.format(x/(10**6))+'m' for x in ylabels]
+            ylabels[0] = '0'
+    return ylabels
 
 def getxlabels(xlabels):
-	if max(xlabels) >=10**10:
-		xlabels = ["{:.2e}".format(x) for x in xlabels]
-	else:
-		if max(xlabels)< 10**6:
-			xlabels = ['{:,.2f}'.format(x/1000)+'k' for x in xlabels]
-		elif max(xlabels)>= 10**6:
-			xlabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in xlabels]
-	xlabels[0] = '0.00'
-	return xlabels
+    if max(xlabels) >=10**10:
+        xlabels = ["{:.2e}".format(x) for x in xlabels]
+        xlabels[0] = '0.00'
+    else:
+        if max(xlabels) <= 1000:
+            xlabels = ['{:,.1f}'.format(x) for x in xlabels]
+            xlabels[0] = '0'
+        elif max(xlabels)< 10**6 and max(xlabels)> 1000:
+            xlabels = ['{:,.2f}'.format(x/1000)+'k' for x in xlabels]
+            xlabels[0] = '0.00'
+        else:#max(xlabels)>= 10**6:
+            xlabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in xlabels]
+            xlabels[0] = '0.00'
+    return xlabels
 
 
 
@@ -3318,10 +3328,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 			pp.close()
 		except:
-		  print("There may be an issue with the formatting of your matrix file.")
-		  os.remove(output_path + 'SBS_288_plots_' + project + '.pdf')
-
-
+			print("There may be an issue with the formatting of your matrix file.")
+			os.remove(output_path + 'SBS_288_plots_' + project + '.pdf')
 
 	elif plot_type == '288_Normalized':
 		with open(matrix_path) as f:
