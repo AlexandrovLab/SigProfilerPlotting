@@ -1,10 +1,13 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: sigProfilerPlotting
-Version: 1.2.1
+Version: 1.2.2
 Summary: SigProfiler plotting tool
-Home-page: UNKNOWN
+Home-page: 
 Author: Erik Bergstrom
 Author-email: ebergstr@eng.ucsd.edu
 License: UCSD
-Description: UNKNOWN
 Platform: UNKNOWN
+License-File: LICENSE
+
+UNKNOWN
+
