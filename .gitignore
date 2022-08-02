@@ -7,6 +7,8 @@
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 
+sigProfilerPlotting/templates/**
+
 # Hidden files and directories
 *.DS_Store
 
