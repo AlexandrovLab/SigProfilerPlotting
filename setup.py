@@ -53,13 +53,20 @@ class move_ttf(install):
             file_names = ["Times New Roman.ttf", "Arial.ttf", "Courier New.ttf", 
             			  "Courier New Bold.ttf", "Arial Bold.ttf", "Times New Roman Bold.ttf"]
             for file in file_names:
-            	old_path = os.path.join(cp_ttf_dir, "fonts/" + file)
-            	new_path = os.path.join(mpl_ttf_dir, file)
-            	shutil.copyfile(old_path, new_path)
+                old_path = os.path.join(cp_ttf_dir, "fonts/" + file)
+                new_path = os.path.join(mpl_ttf_dir, file)
+                shutil.copyfile(old_path, new_path)
             matplotlib.font_manager._rebuild()
 
         except:
             warnings.warn("WARNING: An issue occured while installing the fonts.")
+        #install figure templates
+        try:
+            import sigProfilerPlotting as sigPlt
+            sigPlt.install_plot_templates('SBS96')
+            os.system("echo 'installed figure templates' ")
+        except:
+            print("Failed to install templates")
 
         
 
@@ -78,3 +85,4 @@ setup(name='sigProfilerPlotting',
 	    #Specify the custom install class
 	    cmdclass={'install' : move_ttf},
 		zip_safe=False)
+
