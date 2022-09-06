@@ -5,7 +5,7 @@ python:
 
 install:
   - pip install -q matplotlib
-  - pip install .
+  - pip install . -v
 
 script: python3 plot_example.py
 
