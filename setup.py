@@ -64,6 +64,7 @@ class move_ttf(install):
         try:
             import sigProfilerPlotting as sigPlt
             sigPlt.install_plot_templates('SBS96')
+            sigPlt.install_plot_templates('SBS288')
             os.system("echo 'installed figure templates' ")
         except:
             print("Failed to install templates")
