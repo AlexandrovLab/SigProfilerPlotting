@@ -65,6 +65,7 @@ class move_ttf(install):
             import sigProfilerPlotting as sigPlt
             sigPlt.install_plot_templates('SBS96')
             sigPlt.install_plot_templates('SBS288')
+            sigPlt.install_plot_templates('DBS78')
             os.system("echo 'installed figure templates' ")
         except:
             os.system("echo 'Failed to install templates' ")
@@ -80,7 +81,7 @@ setup(name='sigProfilerPlotting',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
-			"matplotlib>=3.3.0,<=3.4.3", "pandas", "seaborn"],
+			"matplotlib>=3.3.0,<=3.4.3", "pandas", "seaborn","sklearn"],
         package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
