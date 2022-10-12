@@ -66,6 +66,7 @@ class move_ttf(install):
             sigPlt.install_plot_templates('SBS96')
             sigPlt.install_plot_templates('SBS288')
             sigPlt.install_plot_templates('DBS78')
+            sigPlt.install_plot_templates('ID83')
             os.system("echo 'installed figure templates' ")
         except:
             os.system("echo 'Failed to install templates' ")
