@@ -29,8 +29,8 @@ import pickle
 import sigProfilerPlotting as spplt
 import pdb
 import itertools,time
-# import sklearn
-# from sklearn.preprocessing import LabelEncoder
+import sklearn
+from sklearn.preprocessing import LabelEncoder
 import copy
 
 warnings.filterwarnings("ignore")
@@ -58,7 +58,7 @@ def install_plot_templates(context='SBS96'):
 	filename= os.path.join(install_path,context+'.pkl')
 	make_pickle_file(context,path=filename)
 
-def make_pickle_file(context='SBS96',path='SBS96.pkl'):
+def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=False):
 	if context == 'SBS96':
 		plot_custom_text = False
 		sig_probs = False
@@ -148,7 +148,10 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl'):
 
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
-		pickle.dump(plot1, open(path, 'wb'))
+		if return_plot_template == False:
+			pickle.dump(plot1, open(path, 'wb'))
+		else:
+			return plot1
 	elif context =='SBS288':
 		plot_custom_text = False
 		sig_probs = False
@@ -255,7 +258,10 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl'):
 		# panel2.set_xticks(xlabels)
 		handles, labels = panel2.get_legend_handles_labels()
 		panel2.legend(handles[:3], labels[:3], loc='best', prop={'size':30})
-		pickle.dump(plot1, open(path, 'wb')) 
+		if return_plot_template == False:
+			pickle.dump(plot1, open(path, 'wb'))
+		else:
+			return plot1
 	
 	elif context =='DBS78':
 	
@@ -337,7 +343,10 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl'):
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
 		[i.set_color("grey") for i in plt.gca().get_xticklabels()]
-		pickle.dump(plot1, open(path, 'wb'))
+		if return_plot_template == False:
+			pickle.dump(plot1, open(path, 'wb'))
+		else:
+			return plot1
 	
 	elif context =='ID83':
 		plt.rcParams['axes.linewidth'] = 2
@@ -456,12 +465,15 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl'):
 							direction='in', length=25, colors='gray', width=2)
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
-		package_path = spplt.__path__[0]
-		path_1 =os.path.join(package_path,'templates/')
-		filename= os.path.join(path_1,'ID'+'.pkl')
-		pickle.dump(plot1, open(filename, 'wb'))
+		# package_path = spplt.__path__[0]
+		# path_1 =os.path.join(package_path,'templates/')
+		# filename= os.path.join(path_1,'ID'+'.pkl')
+		# pickle.dump(plot1, open(filename, 'wb'))
 
-
+		if return_plot_template == False:
+			pickle.dump(plot1, open(path, 'wb'))
+		else:
+			return plot1
 
 def getylabels(ylabels):
     if max(ylabels) >=10**9:
@@ -947,10 +959,15 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			data= reindex_sbs96(data)
 			sample_count = 0
 
+
 			buf= io.BytesIO()
-	
-			fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS96.pkl','rb'))
-			pickle.dump(fig_orig, buf)
+			try:
+				fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS96.pkl','rb'))
+				pickle.dump(fig_orig, buf)
+			except:
+				fig_orig=make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=True)
+				pickle.dump(fig_orig, buf)
+				
 			figs={}
 			buff_list={}
 			ctx = data.index #[seq[0]+seq[2]+seq[6] for seq in data.index]
@@ -1574,30 +1591,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 				if not percentage:
 					ylabels = getylabels(ylabels)
-					#ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					# if max(ylabels)< 10**5:
-					# 	ylabels = ['{:,.2f}'.format(x/1000)+'k' for x in ylabels]
-					# elif max(ylabels)<= 10**9:
-					# 	ylabels = ['{:,.2f}'.format(x/(10**6))+'m' for x in ylabels]
 
-					# if len(ylabels[-1]) > 3:
-					# 	ylabels_temp = []
-					# 	if len(ylabels[-1]) > 7:
-					# 		for label in ylabels:
-					# 			if len(label) > 7:
-					# 				ylabels_temp.append(label[0:-8] + "m")
-					# 			elif len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-
-					# 	else:
-					# 		for label in ylabels:
-					# 			if len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 264])
 				panel1.set_ylim([0, y])
@@ -3891,7 +3885,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 		try:
 			sample_count = 0
 			buf= io.BytesIO()
-			fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/ID.pkl','rb'))
+			fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/ID83.pkl','rb'))
 			pickle.dump(fig_orig, buf)
 
 			figs={}
