@@ -961,12 +961,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 			buf= io.BytesIO()
-			try:
-				fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS96.pkl','rb'))
-				pickle.dump(fig_orig, buf)
-			except:
-				fig_orig=make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=True)
-				pickle.dump(fig_orig, buf)
+			# try:
+			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS96.pkl','rb'))
+			# 	pickle.dump(fig_orig, buf)
+			# except:
+			fig_orig=make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=True)
+			pickle.dump(fig_orig, buf)
 
 			figs={}
 			buff_list={}
@@ -3356,12 +3356,12 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 			data,tsb_mats = reindex_sbs288(data)
 			buf= io.BytesIO()
-			try:
-				fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS288.pkl','rb'))
-				pickle.dump(fig_orig, buf)
-			except:
-				fig_orig=make_pickle_file(context='SBS288',path='SBS288.pkl', return_plot_template=True)
-				pickle.dump(fig_orig, buf)
+			# try:
+			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS288.pkl','rb'))
+			# 	pickle.dump(fig_orig, buf)
+			# except:
+			fig_orig=make_pickle_file(context='SBS288',path='SBS288.pkl', return_plot_template=True)
+			pickle.dump(fig_orig, buf)
 			
 			figs = {}
 			buff_list = {}
@@ -3890,12 +3890,12 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 		try:
 			sample_count = 0
 			buf= io.BytesIO()
-			try:
-				fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/ID83.pkl','rb'))
-				pickle.dump(fig_orig, buf)
-			except:
-				fig_orig=make_pickle_file(context='ID83',path='ID83.pkl', return_plot_template=True)
-				pickle.dump(fig_orig, buf)
+			# try:
+			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/ID83.pkl','rb'))
+			# 	pickle.dump(fig_orig, buf)
+			# except:
+			fig_orig=make_pickle_file(context='ID83',path='ID83.pkl', return_plot_template=True)
+			pickle.dump(fig_orig, buf)
 
 
 			figs={}
@@ -4752,12 +4752,12 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			buf= io.BytesIO()
 			# fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/DBS78.pkl','rb'))
 			# pickle.dump(fig_orig, buf)
-			try:
-				fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/DBS78.pkl','rb'))
-				pickle.dump(fig_orig, buf)
-			except:
-				fig_orig=make_pickle_file(context='DBS78',path='DBS78.pkl', return_plot_template=True)
-				pickle.dump(fig_orig, buf)
+			# try:
+			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/DBS78.pkl','rb'))
+			# 	pickle.dump(fig_orig, buf)
+			# except:
+			fig_orig=make_pickle_file(context='DBS78',path='DBS78.pkl', return_plot_template=True)
+			pickle.dump(fig_orig, buf)
 
 			figs={}
 
