@@ -160,8 +160,8 @@ def plotActivity(activity_file, output_file = "Activity_in_samples.pdf", bin_siz
         if log: 
             plt.yscale('log')
             print("WARNING: When log scale is applied to a stacked plot, the size of the bars are not proportional to the real value")
-            plt.ylabel("log10 of mutations in each signatrure")       
-        plt.ylabel("Number of mutations in each signatrure")
+            plt.ylabel("log10 of mutations in each signature")       
+        plt.ylabel("Number of mutations in each signature")
         pp.savefig(plot) 
         plt.close()
     pp.close()
