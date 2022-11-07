@@ -33,6 +33,8 @@ import sklearn
 from sklearn.preprocessing import LabelEncoder
 import copy
 
+MUTTYPE="MutationType"
+
 warnings.filterwarnings("ignore")
 
 def temp_plotsave(output_path,project,figs_orig):
@@ -70,7 +72,22 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		plot1 = plt.figure(figsize=(43.93,9.92))
 		plt.rc('axes', edgecolor='lightgray')
 		panel1 = plt.axes([0.04, 0.09, 0.95, 0.77])
-		seq96=['A[C>A]A','A[C>A]C','A[C>A]G','A[C>A]T','A[C>G]A','A[C>G]C','A[C>G]G','A[C>G]T','A[C>T]A','A[C>T]C','A[C>T]G','A[C>T]T','A[T>A]A','A[T>A]C','A[T>A]G','A[T>A]T','A[T>C]A','A[T>C]C','A[T>C]G','A[T>C]T','A[T>G]A','A[T>G]C','A[T>G]G','A[T>G]T','C[C>A]A','C[C>A]C','C[C>A]G','C[C>A]T','C[C>G]A','C[C>G]C','C[C>G]G','C[C>G]T','C[C>T]A','C[C>T]C','C[C>T]G','C[C>T]T','C[T>A]A','C[T>A]C','C[T>A]G','C[T>A]T','C[T>C]A','C[T>C]C','C[T>C]G','C[T>C]T','C[T>G]A','C[T>G]C','C[T>G]G','C[T>G]T','G[C>A]A','G[C>A]C','G[C>A]G','G[C>A]T','G[C>G]A','G[C>G]C','G[C>G]G','G[C>G]T','G[C>T]A','G[C>T]C','G[C>T]G','G[C>T]T','G[T>A]A','G[T>A]C','G[T>A]G','G[T>A]T','G[T>C]A','G[T>C]C','G[T>C]G','G[T>C]T','G[T>G]A','G[T>G]C','G[T>G]G','G[T>G]T','T[C>A]A','T[C>A]C','T[C>A]G','T[C>A]T','T[C>G]A','T[C>G]C','T[C>G]G','T[C>G]T','T[C>T]A','T[C>T]C','T[C>T]G','T[C>T]T','T[T>A]A','T[T>A]C','T[T>A]G','T[T>A]T','T[T>C]A','T[T>C]C','T[T>C]G','T[T>C]T','T[T>G]A','T[T>G]C','T[T>G]G','T[T>G]T']
+		seq96=['A[C>A]A','A[C>A]C','A[C>A]G','A[C>A]T','A[C>G]A','A[C>G]C',
+			'A[C>G]G','A[C>G]T','A[C>T]A','A[C>T]C','A[C>T]G','A[C>T]T',
+			'A[T>A]A','A[T>A]C','A[T>A]G','A[T>A]T','A[T>C]A','A[T>C]C',
+			'A[T>C]G','A[T>C]T','A[T>G]A','A[T>G]C','A[T>G]G','A[T>G]T',
+			'C[C>A]A','C[C>A]C','C[C>A]G','C[C>A]T','C[C>G]A','C[C>G]C',
+			'C[C>G]G','C[C>G]T','C[C>T]A','C[C>T]C','C[C>T]G','C[C>T]T',
+			'C[T>A]A','C[T>A]C','C[T>A]G','C[T>A]T','C[T>C]A','C[T>C]C',
+			'C[T>C]G','C[T>C]T','C[T>G]A','C[T>G]C','C[T>G]G','C[T>G]T',
+			'G[C>A]A','G[C>A]C','G[C>A]G','G[C>A]T','G[C>G]A','G[C>G]C',
+			'G[C>G]G','G[C>G]T','G[C>T]A','G[C>T]C','G[C>T]G','G[C>T]T',
+			'G[T>A]A','G[T>A]C','G[T>A]G','G[T>A]T','G[T>C]A','G[T>C]C',
+			'G[T>C]G','G[T>C]T','G[T>G]A','G[T>G]C','G[T>G]G','G[T>G]T',
+			'T[C>A]A','T[C>A]C','T[C>A]G','T[C>A]T','T[C>G]A','T[C>G]C',
+			'T[C>G]G','T[C>G]T','T[C>T]A','T[C>T]C','T[C>T]G','T[C>T]T',
+			'T[T>A]A','T[T>A]C','T[T>A]G','T[T>A]T','T[T>C]A','T[T>C]C',
+			'T[T>C]G','T[T>C]T','T[T>G]A','T[T>G]C','T[T>G]G','T[T>G]T']
 		xlabels = []
 
 		x = 0.4
@@ -941,17 +958,37 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf", percentage=False
         pp.close()
 
 
-def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None, savefig_format="pdf"):
-	
+def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
+		custom_text_upper=None, custom_text_middle=None,
+		custom_text_bottom=None, savefig_format="pdf"):
+	"""Use an input matrix to create a SBS plot.
+
+		Args:
+			matrix_path: The path to a text file or a pandas DataFrame.
+			output_path: Path to a directory for saving the output.
+			project: Name of unique sample set
+			plot_type: Context of the mutational matrix (ie. 96, 288, 384, 1536)
+			savefig_format: Format of the output plot (pdf, png, or buffer_stream)
+		Returns:
+			Plot of the given input matrix.
+	"""
 	plot_custom_text = False
 	sig_probs = False
 	pcawg = False
 
 	if plot_type == '96':
 		try:
-			if not isinstance(matrix_path, pd.DataFrame):
+			# input data is a DataFrame
+			if isinstance(matrix_path, pd.DataFrame):
+				data = matrix_path
+				if MUTTYPE in data.columns:
+					data = data.set_index(MUTTYPE, drop=True)
+			# input data is a path to a file
+			elif isinstance(matrix_path, str):
 				data=pd.read_csv(matrix_path,sep='\t',index_col=0)
 				data=data.dropna(axis=1, how='all')
+			else:
+				raise ValueError("ERROR: plotSBS requires path to file or DataFrame.")
 
 			if data.isnull().values.any():
 				raise ValueError("Input data contains Nans.")
@@ -1033,12 +1070,10 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				panel1.set_xlim([0, 96])
 				panel1.set_ylim([0, y])
 				panel1.set_yticks(ylabs)
-			
 				if sig_probs:
 					plt.text(0.045, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 				else:
 					plt.text(0.045, 0.75, sample + ": " + "{:,}".format(int(total_count)) + " subs", fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
-
 
 				panel1.set_yticklabels(ylabels, fontsize=font_label_size)
 				plt.gca().yaxis.grid(True)
@@ -1108,12 +1143,8 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				[i.set_color("black") for i in plt.gca().get_yticklabels()]
 				sample_count += 1
 		
-
 			if savefig_format == "pdf":
-				pp = PdfPages(output_path + 'SBS_96_plots_' + project + '.pdf')
-		
-			
-			if savefig_format == "pdf":
+				pp = PdfPages(os.path.join(output_path, 'SBS_96_plots_' + project + '.pdf'))
 				for fig in figs:
 					figs[fig].savefig(pp, format='pdf')
 				pp.close()
@@ -1126,7 +1157,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					buffer2=io.BytesIO()
 					figs[fig].savefig(buffer2,format='png')
 					buff_list[fig]=buffer2
-					return buff_list
+				return buff_list
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_96_plots_' + project + '.pdf')
@@ -3911,7 +3942,6 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 			for ii in range(0,len(xlables_set)):
 				colors_idx=[ii if x==xlables_set[ii] else x for x in colors_idx]
 			
-			# pdb.set_trace()
 			colors_flat_list = [colors[i] for i in colors_idx]
 
 			for sample in data.columns: #mutations.keys():
@@ -3962,7 +3992,6 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				panel1.set_ylim([0, y])
 				panel1.set_xticks(labs)
 				panel1.set_yticks(ylabs)
-				# import pdb;pdb.set_trace()
 				if sig_probs:
 					plt.text(0.0475, 0.75, sample, fontsize=60, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure)
 				else:
@@ -4035,7 +4064,6 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 									direction='in', length=25, colors='gray', width=2)
 
 				[i.set_color("black") for i in plt.gca().get_yticklabels()]
-				# import pdb;pdb.set_trace()
 				# pp.savefig(plot1)
 				# plt.close()
 				sample_count += 1
@@ -4703,8 +4731,6 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 		if data.isnull().values.any():
 			raise ValueError("Input data contains Nans.")
-		# import pdb;
-		# pdb.set_trace()
 		# with open(matrix_path) as f:
 		#     next(f)
 		#     first_line = f.readline()
