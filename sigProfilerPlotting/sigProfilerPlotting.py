@@ -1160,7 +1160,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				return buff_list
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
-			os.remove(output_path + 'SBS_96_plots_' + project + '.pdf')
+			os.remove(os.path.join(output_path, 'SBS_96_plots_' + project + '.pdf'))
 
 	elif plot_type == '192' or plot_type == '96SB' or plot_type == '384':
 		with open(matrix_path) as f:
