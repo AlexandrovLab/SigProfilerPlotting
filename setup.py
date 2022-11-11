@@ -71,12 +71,15 @@ class move_ttf(install):
         except:
             os.system("echo 'Failed to install templates' ")
 
-        
+with open("README.md") as f:
+    readme = f.read()
 
 setup(name='sigProfilerPlotting',
 		version=VERSION,
 		description='SigProfiler plotting tool',
-		url='',
+        long_description=readme,
+        long_description_content_type="text/markdown",
+		url='https://github.com/alexandrovlab/SigProfilerPlotting',
 		author='Erik Bergstrom',
 		author_email='ebergstr@eng.ucsd.edu',
 		license='UCSD',
