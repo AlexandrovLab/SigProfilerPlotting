@@ -12,7 +12,7 @@ def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
-VERSION = '1.3.2'
+VERSION = '1.3.3'
 
 def write_version_py(filename='sigProfilerPlotting/version.py'):
     # Copied from numpy setup.py
@@ -82,7 +82,7 @@ setup(name='sigProfilerPlotting',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
-			"matplotlib>=3.3.0,<=3.4.3", "pandas", "seaborn","sklearn"],
+			"matplotlib>=3.3.0,<=3.4.3", "pandas>=1.2.4", "scikit-learn>=1.1.3"],
         package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
