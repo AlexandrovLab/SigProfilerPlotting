@@ -983,6 +983,10 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				data = matrix_path
 				if MUTTYPE in data.columns:
 					data = data.set_index(MUTTYPE, drop=True)
+				else:
+					data.rename(columns={data.columns[0]:MUTTYPE}, inplace=True)
+					data = data.set_index(MUTTYPE, drop=True)
+
 			# input data is a path to a file
 			elif isinstance(matrix_path, str):
 				data=pd.read_csv(matrix_path,sep='\t',index_col=0)
@@ -1144,7 +1148,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				sample_count += 1
 		
 			if savefig_format == "pdf":
-				pp = PdfPages(os.path.join(output_path, 'SBS_96_plots_' + project + '.pdf'))
+				pp = PdfPages(output_path + 'SBS_96_plots_'+ project +'.pdf')
 				for fig in figs:
 					figs[fig].savefig(pp, format='pdf')
 				pp.close()
