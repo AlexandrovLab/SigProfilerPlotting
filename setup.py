@@ -12,7 +12,7 @@ def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
-VERSION = '1.3.4'
+VERSION = '1.3.5'
 
 def write_version_py(filename='sigProfilerPlotting/version.py'):
     # Copied from numpy setup.py

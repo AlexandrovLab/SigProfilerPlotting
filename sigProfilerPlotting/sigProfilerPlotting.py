@@ -32,6 +32,7 @@ import itertools,time
 import sklearn
 from sklearn.preprocessing import LabelEncoder
 import copy
+import errno
 
 MUTTYPE="MutationType"
 
@@ -910,10 +911,11 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf",
     
     df = pd.DataFrame()
     if read_from_file:
+        if not os.path.exists(matrix_path):
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), matrix_path)
         df = pd.read_csv(matrix_path, sep=None, engine='python') #flexible reading of tsv or csv
     else:
         df = matrix_path
-    
     label = df.columns[0]
     labels = df[label]
     buff_list = dict()
@@ -3905,7 +3907,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			pp.close()
 
 	else:
-	  print("The provided plot_type: ", plot_type, " is not supported by this plotting function")
+	  print("The provided plot_type:", plot_type, "is not supported by this plotting function")
 
 
 def plotID(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None, savefig_format = "pdf"):
@@ -3917,9 +3919,21 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 	pcawg = False
 	if plot_type == '94' or plot_type == 'ID94' or plot_type == '94ID' or plot_type == '83':
 
-		if not isinstance(matrix_path, pd.DataFrame):
+		# input data is a DataFrame
+		if isinstance(matrix_path, pd.DataFrame):
+			data = matrix_path
+			if MUTTYPE in data.columns:
+				data = data.set_index(MUTTYPE, drop=True)
+			else:
+				data.rename(columns={data.columns[0]:MUTTYPE}, inplace=True)
+				data = data.set_index(MUTTYPE, drop=True)
+
+		# input data is a path to a file
+		elif isinstance(matrix_path, str):
 			data=pd.read_csv(matrix_path,sep='\t',index_col=0)
 			data=data.dropna(axis=1, how='all')
+		else:
+			raise ValueError("ERROR: plotSBS requires path to file or DataFrame.")
 
 		if data.isnull().values.any():
 			raise ValueError("Input data contains Nans.")
@@ -4070,15 +4084,10 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 									direction='in', length=25, colors='gray', width=2)
 
 				[i.set_color("black") for i in plt.gca().get_yticklabels()]
-				# pp.savefig(plot1)
-				# plt.close()
 				sample_count += 1
-			# pp.close()
+
 			if savefig_format == "pdf":
-				pp = PdfPages(output_path + 'ID_83_plots_' + project + '.pdf') # PdfPages(output_path + 'SBS_96_plots_' + project + '.pdf')
-		
-			
-			if savefig_format == "pdf":
+				pp = PdfPages(output_path + 'ID_83_plots_' + project + '.pdf')
 				for fig in figs:
 					figs[fig].savefig(pp, format='pdf')
 				pp.close()
@@ -4092,7 +4101,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 					buffer2=io.BytesIO()
 					figs[fig].savefig(buffer2,format='png')
 					buff_list[fig]=buffer2
-					return buff_list
+				return buff_list
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'ID_83_plots_' + project + '.pdf')
@@ -4714,7 +4723,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 
 
 	else:
-		print("The provided plot_type: ", plot_type, " is not supported by this plotting function")
+		print("The provided plot_type:", plot_type, "is not supported by this plotting function")
 
 def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None):
 
@@ -5135,4 +5144,4 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 			os.remove(output_path + 'DBS_186_plots_' + project + '.pdf')
 
 	else:
-		print("The provided plot_type: ", plot_type, " is not supported by this plotting function")
+		print("The provided plot_type:", plot_type, "is not supported by this plotting function")
