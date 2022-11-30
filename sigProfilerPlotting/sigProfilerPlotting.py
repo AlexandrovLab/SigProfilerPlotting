@@ -52,7 +52,6 @@ def get_default_96labels():
     return result
 
 def install_plot_templates(context='SBS96'):
-	#WOkrks for both 96 and 288
 	package_path = spplt.__path__[0]
 	install_path =os.path.join(package_path,'templates/')
 	if not os.path.exists(install_path):
@@ -1034,6 +1033,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 					if total_count > 0:
 						plt.bar(np.arange(len(ctx))+x,muts/total_count*100,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 						ymax = np.max(muts/total_count*100)
+					sig_probs = True
 				else:
 					plt.bar(np.arange(len(ctx))+x,muts,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 					ymax = np.max(muts)
@@ -3423,6 +3423,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 					if total_count > 0:
 						panel1.bar(np.arange(len(ctx))+x,muts/total_count*100,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 						ymax = np.max(muts/total_count*100)
+					sig_probs=True
 				else:
 					panel1.bar(np.arange(len(ctx))+x,muts,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 					ymax = np.max(muts)
@@ -3977,6 +3978,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 					if total_count > 0:
 						plt.bar(np.arange(len(ctx))+x, muts/total_count*100,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 						ymax = np.max(muts/total_count*100)
+					sig_probs = True
 				else:
 					plt.bar(np.arange(len(ctx))+x, muts,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 					ymax = np.max(muts)
@@ -4815,8 +4817,8 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 					if total_count > 0:
 						plt.bar(np.asarray(range(len(ctx)))+x,muts/total_count*100,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 						ymax = np.max(muts/total_count*100)
+					sig_probs = True
 				else:
-
 					plt.bar(np.asarray(range(len(ctx)))+x,muts,width=0.4,color=colors_flat_list,align='center', zorder=1000)
 					ymax = np.max(muts)
 				# for i in range(len(xlabels)):
