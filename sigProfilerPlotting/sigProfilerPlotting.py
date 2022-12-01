@@ -4727,7 +4727,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 	else:
 		print("The provided plot_type:", plot_type, "is not supported by this plotting function")
 
-def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None):
+def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None,savefig_format='pdf'):
 
 
     # context ='DBS78'
@@ -4933,11 +4933,25 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				# pp.savefig(plot1)
 				# plt.close()
 				# sample_count += 1
-			pp = PdfPages(output_path + 'DBS_78_plots_' + project + '.pdf')
-			for fig in figs:
-				figs[fig].savefig(pp, format='pdf')
-			pp.close()
-			
+
+
+			if savefig_format == "pdf":
+				pp = PdfPages(output_path + 'DBS_78_plots_' + project + '.pdf')
+				for fig in figs:
+					figs[fig].savefig(pp, format='pdf')
+				pp.close()
+				
+			if savefig_format == "png":
+				for fig in figs:
+					figs[fig].savefig(output_path + 'DBS_78_plots_'+fig+'.png',dpi=100)
+			if savefig_format == "buffer_stream":
+				buff_list={}
+				for fig in figs:
+					buffer2=io.BytesIO()
+					figs[fig].savefig(buffer2,format='png')
+					buff_list[fig]=buffer2
+				return buff_list	
+
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'DBS_78_plots_' + project + '.pdf')
