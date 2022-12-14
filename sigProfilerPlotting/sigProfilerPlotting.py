@@ -3562,18 +3562,18 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				y2max = 0
 				tsbColors = [[1/256,70/256,102/256], [228/256,41/256,38/256], 'green']
 
-			if percentage:
-				y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])/total_count *100
+				if percentage:
+					y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])/total_count *100
 
-				panel2.barh(range(28,1,-4),tsb_mats['T'][sample].values /total_count *100 , color=tsbColors[0], label="Genic-transcribed")
-				panel2.barh(range(27,1,-4),tsb_mats['U'][sample].values /total_count *100, color=tsbColors[1], label="Genic-untranscribed")
-				panel2.barh(range(26,1,-4),tsb_mats['N'][sample].values /total_count *100 , color=tsbColors[2], label="Intergenic")
+					panel2.barh(range(28,1,-4),tsb_mats['T'][sample].values /total_count *100 , color=tsbColors[0], label="Genic-transcribed")
+					panel2.barh(range(27,1,-4),tsb_mats['U'][sample].values /total_count *100, color=tsbColors[1], label="Genic-untranscribed")
+					panel2.barh(range(26,1,-4),tsb_mats['N'][sample].values /total_count *100 , color=tsbColors[2], label="Intergenic")
 
-			else:
-				y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])
-				panel2.barh(range(28,1,-4),tsb_mats['T'][sample].values , color=tsbColors[0], label="Genic-transcribed")
-				panel2.barh(range(27,1,-4),tsb_mats['U'][sample].values , color=tsbColors[1], label="Genic-untranscribed")
-				panel2.barh(range(26,1,-4),tsb_mats['N'][sample].values , color=tsbColors[2], label="Intergenic")
+				else:
+					y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])
+					panel2.barh(range(28,1,-4),tsb_mats['T'][sample].values , color=tsbColors[0], label="Genic-transcribed")
+					panel2.barh(range(27,1,-4),tsb_mats['U'][sample].values , color=tsbColors[1], label="Genic-untranscribed")
+					panel2.barh(range(26,1,-4),tsb_mats['N'][sample].values , color=tsbColors[2], label="Intergenic")
 
 				labels=list(tsb_mats['T'][sample].index)
 
