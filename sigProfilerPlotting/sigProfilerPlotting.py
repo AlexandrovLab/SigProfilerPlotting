@@ -72,22 +72,30 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		plot1 = plt.figure(figsize=(43.93,9.92))
 		plt.rc('axes', edgecolor='lightgray')
 		panel1 = plt.axes([0.04, 0.09, 0.95, 0.77])
-		seq96=['A[C>A]A','A[C>A]C','A[C>A]G','A[C>A]T','A[C>G]A','A[C>G]C',
-			'A[C>G]G','A[C>G]T','A[C>T]A','A[C>T]C','A[C>T]G','A[C>T]T',
-			'A[T>A]A','A[T>A]C','A[T>A]G','A[T>A]T','A[T>C]A','A[T>C]C',
-			'A[T>C]G','A[T>C]T','A[T>G]A','A[T>G]C','A[T>G]G','A[T>G]T',
-			'C[C>A]A','C[C>A]C','C[C>A]G','C[C>A]T','C[C>G]A','C[C>G]C',
-			'C[C>G]G','C[C>G]T','C[C>T]A','C[C>T]C','C[C>T]G','C[C>T]T',
-			'C[T>A]A','C[T>A]C','C[T>A]G','C[T>A]T','C[T>C]A','C[T>C]C',
-			'C[T>C]G','C[T>C]T','C[T>G]A','C[T>G]C','C[T>G]G','C[T>G]T',
-			'G[C>A]A','G[C>A]C','G[C>A]G','G[C>A]T','G[C>G]A','G[C>G]C',
-			'G[C>G]G','G[C>G]T','G[C>T]A','G[C>T]C','G[C>T]G','G[C>T]T',
-			'G[T>A]A','G[T>A]C','G[T>A]G','G[T>A]T','G[T>C]A','G[T>C]C',
-			'G[T>C]G','G[T>C]T','G[T>G]A','G[T>G]C','G[T>G]G','G[T>G]T',
-			'T[C>A]A','T[C>A]C','T[C>A]G','T[C>A]T','T[C>G]A','T[C>G]C',
-			'T[C>G]G','T[C>G]T','T[C>T]A','T[C>T]C','T[C>T]G','T[C>T]T',
-			'T[T>A]A','T[T>A]C','T[T>A]G','T[T>A]T','T[T>C]A','T[T>C]C',
-			'T[T>C]G','T[T>C]T','T[T>G]A','T[T>G]C','T[T>G]G','T[T>G]T']
+		seq96=['A[C>A]A', 'A[C>A]C', 'A[C>A]G', 'A[C>A]T',
+				'C[C>A]A', 'C[C>A]C', 'C[C>A]G', 'C[C>A]T',
+				'G[C>A]A', 'G[C>A]C', 'G[C>A]G', 'G[C>A]T',
+				'T[C>A]A', 'T[C>A]C', 'T[C>A]G', 'T[C>A]T',
+				'A[C>G]A', 'A[C>G]C', 'A[C>G]G', 'A[C>G]T',
+				'C[C>G]A', 'C[C>G]C', 'C[C>G]G', 'C[C>G]T',
+				'G[C>G]A', 'G[C>G]C', 'G[C>G]G', 'G[C>G]T',
+				'T[C>G]A', 'T[C>G]C', 'T[C>G]G', 'T[C>G]T',
+				'A[C>T]A', 'A[C>T]C', 'A[C>T]G', 'A[C>T]T',
+				'C[C>T]A', 'C[C>T]C', 'C[C>T]G', 'C[C>T]T',
+				'G[C>T]A', 'G[C>T]C', 'G[C>T]G', 'G[C>T]T',
+				'T[C>T]A', 'T[C>T]C', 'T[C>T]G', 'T[C>T]T',
+				'A[T>A]A', 'A[T>A]C', 'A[T>A]G', 'A[T>A]T',
+				'C[T>A]A', 'C[T>A]C', 'C[T>A]G', 'C[T>A]T',
+				'G[T>A]A', 'G[T>A]C', 'G[T>A]G', 'G[T>A]T',
+				'T[T>A]A', 'T[T>A]C', 'T[T>A]G', 'T[T>A]T',
+				'A[T>C]A', 'A[T>C]C', 'A[T>C]G', 'A[T>C]T',
+				'C[T>C]A', 'C[T>C]C', 'C[T>C]G', 'C[T>C]T',
+				'G[T>C]A', 'G[T>C]C', 'G[T>C]G', 'G[T>C]T',
+				'T[T>C]A', 'T[T>C]C', 'T[T>C]G', 'T[T>C]T',
+				'A[T>G]A', 'A[T>G]C', 'A[T>G]G', 'A[T>G]T',
+				'C[T>G]A', 'C[T>G]C', 'C[T>G]G', 'C[T>G]T',
+				'G[T>G]A', 'G[T>G]C', 'G[T>G]G', 'G[T>G]T',
+				'T[T>G]A', 'T[T>G]C', 'T[T>G]G', 'T[T>G]T']
 		xlabels = []
 
 		x = 0.4
@@ -3554,11 +3562,19 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				y2max = 0
 				tsbColors = [[1/256,70/256,102/256], [228/256,41/256,38/256], 'green']
 
-				y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])
+			if percentage:
+				y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])/total_count *100
 
+				panel2.barh(range(28,1,-4),tsb_mats['T'][sample].values /total_count *100 , color=tsbColors[0], label="Genic-transcribed")
+				panel2.barh(range(27,1,-4),tsb_mats['U'][sample].values /total_count *100, color=tsbColors[1], label="Genic-untranscribed")
+				panel2.barh(range(26,1,-4),tsb_mats['N'][sample].values /total_count *100 , color=tsbColors[2], label="Intergenic")
+
+			else:
+				y2max= np.max([tsb_mats['T'][sample]['All'],tsb_mats['U'][sample]['All'],tsb_mats['N'][sample]['All']])
 				panel2.barh(range(28,1,-4),tsb_mats['T'][sample].values , color=tsbColors[0], label="Genic-transcribed")
 				panel2.barh(range(27,1,-4),tsb_mats['U'][sample].values , color=tsbColors[1], label="Genic-untranscribed")
 				panel2.barh(range(26,1,-4),tsb_mats['N'][sample].values , color=tsbColors[2], label="Intergenic")
+
 				labels=list(tsb_mats['T'][sample].index)
 
 				y = int(y2max*1.1)
@@ -4727,7 +4743,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 	else:
 		print("The provided plot_type:", plot_type, "is not supported by this plotting function")
 
-def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None):
+def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None,savefig_format='pdf'):
 
 
     # context ='DBS78'
@@ -4933,11 +4949,25 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				# pp.savefig(plot1)
 				# plt.close()
 				# sample_count += 1
-			pp = PdfPages(output_path + 'DBS_78_plots_' + project + '.pdf')
-			for fig in figs:
-				figs[fig].savefig(pp, format='pdf')
-			pp.close()
-			
+
+
+			if savefig_format == "pdf":
+				pp = PdfPages(output_path + 'DBS_78_plots_' + project + '.pdf')
+				for fig in figs:
+					figs[fig].savefig(pp, format='pdf')
+				pp.close()
+				
+			if savefig_format == "png":
+				for fig in figs:
+					figs[fig].savefig(output_path + 'DBS_78_plots_'+fig+'.png',dpi=100)
+			if savefig_format == "buffer_stream":
+				buff_list={}
+				for fig in figs:
+					buffer2=io.BytesIO()
+					figs[fig].savefig(buffer2,format='png')
+					buff_list[fig]=buffer2
+				return buff_list	
+
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'DBS_78_plots_' + project + '.pdf')
