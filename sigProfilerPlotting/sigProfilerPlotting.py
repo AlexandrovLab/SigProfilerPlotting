@@ -38,6 +38,27 @@ MUTTYPE="MutationType"
 
 warnings.filterwarnings("ignore")
 
+def process_input(matrix_path):
+	# input data is a DataFrame
+	if isinstance(matrix_path, pd.DataFrame):
+		data = matrix_path
+		if MUTTYPE in data.columns:
+			data = data.set_index(MUTTYPE, drop=True)
+		else:
+			data.rename(columns={data.columns[0]:MUTTYPE}, inplace=True)
+			data = data.set_index(MUTTYPE, drop=True)
+	# input data is a path to a file
+	elif isinstance(matrix_path, str):
+		data=pd.read_csv(matrix_path,sep='\t',index_col=0)
+		data=data.dropna(axis=1, how='all')
+	else:
+		raise ValueError("ERROR: matrix_path requires path to file or DataFrame.")
+
+	if data.isnull().values.any():
+		raise ValueError("Input data contains Nans.")
+
+	return data
+
 def temp_plotsave(output_path,project,figs_orig):
     pp = PdfPages(output_path + 'SBS_288_testst_plots_' + project + '.pdf')
     figs_orig.savefig(pp, format='pdf')
@@ -989,34 +1010,11 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 	if plot_type == '96':
 		try:
-			# input data is a DataFrame
-			if isinstance(matrix_path, pd.DataFrame):
-				data = matrix_path
-				if MUTTYPE in data.columns:
-					data = data.set_index(MUTTYPE, drop=True)
-				else:
-					data.rename(columns={data.columns[0]:MUTTYPE}, inplace=True)
-					data = data.set_index(MUTTYPE, drop=True)
-
-			# input data is a path to a file
-			elif isinstance(matrix_path, str):
-				data=pd.read_csv(matrix_path,sep='\t',index_col=0)
-				data=data.dropna(axis=1, how='all')
-			else:
-				raise ValueError("ERROR: plotSBS requires path to file or DataFrame.")
-
-			if data.isnull().values.any():
-				raise ValueError("Input data contains Nans.")
-			
-			data= reindex_sbs96(data)
+			data = process_input(matrix_path)
+			data = reindex_sbs96(data)
 			sample_count = 0
 
-
 			buf= io.BytesIO()
-			# try:
-			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS96.pkl','rb'))
-			# 	pickle.dump(fig_orig, buf)
-			# except:
 			fig_orig=make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=True)
 			pickle.dump(fig_orig, buf)
 
@@ -3392,12 +3390,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			sig_probs = False
 			pcawg = False
 
-			if not isinstance(matrix_path, pd.DataFrame):
-				data=pd.read_csv(matrix_path,sep='\t',index_col=0)
-				data=data.dropna(axis=1, how='all')
-
-			if data.isnull().values.any():
-				raise ValueError("Input data contains Nans.")
+			data = process_input(matrix_path)
 		
 			sample_count = 0
 
@@ -3936,38 +3929,14 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 	pcawg = False
 	if plot_type == '94' or plot_type == 'ID94' or plot_type == '94ID' or plot_type == '83':
 
-		# input data is a DataFrame
-		if isinstance(matrix_path, pd.DataFrame):
-			data = matrix_path
-			if MUTTYPE in data.columns:
-				data = data.set_index(MUTTYPE, drop=True)
-			else:
-				data.rename(columns={data.columns[0]:MUTTYPE}, inplace=True)
-				data = data.set_index(MUTTYPE, drop=True)
-
-		# input data is a path to a file
-		elif isinstance(matrix_path, str):
-			data=pd.read_csv(matrix_path,sep='\t',index_col=0)
-			data=data.dropna(axis=1, how='all')
-		else:
-			raise ValueError("ERROR: plotSBS requires path to file or DataFrame.")
-
-		if data.isnull().values.any():
-			raise ValueError("Input data contains Nans.")
+		data = process_input(matrix_path)
 		
 		try:
 			sample_count = 0
 			buf= io.BytesIO()
-			# try:
-			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/ID83.pkl','rb'))
-			# 	pickle.dump(fig_orig, buf)
-			# except:
 			fig_orig=make_pickle_file(context='ID83',path='ID83.pkl', return_plot_template=True)
 			pickle.dump(fig_orig, buf)
-
-
 			figs={}
-
 			colors = [[253/256,190/256,111/256], [255/256,128/256,2/256], [176/256,221/256,139/256], [54/256,161/256,46/256],
 							[253/256,202/256,181/256], [252/256,138/256,106/256], [241/256,68/256,50/256], [188/256,25/256,26/256],
 							[208/256,225/256,242/256], [148/256,196/256,223/256], [74/256,152/256,201/256], [23/256,100/256,171/256],
@@ -4745,35 +4714,11 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 
 def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None,savefig_format='pdf'):
 
-
-    # context ='DBS78'
-    # package_path = spplt.__path__[0]
-    # install_path =os.path.join(package_path,'templates/')
-    # if not os.path.exists(install_path):
-    #     os.mkdir(install_path)
-
-    # filename= os.path.join(install_path,context+'.pkl')
-    # getdbstemp(context,path=filename)
 	plot_custom_text = False
 	pcawg = False
 	sig_probs = False
 	if plot_type == '78' or plot_type == '78DBS' or plot_type == 'DBS78':
-		if not isinstance(matrix_path, pd.DataFrame):
-			data=pd.read_csv(matrix_path,sep='\t',index_col=0)
-			data=data.dropna(axis=1, how='all')
-
-		if data.isnull().values.any():
-			raise ValueError("Input data contains Nans.")
-		# with open(matrix_path) as f:
-		#     next(f)
-		#     first_line = f.readline()
-		#     first_line = first_line.strip().split()
-		#     mutation_type = first_line[0]
-		#     if first_line[0][2] != ">":
-		#         pcawg = True
-		#     if len(mutation_type) != 5 and first_line[0][2] == ">":
-		#         sys.exit("The matrix does not match the correct DBS96 format. Please check you formatting and rerun this plotting function.")
-		# pp = PdfPages(output_path + 'DBS_78_plots_' + project + '.pdf')
+		data = process_input(matrix_path)
 
 		dinucs = ['TT>GG','TT>CG','TT>AG','TT>GC','TT>CC','TT>AC','TT>GA','TT>CA','TT>AA','AC>CA','AC>CG','AC>CT','AC>GA',
 					'AC>GG','AC>GT','AC>TA','AC>TG','AC>TT','CT>AA','CT>AC','CT>AG','CT>GA','CT>GC','CT>GG','CT>TG','CT>TC',
