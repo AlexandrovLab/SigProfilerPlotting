@@ -33,10 +33,18 @@ import sklearn
 from sklearn.preprocessing import LabelEncoder
 import copy
 import errno
+import logging
 
 MUTTYPE="MutationType"
 
+#logging.getLogger('matplotlib.font_manager').disabled = True
 warnings.filterwarnings("ignore")
+
+# load fonts for matplotlib
+def load_fonts():
+	font_dir = os.path.join(matplotlib.matplotlib_fname(), 'fonts', 'ttf')
+	for tmp_font in matplotlib.font_manager.findSystemFonts(font_dir):
+		matplotlib.font_manager.fontManager.addfont(tmp_font)
 
 def process_input(matrix_path):
 	# input data is a DataFrame
@@ -1007,6 +1015,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 	plot_custom_text = False
 	sig_probs = False
 	pcawg = False
+	load_fonts()
 
 	if plot_type == '96':
 		try:
@@ -3927,6 +3936,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 	plot_custom_text = False
 	sig_probs = False
 	pcawg = False
+	load_fonts()
 	if plot_type == '94' or plot_type == 'ID94' or plot_type == '94ID' or plot_type == '83':
 
 		data = process_input(matrix_path)
@@ -4717,6 +4727,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 	plot_custom_text = False
 	pcawg = False
 	sig_probs = False
+	load_fonts()
 	if plot_type == '78' or plot_type == '78DBS' or plot_type == 'DBS78':
 		data = process_input(matrix_path)
 
