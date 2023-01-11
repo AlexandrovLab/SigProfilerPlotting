@@ -33,9 +33,11 @@ import sklearn
 from sklearn.preprocessing import LabelEncoder
 import copy
 import errno
+import logging
 
 MUTTYPE="MutationType"
 
+logging.getLogger('matplotlib.font_manager').disabled = True
 warnings.filterwarnings("ignore")
 
 def process_input(matrix_path):
