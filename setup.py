@@ -12,7 +12,7 @@ def readme():
 	with open('README.rst') as f:
 		return(f.read())
 
-VERSION = '1.3.10'
+VERSION = '1.3.11'
 
 def write_version_py(filename='sigProfilerPlotting/version.py'):
     # Copied from numpy setup.py
@@ -60,16 +60,6 @@ class move_ttf(install):
 
         except:
             warnings.warn("WARNING: An issue occured while installing the fonts.")
-        #install figure templates
-        try:
-            import sigProfilerPlotting as sigPlt
-            sigPlt.install_plot_templates('SBS96')
-            sigPlt.install_plot_templates('SBS288')
-            sigPlt.install_plot_templates('DBS78')
-            sigPlt.install_plot_templates('ID83')
-            os.system("echo 'installed figure templates' ")
-        except:
-            os.system("echo 'Failed to install templates' ")
 
 with open("README.md") as f:
     readme = f.read()
@@ -85,7 +75,9 @@ setup(name='sigProfilerPlotting',
 		license='UCSD',
 		packages=['sigProfilerPlotting'],
 		install_requires =[
-			"matplotlib>=3.4.3", "pandas>=1.2.4", "scikit-learn>=1.1.3"],
+                "matplotlib>=3.4.3",
+                "pandas>=1.2.4",
+                "scikit-learn>=1.1.3"],
         package_data={'':['fonts/*.ttf']},
 		include_package_data=True,
 	    #Specify the custom install class
