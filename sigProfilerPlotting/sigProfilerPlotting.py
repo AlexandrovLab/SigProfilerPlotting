@@ -28,17 +28,61 @@ import warnings
 import pickle
 import sigProfilerPlotting as spplt
 import pdb
-import itertools,time
+import itertools
 import sklearn
 from sklearn.preprocessing import LabelEncoder
 import copy
 import errno
 import logging
+from PIL import Image
 
 MUTTYPE="MutationType"
+SPP_PATH = spplt.__path__[0]
+SPP_TEMPLATES = os.path.join(SPP_PATH, 'templates/')
 
 logging.getLogger('matplotlib.font_manager').disabled = True
 warnings.filterwarnings("ignore")
+
+# Note that plt.close(), plt.clf(), and plt.cla() would not close memory
+# Referenced the following post for the function below:
+# https://stackoverflow.com/questions/28757348/how-to-clear-memory-completely-of-all-matplotlib-plots
+def clear_plotting_memory():
+    usedbackend = matplotlib.get_backend()
+    matplotlib.use(usedbackend)
+    allfignums = matplotlib.pyplot.get_fignums()
+    for i in allfignums:
+        fig = matplotlib.pyplot.figure(i)
+        fig.clear()
+        matplotlib.pyplot.close(fig)
+
+# Saves figures to files, unless savefig_format is "PIL_Image", in which case
+# the figures are saved to a dictionary of buffers
+def output_results(savefig_format, output_path, project, figs, context_type):
+	if savefig_format.lower() == "pdf":
+		pp = PdfPages(output_path + context_type +'_plots_'+ project +'.pdf')
+		for fig in figs:
+			figs[fig].savefig(pp, format='pdf')
+		pp.close()
+		clear_plotting_memory()
+	elif savefig_format.lower() == "png":
+		for fig in figs:
+			figs[fig].savefig(output_path + context_type +'_plots_'+fig+'.png',dpi=100)
+		clear_plotting_memory()
+	elif savefig_format.lower() == "pil_image":
+		image_list = {}
+		for fig in figs:
+			tmp_buffer=io.BytesIO()
+			figs[fig].savefig(tmp_buffer,format='png')
+			# convert tmp_buffer to a PIL and close buffer
+			tmp_buffer.seek(0)
+			tmp_image=Image.open(tmp_buffer)
+			# add the image to the image list for return
+			image_list[fig]=tmp_image
+		clear_plotting_memory()
+		return image_list
+	else:
+		raise ValueError("ERROR: savefig_format must be 'pdf', 'png', or 'PIL_Image'.")
+	return None
 
 def process_input(matrix_path):
 	# input data is a DataFrame
@@ -61,11 +105,6 @@ def process_input(matrix_path):
 
 	return data
 
-def temp_plotsave(output_path,project,figs_orig):
-    pp = PdfPages(output_path + 'SBS_288_testst_plots_' + project + '.pdf')
-    figs_orig.savefig(pp, format='pdf')
-    pp.close()
-
 def get_default_96labels():
     first=['A','C','G','T']
     inner_bracket=[[x]*16 for x in ["C>A", "C>G", "C>T", "T>A", "T>C", "T>G"]]
@@ -74,16 +113,18 @@ def get_default_96labels():
     result=[outter_bracket[f%16][0]+"["+inner_bracket[f]+"]"+outter_bracket[f%16][1] for f in range(0,96)]
     return result
 
-def install_plot_templates(context='SBS96'):
-	package_path = spplt.__path__[0]
-	install_path =os.path.join(package_path,'templates/')
-	if not os.path.exists(install_path):
-		os.mkdir(install_path)
+def make_pickle_file(context='SBS96', return_plot_template=False):
 
-	filename= os.path.join(install_path,context+'.pkl')
-	make_pickle_file(context,path=filename)
+	path=os.path.join(SPP_TEMPLATES,context+'.pkl')
 
-def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=False):
+	# if the pickle file already exists, return the template
+	if os.path.exists(path):
+		return pickle.load(open(path, "rb"))
+
+	# check if the template directory exists, create if not
+	if not os.path.exists(SPP_TEMPLATES):
+		os.mkdir(SPP_TEMPLATES)
+
 	if context == 'SBS96':
 		plot_custom_text = False
 		sig_probs = False
@@ -152,11 +193,7 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		# ytick_offest = int(y/4)
 		y = ymax/1.025
 		ytick_offest = float(y/3)
-
-
 		labs = np.arange(0.375,96.375,1)
-
-
 
 		panel1.set_xlim([0, 96])
 		# panel1.set_ylim([0, y])
@@ -173,20 +210,11 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 				count = 0
 				m += 1
 
-
-		# panel1.set_yticklabels(ylabels, fontsize=font_label_size)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
 
-		# if percentage:
-		# 	plt.ylabel("Percentage of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
-		# else:
-		# 	plt.ylabel("Number of Single Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
-
-
-		# image = plt.imread('template/SBS_96_plots_template.jpg')
 		panel1.tick_params(axis='both',which='both',\
 							bottom=False, labelbottom=False,\
 							left=True, labelleft=True,\
@@ -199,6 +227,7 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		if return_plot_template == False:
 			pickle.dump(plot1, open(path, 'wb'))
 		else:
+			pickle.dump(plot1, open(path, 'wb'))
 			return plot1
 	elif context =='SBS288':
 		plot_custom_text = False
@@ -216,7 +245,6 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		ymax = 0
 		colors = [[3/256,189/256,239/256], [1/256,1/256,1/256],[228/256,41/256,38/256], [203/256,202/256,202/256], [162/256,207/256,99/256], [236/256,199/256,197/256]]
 		i = 0
-		# seq96=['A[C>A]A','A[C>A]C','A[C>A]G','A[C>A]T','A[C>G]A','A[C>G]C','A[C>G]G','A[C>G]T','A[C>T]A','A[C>T]C','A[C>T]G','A[C>T]T','A[T>A]A','A[T>A]C','A[T>A]G','A[T>A]T','A[T>C]A','A[T>C]C','A[T>C]G','A[T>C]T','A[T>G]A','A[T>G]C','A[T>G]G','A[T>G]T','C[C>A]A','C[C>A]C','C[C>A]G','C[C>A]T','C[C>G]A','C[C>G]C','C[C>G]G','C[C>G]T','C[C>T]A','C[C>T]C','C[C>T]G','C[C>T]T','C[T>A]A','C[T>A]C','C[T>A]G','C[T>A]T','C[T>C]A','C[T>C]C','C[T>C]G','C[T>C]T','C[T>G]A','C[T>G]C','C[T>G]G','C[T>G]T','G[C>A]A','G[C>A]C','G[C>A]G','G[C>A]T','G[C>G]A','G[C>G]C','G[C>G]G','G[C>G]T','G[C>T]A','G[C>T]C','G[C>T]G','G[C>T]T','G[T>A]A','G[T>A]C','G[T>A]G','G[T>A]T','G[T>C]A','G[T>C]C','G[T>C]G','G[T>C]T','G[T>G]A','G[T>G]C','G[T>G]G','G[T>G]T','T[C>A]A','T[C>A]C','T[C>A]G','T[C>A]T','T[C>G]A','T[C>G]C','T[C>G]G','T[C>G]T','T[C>T]A','T[C>T]C','T[C>T]G','T[C>T]T','T[T>A]A','T[T>A]C','T[T>A]G','T[T>A]T','T[T>C]A','T[T>C]C','T[T>C]G','T[T>C]T','T[T>G]A','T[T>G]C','T[T>G]G','T[T>G]T']
 		result = get_default_96labels()
 		xlabels = [seq[0]+seq[2]+seq[6] for seq in result]
 		x = .043
@@ -228,7 +256,6 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 			x += .117
 
 		yText = y3 + .06
-
 
 		plt.text(.082, yText, 'C>A', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
 		plt.text(.1975, yText, 'C>G', fontsize=55, fontweight='bold', fontname='Arial', transform=plt.gcf().transFigure)
@@ -244,13 +271,8 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 			y += 1
 		y = ymax/1.025
 		ytick_offest = float(y/3)
-
 		font_label_size = 30
-
-
 		labs = np.arange(0.375,96.375,1)
-
-
 
 		panel1.set_xlim([0, 96])
 		panel1.set_ylim([0, y])
@@ -272,8 +294,6 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
 
-
-
 		panel1.tick_params(axis='both',which='both',\
 							bottom=False, labelbottom=False,\
 							left=True, labelleft=True,\
@@ -281,9 +301,7 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 							top=False, labeltop=False,\
 							direction='in', length=25, colors='lightgray', width=2)
 
-
 		[i.set_color("black") for i in panel1.get_yticklabels()]
-
 
 		yp2 = 28
 		labels = []
@@ -303,12 +321,12 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		panel2.set_yticks([3, 7, 11, 15, 19, 23, 27])
 		panel2.set_yticklabels(labels, fontsize=30,fontname="Arial", weight = 'bold')
 		panel2.set_xticklabels(xlabels, fontsize=30)
-		# panel2.set_xticks(xlabels)
 		handles, labels = panel2.get_legend_handles_labels()
 		panel2.legend(handles[:3], labels[:3], loc='best', prop={'size':30})
 		if return_plot_template == False:
 			pickle.dump(plot1, open(path, 'wb'))
 		else:
+			pickle.dump(plot1, open(path, 'wb'))
 			return plot1
 	
 	elif context =='DBS78':
@@ -368,20 +386,12 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		panel1.set_xlim([0, 78])
 		panel1.set_ylim([0, y])
 		panel1.set_xticks(labs)
-		# panel1.set_yticks(ylabs)
 		panel1.set_xticklabels(xlabels, rotation='vertical', fontsize=30, color='grey', fontname='Courier New', verticalalignment='top', fontweight='bold')
 
-		# panel1.set_yticklabels(ylabels, fontsize=25)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 		panel1.set_xlabel('')
 		panel1.set_ylabel('')
-
-		# if percentage:
-		#     plt.ylabel("Percentage of Double Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
-		# else:
-		#     plt.ylabel("Number of Double Base Substitutions", fontsize=35, fontname="Times New Roman", weight = 'bold')
-
 		panel1.tick_params(axis='both',which='both',\
 							bottom=False, labelbottom=True,\
 							left=True, labelleft=True,\
@@ -394,6 +404,7 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		if return_plot_template == False:
 			pickle.dump(plot1, open(path, 'wb'))
 		else:
+			pickle.dump(plot1, open(path, 'wb'))
 			return plot1
 	
 	elif context =='ID83':
@@ -490,16 +501,11 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 		x += .0335
 		plt.text(x, yText_labels_bottom, '1  2  3  4  5+', fontsize=32, fontweight='bold', fontname='Times New Roman', color='black', transform=plt.gcf().transFigure)
 
-
 		labs = np.arange(0.375,83.375,1)
-
 		panel1.set_xlim([0, 83])
 		panel1.set_ylim([0, y])
 		panel1.set_xticks(labs)
 
-
-
-		# panel1.set_yticklabels(ylabels, fontsize=30)
 		plt.gca().yaxis.grid(True)
 		plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
 		panel1.set_xlabel('')
@@ -513,14 +519,11 @@ def make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=Fals
 							direction='in', length=25, colors='gray', width=2)
 
 		[i.set_color("black") for i in plt.gca().get_yticklabels()]
-		# package_path = spplt.__path__[0]
-		# path_1 =os.path.join(package_path,'templates/')
-		# filename= os.path.join(path_1,'ID'+'.pkl')
-		# pickle.dump(plot1, open(filename, 'wb'))
 
 		if return_plot_template == False:
 			pickle.dump(plot1, open(path, 'wb'))
 		else:
+			pickle.dump(plot1, open(path, 'wb'))
 			return plot1
 
 def getylabels(ylabels):
@@ -657,7 +660,7 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         ax.tick_params(labelleft=True, left=False, bottom=False)
         ax.tick_params(axis='y', which='major', pad=0, labelsize=30)
 
-        #ADD PATCHES AND TEXT
+        # Set patch dimensions
         patch_height = 0.05
         patch_width = 2.8
         loh_width= 2.5
@@ -703,7 +706,7 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         # set the y-axis labels
         ax.set_yticklabels(tmp_y_labels, fontname='Arial', weight='bold', fontsize=16, color='black')
 
-        #y-axis titles
+        # y-axis titles
         if aggregate and not percentage:
             ax.set_ylabel("Number of events per sample", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
         elif aggregate and percentage:
@@ -713,7 +716,7 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         elif not aggregate and percentage:
             ax.set_ylabel("Percentage(%)", fontsize=24, fontname="Arial", weight = 'bold', labelpad = 15, color='black')
             
-        #TITLE
+        # TITLE
         if not aggregate:
             plt.text(0, 0.90, sample, fontsize=20, fontname='Arial', fontweight='bold', color='black', transform=trans)
         else:
@@ -742,7 +745,7 @@ def plotSV(matrix_path, output_path, project, plot_type="pdf", percentage=False,
         else:
             print("The only plot type supported at this time is pdf")
 
-        #each column vector in dataframe contains counts for a specific sample
+        # each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
             counts = list(df[col])
@@ -800,7 +803,6 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf",
         loh_subclass = ["1", '2', '3-4', '5-8', '9+']
         het_sub_class = ['2', '3-4', '5-8', '9+']
         x_labels = ['0 - 100kb', '100kb - 1Mb', '1Mb - 10Mb', '10Mb - 40Mb','>40Mb']
-        #color_mapping = {'9+':[236/256,199/256,197/256], '5-8':[162/256,207/256,99/256], '3-4':[203/256,202/256,202/256], '2':[228/256,41/256,38/256], '1':[1/256,1/256,1/256], 'homdel':[3/256,189/256,239/256
         color_mapping = {'0:0-100kb':'#F0F8FF', '0:100kb-1Mb':'#787CE6', '0:>1Mb':'#0000CD', \
             '1:0-100kb':'#EBEBEB', '1:100kb-1Mb':'#C5C5C5', '1:1Mb-10Mb':'#9F9F9F', '1:10Mb-40Mb':'#797979', \
             '1:>40Mb':'#545454', '2:0-100kb':'#F5FFFA', '2:100kb-1Mb':'#C0E2C3', \
@@ -841,17 +843,17 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf",
             categories = label.split(':')
             cnv_class = categories[0]
             size_class = categories[2]
-            #hom del has different color scheme and size classification
+            # hom del has different color scheme and size classification
             hom_del = False
             if categories[1] == "homdel":
                 hom_del = True
-            i += 1 #position of bar
+            i += 1 # position of bar
             
             ax.bar(ticks[i], count, color=color_mapping[cnv_class+":"+size_class], edgecolor='black', align='center')
                 
             xticks.append(ticks[i])
         
-        #ADD PATCHES AND TEXT
+        # ADD PATCHES AND TEXT
         patch_height = 0.05
         patch_width = 2.8
         loh_width= 2.5
@@ -864,7 +866,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf",
         categories = het_sub_class + loh_subclass + ['Hom' + '\n' + 'Del']
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
 
-        patch_locs = np.arange(0, 45, 5) #position of patches in data coordinates
+        patch_locs = np.arange(0, 45, 5) # position of patches in data coordinates
         line_locs = [] # for recording positions of top evel patches and separation lines
         
         # homdel patch
@@ -951,7 +953,7 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf",
     buff_list = dict()
     if aggregate:
         num_samples = len(df.columns) - 1
-        df['total_count'] = df.sum(axis=1) / num_samples #NORMALIZE BY # of SAMPLES
+        df['total_count'] = df.sum(axis=1) / num_samples # NORMALIZE BY # of SAMPLES
         counts = list(df['total_count'])
         if percentage and sum(counts)!=0:
             counts = [(x/sum(counts))*100 for x in counts]
@@ -1002,7 +1004,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			output_path: Path to a directory for saving the output.
 			project: Name of unique sample set
 			plot_type: Context of the mutational matrix (ie. 96, 288, 384, 1536)
-			savefig_format: Format of the output plot (pdf, png, or buffer_stream)
+			savefig_format: Format of the output plot (pdf, png, or PIL_Image)
 		Returns:
 			Plot of the given input matrix.
 	"""
@@ -1017,7 +1019,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			sample_count = 0
 
 			buf= io.BytesIO()
-			fig_orig=make_pickle_file(context='SBS96',path='SBS96.pkl', return_plot_template=True)
+			fig_orig=make_pickle_file(context='SBS96', return_plot_template=True)
 			pickle.dump(fig_orig, buf)
 
 			figs={}
@@ -1032,7 +1034,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				figs[sample]=pickle.load(buf)
 				panel1= figs[sample].axes[0]
 
-				total_count = np.sum(data[sample].values) #sum(sum(nuc.values()) for nuc in mutations[sample].values())
+				total_count = np.sum(data[sample].values)
 				x = 0.4
 				ymax = 0
 				i = 0
@@ -1056,7 +1058,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 				while y%4 != 0:
 					y += 1
-				# ytick_offest = int(y/4)
+
 				y = ymax/1.025
 				ytick_offest = float(y/3)
 
@@ -1159,21 +1161,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				[i.set_color("black") for i in plt.gca().get_yticklabels()]
 				sample_count += 1
 		
-			if savefig_format == "pdf":
-				pp = PdfPages(output_path + 'SBS_96_plots_'+ project +'.pdf')
-				for fig in figs:
-					figs[fig].savefig(pp, format='pdf')
-				pp.close()
-				
-			if savefig_format == "png":
-				for fig in figs:
-					figs[fig].savefig(output_path + 'SBS_96_plots_'+fig+'.png',dpi=100)
-			if savefig_format == "buffer_stream":
-				for fig in figs:
-					buffer2=io.BytesIO()
-					figs[fig].savefig(buffer2,format='png')
-					buff_list[fig]=buffer2
-				return buff_list
+			return output_results(savefig_format, output_path, project, figs, "SBS_96")
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(os.path.join(output_path, 'SBS_96_plots_' + project + '.pdf'))
@@ -1309,7 +1297,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				while y%4 != 0:
 					y += 1
 
-				# ytick_offest = int(y/4)
 				y = ymax/1.025
 
 				ytick_offest = float(y/3)
@@ -1342,25 +1329,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 				if not percentage:
 					ylabels= getylabels(ylabels)
-					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					# if len(ylabels[-1]) > 3:
-					# 	ylabels_temp = []
-					# 	if len(ylabels[-1]) > 7:
-					# 		for label in ylabels:
-					# 			if len(label) > 7:
-					# 				ylabels_temp.append(label[0:-8] + "m")
-					# 			elif len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-
-					# 	else:
-					# 		for label in ylabels:
-					# 			if len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-					# 	ylabels = ylabels_temp
 
 				panel1.set_xlim([0, 96])
 				panel1.set_ylim([0, y])
@@ -1420,8 +1388,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 						panel1.text(x_pos_custom, 0.78, custom_text_upper_plot, fontsize=40, weight='bold', color='black', fontname= "Arial", transform=plt.gcf().transFigure, ha='right')
 
 
-
-
 				panel1.set_yticklabels(ylabels, fontsize=font_label_size)
 				plt.gca().yaxis.grid(True)
 				plt.gca().grid(which='major', axis='y', color=[0.6,0.6,0.6], zorder=1)
@@ -1454,7 +1420,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 
 
-
 	elif plot_type == '192_extended' or plot_type == '96SB_extended' or plot_type == '384_extended':
 		with open(matrix_path) as f:
 			next(f)
@@ -1465,14 +1430,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			if first_line[0][7] != "]" and first_line[0][6] != ">" and first_line[0][3] != ">":
 				sys.exit("The matrix does not match the correct SBS288 format. Please check you formatting and rerun this plotting function.")
 
-		# with open(matrix_path) as f:
-		# 	next(f)
-		# 	first_line = f.readline()
-		# 	first_line = first_line.strip().split()
-		# 	if first_line[0][6] == ">" or first_line[0][3] == ">":
-		# 		pcawg = True
-		# 	if first_line[0][7] != "]" and first_line[0][6] != ">" and first_line[0][3] != ">":
-		# 		sys.exit("The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function.")
 		pp = PdfPages(output_path + 'SBS_384_extended_plots_' + project + '.pdf')
 		mutations = OrderedDict()
 		try:
@@ -1605,7 +1562,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				while y%4 != 0:
 					y += 1
 
-				# ytick_offest = int(y/4)
 				y = ymax/1.025
 
 				ytick_offest = float(y/3)
@@ -1727,8 +1683,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_384_extended_plots_' + project + '.pdf')
-
-
 
 
 
@@ -1879,8 +1833,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 								   top=False, labeltop=False,\
 								   width=2)
 
-
-
 				pp.savefig(plot1)
 				plt.close()
 			pp.close()
@@ -1898,7 +1850,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				sys.exit("The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function.")
 
 		pp = PdfPages(output_path + 'SBS_24_plots_' + project + '.pdf')
-
 		mutations = OrderedDict()
 
 		try:
@@ -2008,11 +1959,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 								else:
 									xlabels_temp.append(label)
 						xlabels = xlabels_temp
-				# if not percentage:
-				#   xlabels = ['{:,}'.format(int(x)) for x in xlabels]
+
 				ylabs = np.arange(2.15, 13, 2)
 				ylabels = (['T>G','T>C','T>A','C>T','C>G','C>A'])
-				#labs = np.arange(0,12.485,)
 				panel1.set_xlim([0, x])
 				panel1.set_ylim([1.2524, 13.235])
 				panel1.set_yticks(ylabs)
@@ -2052,7 +2001,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			os.remove(output_path + 'SBS_24_plots_' + project + '.pdf')
 
 
-###########################################################################################################################
+
+
+
 	elif plot_type == '1536':
 		with open(matrix_path) as f:
 			next(f)
@@ -2454,26 +2405,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 				if not percentage:
 					ylabels_96 = getylabels(ylabels_96)
-					# ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
-					# if len(ylabels_96[-1]) > 3:
-					# 	ylabels_temp = []
-					# 	if len(ylabels_96[-1]) > 7:
-					# 		for label in ylabels_96:
-					# 			if len(label) > 7:
-					# 				ylabels_temp.append(label[0:-8] + "m")
-					# 			elif len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-
-					# 	else:
-					# 		for label in ylabels_96:
-					# 			if len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-					# 	ylabels_96 = ylabels_temp
-
 
 				# Set all panel limits
 				panel1.set_xlim([0, 101])
@@ -2492,9 +2423,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				panel3.set_xticks([])
 				panel4.set_xticks([])
 
-
-
-				# x-axis 1536 bottom plot
 				m = 0
 				count = 0
 				x_letter = 0
@@ -2673,7 +2601,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'SBS_1536_plots_' + project + '.pdf')
 
-###########################################################################################################################
+
+
+
 	elif plot_type == '4608':
 		with open(matrix_path) as f:
 			next(f)
@@ -2933,8 +2863,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 					x_pos = x_inter
 					i += 1
 
-
-
 				# Plot 5' and 3' context matrices
 				x_pos = 0
 				x_inter = 0
@@ -3089,26 +3017,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 				if not percentage:
 					ylabels_96 = getylabels(ylabels_96)
-					# ylabels_96 = ['{:,}'.format(int(x)) for x in ylabels_96]
-					# if len(ylabels_96[-1]) > 3:
-					# 	ylabels_temp = []
-					# 	if len(ylabels_96[-1]) > 7:
-					# 		for label in ylabels_96:
-					# 			if len(label) > 7:
-					# 				ylabels_temp.append(label[0:-8] + "m")
-					# 			elif len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-
-					# 	else:
-					# 		for label in ylabels_96:
-					# 			if len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-					# 	ylabels_96 = ylabels_temp
-
 
 				# Set all panel limits
 				panel1.set_xlim([0, 101])
@@ -3126,8 +3034,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				panel3.set_yticks([])
 				panel3.set_xticks([])
 				panel4.set_xticks([])
-
-
 
 				# x-axis 1536 bottom plot
 				m = 0
@@ -3348,25 +3254,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 				if not percentage:
 					xlabels = getxlabels(xlabels)
-					# xlabels = ['{:,}'.format(int(x)) for x in xlabels]
-					# if len(xlabels[-1]) > 3:
-					# 	xlabels_temp = []
-					# 	if len(xlabels[-1]) > 7:
-					# 		for label in xlabels:
-					# 			if len(label) > 7:
-					# 				xlabels_temp.append(label[0:-8] + "m")
-					# 			elif len(label) > 3:
-					# 				xlabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				xlabels_temp.append(label)
 
-					# 	else:
-					# 		for label in xlabels:
-					# 			if len(label) > 3:
-					# 				xlabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				xlabels_temp.append(label)
-					# 	xlabels = xlabels_temp
 				panel5.spines['right'].set_visible(False)
 				panel5.spines['top'].set_visible(False)
 				labels.reverse()
@@ -3398,11 +3286,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 			data,tsb_mats = reindex_sbs288(data)
 			buf= io.BytesIO()
-			# try:
-			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/SBS288.pkl','rb'))
-			# 	pickle.dump(fig_orig, buf)
-			# except:
-			fig_orig=make_pickle_file(context='SBS288',path='SBS288.pkl', return_plot_template=True)
+			fig_orig=make_pickle_file(context='SBS288', return_plot_template=True)
 			pickle.dump(fig_orig, buf)
 			
 			figs = {}
@@ -3528,8 +3412,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 
 				panel1.set_yticklabels(ylabels, fontsize=font_label_size)
-				# plt.gca().yaxis.grid(True)
-				# plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 				panel1.yaxis.grid(True)
 				panel1.grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 				panel1.set_xlabel('')
@@ -3601,28 +3483,9 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 				panel2.set_xticks(xlabs)
 				handles, labels = panel2.get_legend_handles_labels()
 				panel2.legend(handles[:3], labels[:3], loc='best', prop={'size':30})
-				# temp_plotsave(output_path,project,figs[sample])
-				# pp.savefig(plot1)
-				# plt.close()
 				sample_count += 1
 			
-			if savefig_format == "pdf":
-				pp = PdfPages(output_path + 'SBS_288_plots_' + project + '.pdf')
-
-			if savefig_format == "pdf":
-				for fig in figs:
-					figs[fig].savefig(pp, format='pdf')
-				pp.close()
-				
-			if savefig_format == "png":
-				for fig in figs:
-					figs[fig].savefig(output_path + 'SBS_288_plots_'+fig+'.png',dpi=100)
-			if savefig_format == "buffer_stream":
-				for fig in figs:
-					buffer2=io.BytesIO()
-					figs[fig].savefig(buffer2,format='png')
-					buff_list[fig]=buffer2
-					return buff_list
+			return output_results(savefig_format, output_path, project, figs, "SBS_288")
 
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
@@ -3765,8 +3628,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 					ylabs = [0, round(ytick_offest, 1), round(ytick_offest*2, 1), round(ytick_offest*3, 1), round(ytick_offest*4, 1)]
 					ylabels= [str(0), str(round(ytick_offest, 1)) + "%", str(round(ytick_offest*2, 1)) + "%",
 							  str(round(ytick_offest*3, 1)) + "%", str(round(ytick_offest*4, 1)) + "%"]
-					# ylabels= [str(0), str(round(ytick_offest)) + "%", str(round(ytick_offest*2)) + "%",
-					# 		  str(round(ytick_offest*3)) + "%", str(round(ytick_offest*4)) + "%"]
 				else:
 					ylabs = [0, ytick_offest, ytick_offest*2, ytick_offest*3, ytick_offest*4]
 					ylabels= [0, ytick_offest, ytick_offest*2,
@@ -3856,8 +3717,6 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 
 				panel1.set_yticklabels(ylabels, fontsize=font_label_size)
-				# plt.gca().yaxis.grid(True)
-				# plt.gca().grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 				panel1.yaxis.grid(True)
 				panel1.grid(which='major', axis='y', color=[0.93,0.93,0.93], zorder=1)
 				panel1.set_xlabel('')
@@ -3923,9 +3782,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 
 def plotID(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None, savefig_format = "pdf"):
-	# if 'roman' in matplotlib.font_manager.weight_dict:
-	#   del matplotlib.font_manager.weight_dict['roman']
-	#   matplotlib.font_manager._rebuild()
+
 	plot_custom_text = False
 	sig_probs = False
 	pcawg = False
@@ -3936,7 +3793,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 		try:
 			sample_count = 0
 			buf= io.BytesIO()
-			fig_orig=make_pickle_file(context='ID83',path='ID83.pkl', return_plot_template=True)
+			fig_orig=make_pickle_file(context='ID83', return_plot_template=True)
 			pickle.dump(fig_orig, buf)
 			figs={}
 			colors = [[253/256,190/256,111/256], [255/256,128/256,2/256], [176/256,221/256,139/256], [54/256,161/256,46/256],
@@ -4075,22 +3932,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 				[i.set_color("black") for i in plt.gca().get_yticklabels()]
 				sample_count += 1
 
-			if savefig_format == "pdf":
-				pp = PdfPages(output_path + 'ID_83_plots_' + project + '.pdf')
-				for fig in figs:
-					figs[fig].savefig(pp, format='pdf')
-				pp.close()
-				
-			if savefig_format == "png":
-				for fig in figs:
-					figs[fig].savefig(output_path + 'SBS_96_plots_'+fig+'.png',dpi=100)
-			if savefig_format == "buffer_stream":
-				buff_list={}
-				for fig in figs:
-					buffer2=io.BytesIO()
-					figs[fig].savefig(buffer2,format='png')
-					buff_list[fig]=buffer2
-				return buff_list
+			return output_results(savefig_format, output_path, project, figs, 'ID_83')
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
 			os.remove(output_path + 'ID_83_plots_' + project + '.pdf')
@@ -4291,31 +4133,8 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 					ylabels= [0, ytick_offest, ytick_offest*2,
 							  ytick_offest*3, ytick_offest*4]
 
-
 				if not percentage:
 					ylabels = getylabels(ylabels)
-					# ylabels = ['{:,}'.format(int(x)) for x in ylabels]
-					# if len(ylabels[-1]) > 3:
-					# 	ylabels_temp = []
-					# 	if len(ylabels[-1]) > 7:
-					# 		for label in ylabels:
-					# 			if len(label) > 7:
-					# 				ylabels_temp.append(label[0:-8] + "m")
-					# 			elif len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-
-					# 	else:
-					# 		for label in ylabels:
-					# 			if len(label) > 3:
-					# 				ylabels_temp.append(label[0:-4] + "k")
-					# 			else:
-					# 				ylabels_temp.append(label)
-					# 	ylabels = ylabels_temp
-
-
-
 
 				panel1.set_xlim([0, 28])
 				panel1.set_ylim([0, y])
@@ -4756,13 +4575,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 			buf= io.BytesIO()
-			# fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/DBS78.pkl','rb'))
-			# pickle.dump(fig_orig, buf)
-			# try:
-			# 	fig_orig=pickle.load(open(spplt.__path__[0]+'/templates/DBS78.pkl','rb'))
-			# 	pickle.dump(fig_orig, buf)
-			# except:
-			fig_orig=make_pickle_file(context='DBS78',path='DBS78.pkl', return_plot_template=True)
+			fig_orig=make_pickle_file(context='DBS78', return_plot_template=True)
 			pickle.dump(fig_orig, buf)
 
 			figs={}
@@ -4893,27 +4706,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 				[i.set_color("black") for i in plt.gca().get_yticklabels()]
 				[i.set_color("grey") for i in plt.gca().get_xticklabels()]
 
-				# pp.savefig(plot1)
-				# plt.close()
-				# sample_count += 1
-
-
-			if savefig_format == "pdf":
-				pp = PdfPages(output_path + 'DBS_78_plots_' + project + '.pdf')
-				for fig in figs:
-					figs[fig].savefig(pp, format='pdf')
-				pp.close()
-				
-			if savefig_format == "png":
-				for fig in figs:
-					figs[fig].savefig(output_path + 'DBS_78_plots_'+fig+'.png',dpi=100)
-			if savefig_format == "buffer_stream":
-				buff_list={}
-				for fig in figs:
-					buffer2=io.BytesIO()
-					figs[fig].savefig(buffer2,format='png')
-					buff_list[fig]=buffer2
-				return buff_list	
+			return output_results(savefig_format, output_path, project, figs, "DBS_78")
 
 		except:
 			print("There may be an issue with the formatting of your matrix file.")
