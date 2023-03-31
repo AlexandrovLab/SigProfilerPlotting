@@ -113,17 +113,20 @@ def get_default_96labels():
     result=[outter_bracket[f%16][0]+"["+inner_bracket[f]+"]"+outter_bracket[f%16][1] for f in range(0,96)]
     return result
 
-def make_pickle_file(context='SBS96', return_plot_template=False):
+def make_pickle_file(context='SBS96', return_plot_template=False, volume=None):
 
-	path=os.path.join(SPP_TEMPLATES,context+'.pkl')
+	if volume is None:
+		volume = SPP_TEMPLATES
+
+	path=os.path.join(volume,context+'.pkl')
 
 	# if the pickle file already exists, return the template
 	if os.path.exists(path):
 		return pickle.load(open(path, "rb"))
 
 	# check if the template directory exists, create if not
-	if not os.path.exists(SPP_TEMPLATES):
-		os.mkdir(SPP_TEMPLATES)
+	if not os.path.exists(volume):
+		os.mkdir(volume)
 
 	if context == 'SBS96':
 		plot_custom_text = False
@@ -996,7 +999,8 @@ def plotCNV(matrix_path, output_path, project, plot_type="pdf",
 
 def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 		custom_text_upper=None, custom_text_middle=None,
-		custom_text_bottom=None, savefig_format="pdf"):
+		custom_text_bottom=None, savefig_format="pdf",
+		volume=None):
 	"""Use an input matrix to create a SBS plot.
 
 		Args:
@@ -1005,6 +1009,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			project: Name of unique sample set
 			plot_type: Context of the mutational matrix (ie. 96, 288, 384, 1536)
 			savefig_format: Format of the output plot (pdf, png, or PIL_Image)
+			volume: Path to the .pkl file containing the plot template. For Docker.
 		Returns:
 			Plot of the given input matrix.
 	"""
@@ -1019,7 +1024,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 			sample_count = 0
 
 			buf= io.BytesIO()
-			fig_orig=make_pickle_file(context='SBS96', return_plot_template=True)
+			fig_orig=make_pickle_file(context='SBS96', return_plot_template=True, volume=volume)
 			pickle.dump(fig_orig, buf)
 
 			figs={}
@@ -3286,7 +3291,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 
 			data,tsb_mats = reindex_sbs288(data)
 			buf= io.BytesIO()
-			fig_orig=make_pickle_file(context='SBS288', return_plot_template=True)
+			fig_orig=make_pickle_file(context='SBS288', return_plot_template=True, volume=volume)
 			pickle.dump(fig_orig, buf)
 			
 			figs = {}
@@ -3781,7 +3786,7 @@ def plotSBS(matrix_path, output_path, project, plot_type, percentage=False,
 	  print("The provided plot_type:", plot_type, "is not supported by this plotting function")
 
 
-def plotID(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None, savefig_format = "pdf"):
+def plotID(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None, savefig_format = "pdf", volume=None):
 
 	plot_custom_text = False
 	sig_probs = False
@@ -3793,7 +3798,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 		try:
 			sample_count = 0
 			buf= io.BytesIO()
-			fig_orig=make_pickle_file(context='ID83', return_plot_template=True)
+			fig_orig=make_pickle_file(context='ID83', return_plot_template=True, volume=volume)
 			pickle.dump(fig_orig, buf)
 			figs={}
 			colors = [[253/256,190/256,111/256], [255/256,128/256,2/256], [176/256,221/256,139/256], [54/256,161/256,46/256],
@@ -4533,7 +4538,7 @@ def plotID(matrix_path, output_path, project, plot_type, percentage=False, custo
 	else:
 		print("The provided plot_type:", plot_type, "is not supported by this plotting function")
 
-def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None,savefig_format='pdf'):
+def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, custom_text_upper=None, custom_text_middle=None, custom_text_bottom=None,savefig_format='pdf', volume=None):
 
 	plot_custom_text = False
 	pcawg = False
@@ -4575,7 +4580,7 @@ def plotDBS(matrix_path, output_path, project, plot_type, percentage=False, cust
 
 
 			buf= io.BytesIO()
-			fig_orig=make_pickle_file(context='DBS78', return_plot_template=True)
+			fig_orig=make_pickle_file(context='DBS78', return_plot_template=True, volume=volume)
 			pickle.dump(fig_orig, buf)
 
 			figs={}
