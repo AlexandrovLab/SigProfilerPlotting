@@ -52,6 +52,10 @@ def plotTMB(inputDF, scale, Yrange = "adapt", cutoff = 0, output = "TMB_plot.png
     if Yrange == "adapt":
         ymax = math.ceil(df['log10BURDENpMB'].max())
         ymin = math.floor(df['log10BURDENpMB'].min())
+        if ymax == ymin:
+            val = ymax; 
+            ymax = val + 2
+            ymin = val - 2
     elif Yrange == "cancer":
         ymax = 3
         ymin = -3
