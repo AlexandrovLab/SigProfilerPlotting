@@ -11,7 +11,6 @@ import io
 import itertools
 import logging
 import os
-import pdb
 import pickle
 import re
 import string
@@ -36,12 +35,14 @@ from PIL import Image
 from sklearn.preprocessing import LabelEncoder
 
 import sigProfilerPlotting as spplt
+import pdb
 
 matplotlib.use("Agg")
 
 MUTTYPE = "MutationType"
 SPP_PATH = spplt.__path__[0]
 SPP_TEMPLATES = os.path.join(SPP_PATH, "templates/")
+SPP_REFERENCE = os.path.join(SPP_PATH, "reference_formats/")
 
 logging.getLogger("matplotlib.font_manager").disabled = True
 warnings.filterwarnings("ignore")
@@ -91,8 +92,15 @@ def output_results(savefig_format, output_path, project, figs, context_type):
         raise ValueError("ERROR: savefig_format must be 'pdf', 'png', or 'PIL_Image'.")
     return None
 
+def get_context_reference(plot_type):
+    """Get the reference context for the given context type."""
+    return
 
-def process_input(matrix_path):
+def format_input_context(plot_type):
+    """Format the input context to match the reference context."""
+    return
+
+def process_input(matrix_path, plot_type):
     # input data is a DataFrame
     if isinstance(matrix_path, pd.DataFrame):
         data = matrix_path
@@ -2624,7 +2632,7 @@ def plotSBS(
 
     if plot_type == "96":
         try:
-            data = process_input(matrix_path)
+            data = process_input(matrix_path, plot_type)
             data = reindex_sbs96(data)
             sample_count = 0
 
@@ -7248,7 +7256,7 @@ def plotSBS(
             sig_probs = False
             pcawg = False
 
-            data = process_input(matrix_path)
+            data = process_input(matrix_path, plot_type)
 
             sample_count = 0
 
@@ -8263,7 +8271,7 @@ def plotID(
         or plot_type == "94ID"
         or plot_type == "83"
     ):
-        data = process_input(matrix_path)
+        data = process_input(matrix_path, plot_type)
 
         try:
             sample_count = 0
@@ -10221,7 +10229,7 @@ def plotDBS(
     pcawg = False
     sig_probs = False
     if plot_type == "78" or plot_type == "78DBS" or plot_type == "DBS78":
-        data = process_input(matrix_path)
+        data = process_input(matrix_path, plot_type)
 
         dinucs = [
             "TT>GG",
