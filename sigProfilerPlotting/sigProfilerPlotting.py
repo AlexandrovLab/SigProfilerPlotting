@@ -10616,6 +10616,7 @@ def plotDBS(
 
                 [i.set_color("black") for i in plt.gca().get_yticklabels()]
                 [i.set_color("grey") for i in plt.gca().get_xticklabels()]
+                sample_count+=1
 
             return output_results(savefig_format, output_path, project, figs, "DBS_78")
 
