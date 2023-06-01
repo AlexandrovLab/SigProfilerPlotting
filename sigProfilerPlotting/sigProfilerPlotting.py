@@ -92,13 +92,16 @@ def output_results(savefig_format, output_path, project, figs, context_type):
         raise ValueError("ERROR: savefig_format must be 'pdf', 'png', or 'PIL_Image'.")
     return None
 
+
 def get_context_reference(plot_type):
     """Get the reference context for the given context type."""
     return
 
+
 def format_input_context(plot_type):
     """Format the input context to match the reference context."""
     return
+
 
 def process_input(matrix_path, plot_type):
     # input data is a DataFrame
