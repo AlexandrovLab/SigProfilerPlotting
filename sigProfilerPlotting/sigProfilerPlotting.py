@@ -35,7 +35,6 @@ from PIL import Image
 from sklearn.preprocessing import LabelEncoder
 
 import sigProfilerPlotting as spplt
-import pdb
 
 matplotlib.use("Agg")
 
@@ -1445,35 +1444,35 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
 
 
 def getylabels(ylabels):
-    if max(ylabels) >= 10**9:
+    if max(ylabels) >= 10 ** 9:
         ylabels = ["{:.2e}".format(x) for x in ylabels]
         ylabels[0] = "0.00"
     else:
         if max(ylabels) <= 1000:
             ylabels = ["{:,.0f}".format(x) for x in ylabels]
             ylabels[0] = "0"
-        elif max(ylabels) < 10**5 and max(ylabels) > 1000:
+        elif max(ylabels) < 10 ** 5 and max(ylabels) > 1000:
             ylabels = ["{:,.0f}".format(x / 1000) + "k" for x in ylabels]
             ylabels[0] = "0"
         else:  # if max(ylabels)>= 10**5:
-            ylabels = ["{:,.0f}".format(x / (10**6)) + "m" for x in ylabels]
+            ylabels = ["{:,.0f}".format(x / (10 ** 6)) + "m" for x in ylabels]
             ylabels[0] = "0"
     return ylabels
 
 
 def getxlabels(xlabels):
-    if max(xlabels) >= 10**10:
+    if max(xlabels) >= 10 ** 10:
         xlabels = ["{:.2e}".format(x) for x in xlabels]
         xlabels[0] = "0.00"
     else:
         if max(xlabels) <= 1000:
             xlabels = ["{:,.1f}".format(x) for x in xlabels]
             xlabels[0] = "0"
-        elif max(xlabels) < 10**6 and max(xlabels) > 1000:
+        elif max(xlabels) < 10 ** 6 and max(xlabels) > 1000:
             xlabels = ["{:,.2f}".format(x / 1000) + "k" for x in xlabels]
             xlabels[0] = "0.00"
         else:  # max(xlabels)>= 10**6:
-            xlabels = ["{:,.2f}".format(x / (10**6)) + "m" for x in xlabels]
+            xlabels = ["{:,.2f}".format(x / (10 ** 6)) + "m" for x in xlabels]
             xlabels[0] = "0.00"
     return xlabels
 
@@ -1543,11 +1542,10 @@ def reindex_sbs288(data_f):
     mutations_TSB_df_N = mutations_TSB_df_N.reindex(
         np.roll(mutations_TSB_df_N.index, shift=1)
     )
-    return mutations_df, {
-        "T": mutations_TSB_df_T,
-        "U": mutations_TSB_df_U,
-        "N": mutations_TSB_df_N,
-    }
+    return (
+        mutations_df,
+        {"T": mutations_TSB_df_T, "U": mutations_TSB_df_U, "N": mutations_TSB_df_N,},
+    )
 
 
 def plotSV(
@@ -10616,7 +10614,7 @@ def plotDBS(
 
                 [i.set_color("black") for i in plt.gca().get_yticklabels()]
                 [i.set_color("grey") for i in plt.gca().get_xticklabels()]
-                sample_count+=1
+                sample_count += 1
 
             return output_results(savefig_format, output_path, project, figs, "DBS_78")
 

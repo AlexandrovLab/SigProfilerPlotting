@@ -15,7 +15,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.13"
+VERSION = "1.3.14"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -28,10 +28,7 @@ version = '%(version)s'
     """
     fh = open(filename, "w")
     fh.write(
-        cnt
-        % {
-            "version": VERSION,
-        }
+        cnt % {"version": VERSION,}
     )
     fh.close()
 

@@ -102,7 +102,7 @@ def plotTMB(
     # print(len(names[0]))
     plt.ylim(ymin, ymax)
     yticks_loc = range(ymin, ymax + 1, 1)
-    plt.yticks(yticks_loc, list(map((lambda x: 10**x), list(yticks_loc))))
+    plt.yticks(yticks_loc, list(map((lambda x: 10 ** x), list(yticks_loc))))
     plt.xticks(np.arange(1, 2 * ngroups + 1, step=2), new_labels)
     plt.tick_params(axis="both", which="both", length=0)
     plt.hlines(
