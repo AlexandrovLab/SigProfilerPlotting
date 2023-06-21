@@ -1,2 +1,2 @@
 include fonts/*
-include reference_formats/*
+include SigProfilerPlotting/reference_formats/*

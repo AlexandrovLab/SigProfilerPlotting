@@ -41,7 +41,22 @@ matplotlib.use("Agg")
 MUTTYPE = "MutationType"
 SPP_PATH = spplt.__path__[0]
 SPP_TEMPLATES = os.path.join(SPP_PATH, "templates/")
-SPP_REFERENCE = os.path.join(SPP_PATH, "reference_formats/")
+SPP_REFERENCE = os.path.join(SPP_PATH, "sigProfilerPlotting/reference_formats/")
+
+type_dict = {
+    "96": "SBS96.txt",
+    "sbs": "SBS96.txt",
+    "sbs96": "SBS96.txt",
+    "288": "SBS288.txt",
+    "sbs288": "SBS288.txt",
+    "78": "DBS78.txt",
+    "dbs": "DBS78.txt",
+    "dbs78": "DBS78.txt",
+    "dinuc": "DBS78.txt",
+    "83": "ID83.txt",
+    "id": "ID83.txt",
+    "id83": "ID83.txt",
+}
 
 logging.getLogger("matplotlib.font_manager").disabled = True
 warnings.filterwarnings("ignore")
@@ -92,18 +107,23 @@ def output_results(savefig_format, output_path, project, figs, context_type):
     return None
 
 
+# Get corresponding reference index from our reference_format folder
 def get_context_reference(plot_type):
-    """Get the reference context for the given context type."""
-    return
+    ref_index = []
+    if plot_type.lower in type_dict:
+        SPP_TYPE = type_dict[plot_type.lower()]
+    else:
+        raise ValueError(
+            "ERROR: SigProfilerPlotting is currently not supporting this input plot_type."
+        )
 
+    ref_index = pd.read_csv(SPP_REFERENCE + "/" + SPP_TYPE, header=None, names=["line"])
+    ref_index = ref_index["line"].tolist()
 
-def format_input_context(plot_type):
-    """Format the input context to match the reference context."""
-    return
+    return ref_index
 
 
 def process_input(matrix_path, plot_type):
-    # input data is a DataFrame
     if isinstance(matrix_path, pd.DataFrame):
         data = matrix_path
         if MUTTYPE in data.columns:
@@ -121,7 +141,18 @@ def process_input(matrix_path, plot_type):
     if data.isnull().values.any():
         raise ValueError("Input data contains Nans.")
 
-    return data
+    def order_input_context(plot_type, data):
+        if plot_type.lower in type_dict:
+            if data.shape[0] != int(plot_type):
+                raise ValueError("Input matrix file should have " + plot_type + " rows")
+            else:
+                ref_format = get_context_reference(plot_type)
+                data = data.reindex(ref_format)
+        else:
+            data = data
+        return data
+
+    return order_input_context(plot_type, data)
 
 
 def get_default_96labels():
@@ -1444,35 +1475,35 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
 
 
 def getylabels(ylabels):
-    if max(ylabels) >= 10 ** 9:
+    if max(ylabels) >= 10**9:
         ylabels = ["{:.2e}".format(x) for x in ylabels]
         ylabels[0] = "0.00"
     else:
         if max(ylabels) <= 1000:
             ylabels = ["{:,.0f}".format(x) for x in ylabels]
             ylabels[0] = "0"
-        elif max(ylabels) < 10 ** 5 and max(ylabels) > 1000:
+        elif max(ylabels) < 10**5 and max(ylabels) > 1000:
             ylabels = ["{:,.0f}".format(x / 1000) + "k" for x in ylabels]
             ylabels[0] = "0"
         else:  # if max(ylabels)>= 10**5:
-            ylabels = ["{:,.0f}".format(x / (10 ** 6)) + "m" for x in ylabels]
+            ylabels = ["{:,.0f}".format(x / (10**6)) + "m" for x in ylabels]
             ylabels[0] = "0"
     return ylabels
 
 
 def getxlabels(xlabels):
-    if max(xlabels) >= 10 ** 10:
+    if max(xlabels) >= 10**10:
         xlabels = ["{:.2e}".format(x) for x in xlabels]
         xlabels[0] = "0.00"
     else:
         if max(xlabels) <= 1000:
             xlabels = ["{:,.1f}".format(x) for x in xlabels]
             xlabels[0] = "0"
-        elif max(xlabels) < 10 ** 6 and max(xlabels) > 1000:
+        elif max(xlabels) < 10**6 and max(xlabels) > 1000:
             xlabels = ["{:,.2f}".format(x / 1000) + "k" for x in xlabels]
             xlabels[0] = "0.00"
         else:  # max(xlabels)>= 10**6:
-            xlabels = ["{:,.2f}".format(x / (10 ** 6)) + "m" for x in xlabels]
+            xlabels = ["{:,.2f}".format(x / (10**6)) + "m" for x in xlabels]
             xlabels[0] = "0.00"
     return xlabels
 
@@ -1542,9 +1573,22 @@ def reindex_sbs288(data_f):
     mutations_TSB_df_N = mutations_TSB_df_N.reindex(
         np.roll(mutations_TSB_df_N.index, shift=1)
     )
+    mutations_TSB_df_T = mutations_TSB_df_T.reindex(
+        np.roll(mutations_TSB_df_T.index, shift=1)
+    )
+    mutations_TSB_df_U = mutations_TSB_df_U.reindex(
+        np.roll(mutations_TSB_df_U.index, shift=1)
+    )
+    mutations_TSB_df_N = mutations_TSB_df_N.reindex(
+        np.roll(mutations_TSB_df_N.index, shift=1)
+    )
     return (
         mutations_df,
-        {"T": mutations_TSB_df_T, "U": mutations_TSB_df_U, "N": mutations_TSB_df_N,},
+        {
+            "T": mutations_TSB_df_T,
+            "U": mutations_TSB_df_U,
+            "N": mutations_TSB_df_N,
+        },
     )
 
 

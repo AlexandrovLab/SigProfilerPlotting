@@ -28,7 +28,10 @@ version = '%(version)s'
     """
     fh = open(filename, "w")
     fh.write(
-        cnt % {"version": VERSION,}
+        cnt
+        % {
+            "version": VERSION,
+        }
     )
     fh.close()
 
