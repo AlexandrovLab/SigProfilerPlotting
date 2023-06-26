@@ -117,8 +117,8 @@ def get_context_reference(plot_type):
             "ERROR: SigProfilerPlotting is currently not supporting this input plot_type."
         )
 
-    ref_index = pd.read_csv(SPP_REFERENCE + "/" + SPP_TYPE, header=None, names=["line"])
-    ref_index = ref_index["line"].tolist()
+    ref_index = pd.read_csv(SPP_REFERENCE + "/" + SPP_TYPE, header=None)
+    ref_index.iloc[:, 0].to_list()
 
     return ref_index
 
@@ -143,13 +143,15 @@ def process_input(matrix_path, plot_type):
 
     def order_input_context(plot_type, data):
         if plot_type.lower in type_dict:
-            if data.shape[0] != int(plot_type):
-                raise ValueError("Input matrix file should have " + plot_type + " rows")
+            if data.shape[0] != len(get_context_reference(plot_type)):
+                raise ValueError(
+                    "Input matrix file should have "
+                    + len(get_context_reference(plot_type))
+                    + " rows"
+                )
             else:
                 ref_format = get_context_reference(plot_type)
                 data = data.reindex(ref_format)
-        else:
-            data = data
         return data
 
     return order_input_context(plot_type, data)
@@ -1563,15 +1565,6 @@ def reindex_sbs288(data_f):
     )
     mutations_TSB_df_N = mutations_TSB_df_N.append(
         mutations_TSB_df_N.sum().rename("All")
-    )
-    mutations_TSB_df_T = mutations_TSB_df_T.reindex(
-        np.roll(mutations_TSB_df_T.index, shift=1)
-    )
-    mutations_TSB_df_U = mutations_TSB_df_U.reindex(
-        np.roll(mutations_TSB_df_U.index, shift=1)
-    )
-    mutations_TSB_df_N = mutations_TSB_df_N.reindex(
-        np.roll(mutations_TSB_df_N.index, shift=1)
     )
     mutations_TSB_df_T = mutations_TSB_df_T.reindex(
         np.roll(mutations_TSB_df_T.index, shift=1)
