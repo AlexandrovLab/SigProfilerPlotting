@@ -41,7 +41,10 @@ matplotlib.use("Agg")
 MUTTYPE = "MutationType"
 SPP_PATH = spplt.__path__[0]
 SPP_TEMPLATES = os.path.join(SPP_PATH, "templates/")
-SPP_REFERENCE = os.path.join(SPP_PATH, "sigProfilerPlotting/reference_formats/")
+SPP_REFERENCE = os.path.join(SPP_PATH, "reference_formats/")
+
+logging.getLogger("matplotlib.font_manager").disabled = True
+warnings.filterwarnings("ignore")
 
 type_dict = {
     "96": "SBS96.txt",
@@ -57,10 +60,6 @@ type_dict = {
     "id": "ID83.txt",
     "id83": "ID83.txt",
 }
-
-logging.getLogger("matplotlib.font_manager").disabled = True
-warnings.filterwarnings("ignore")
-
 
 # Note that plt.close(), plt.clf(), and plt.cla() would not close memory
 # Referenced the following post for the function below:
@@ -110,15 +109,15 @@ def output_results(savefig_format, output_path, project, figs, context_type):
 # Get corresponding reference index from our reference_format folder
 def get_context_reference(plot_type):
     ref_index = []
-    if plot_type.lower in type_dict:
+    if plot_type.lower() in type_dict:
         SPP_TYPE = type_dict[plot_type.lower()]
     else:
         raise ValueError(
             "ERROR: SigProfilerPlotting is currently not supporting this input plot_type."
         )
 
-    ref_index = pd.read_csv(SPP_REFERENCE + "/" + SPP_TYPE, header=None)
-    ref_index.iloc[:, 0].to_list()
+    ref_index = pd.read_csv(SPP_REFERENCE + SPP_TYPE, sep="\t", header=None)
+    ref_index = ref_index.iloc[:, 0].tolist()
 
     return ref_index
 
@@ -141,18 +140,18 @@ def process_input(matrix_path, plot_type):
     if data.isnull().values.any():
         raise ValueError("Input data contains Nans.")
 
-    def order_input_context(plot_type, data):
-        if plot_type.lower in type_dict:
+    def order_input_context(plot_type, input_data):
+        if plot_type.lower() in type_dict:
             if data.shape[0] != len(get_context_reference(plot_type)):
                 raise ValueError(
                     "Input matrix file should have "
-                    + len(get_context_reference(plot_type))
+                    + str(len(get_context_reference(plot_type)))
                     + " rows"
                 )
             else:
                 ref_format = get_context_reference(plot_type)
-                data = data.reindex(ref_format)
-        return data
+                reindexed_data = input_data.reindex(ref_format)
+        return reindexed_data
 
     return order_input_context(plot_type, data)
 
