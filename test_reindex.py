@@ -2,6 +2,7 @@ import filecmp
 import pytest
 from pdf2image import convert_from_path
 from PIL import Image
+from PIL import ImageChops
 import sigProfilerPlotting as sigPlt
 import os
 
@@ -29,6 +30,61 @@ def test_dumb_images():
         assert (
             test.tobytes() == standard.tobytes()
         ), f"Images differ on page {page_num}."
+
+
+def test_dumb_x_axis_images():
+    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
+    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
+
+    test = convert_from_path(test_path)[0]
+    standard = convert_from_path(standard_path)[0]
+
+    # Crop the images to focus on the x-axis
+    x_axis_test = test.crop(
+        (0, 0, test.width, 10)
+    )  # Adjust the y-axis crop based on your requirement
+    x_axis_standard = standard.crop(
+        (0, 0, standard.width, 10)
+    )  # Adjust the y-axis crop based on your requirement
+
+    # Assert the images have the same x-axis
+    assert (
+        ImageChops.difference(x_axis_test, x_axis_standard).getbbox() is None
+    ), f"x-axis differs"
+
+
+def test_dumb_y_axis_images():
+    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
+    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
+
+    test = convert_from_path(test_path)[0]
+    standard = convert_from_path(standard_path)[0]
+
+    # Crop the images to focus on the y-axis
+    y_axis_test = test.crop(
+        (0, 0, 10, test.height)
+    )  # Adjust the x-axis crop based on your requirement
+    y_axis_standard = standard.crop(
+        (0, 0, 10, standard.height)
+    )  # Adjust the x-axis crop based on your requirement
+
+    # Assert the images have the same y-axis
+    assert (
+        ImageChops.difference(y_axis_test, y_axis_standard).getbbox() is None
+    ), f"y-axis differs"
+
+
+def test_dumb_content_images():
+    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
+    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
+
+    test = convert_from_path(test_path)[0]
+    standard = convert_from_path(standard_path)[0]
+
+    # Assert the images have the same content
+    assert (
+        ImageChops.difference(test, standard).getbbox() is None
+    ), f"Image content differs"
 
 
 #################
@@ -169,9 +225,9 @@ def test_DBS78_unordered_images():
         ), f"Images differ on page {page_num}."
 
 
-#################
+################
 ##### ID83 #####
-#################
+################
 def test_ID83_images():
     sigPlt.plotID(
         SPP_ID + "ordered/example.ID83.all",
