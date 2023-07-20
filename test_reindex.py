@@ -6,7 +6,6 @@ from PIL import ImageChops
 import sigProfilerPlotting as sigPlt
 import os
 
-
 SPP_PATH = sigPlt.__path__[0]
 SPP_SBS = os.path.join(SPP_PATH, "input/SBS/")
 SPP_DBS = os.path.join(SPP_PATH, "input/DBS/")
@@ -30,61 +29,6 @@ def test_dumb_images():
         assert (
             test.tobytes() == standard.tobytes()
         ), f"Images differ on page {page_num}."
-
-
-def test_dumb_x_axis_images():
-    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
-
-    test = convert_from_path(test_path)[0]
-    standard = convert_from_path(standard_path)[0]
-
-    # Crop the images to focus on the x-axis
-    x_axis_test = test.crop(
-        (0, 0, test.width, 10)
-    )  # Adjust the y-axis crop based on your requirement
-    x_axis_standard = standard.crop(
-        (0, 0, standard.width, 10)
-    )  # Adjust the y-axis crop based on your requirement
-
-    # Assert the images have the same x-axis
-    assert (
-        ImageChops.difference(x_axis_test, x_axis_standard).getbbox() is None
-    ), f"x-axis differs"
-
-
-def test_dumb_y_axis_images():
-    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
-
-    test = convert_from_path(test_path)[0]
-    standard = convert_from_path(standard_path)[0]
-
-    # Crop the images to focus on the y-axis
-    y_axis_test = test.crop(
-        (0, 0, 10, test.height)
-    )  # Adjust the x-axis crop based on your requirement
-    y_axis_standard = standard.crop(
-        (0, 0, 10, standard.height)
-    )  # Adjust the x-axis crop based on your requirement
-
-    # Assert the images have the same y-axis
-    assert (
-        ImageChops.difference(y_axis_test, y_axis_standard).getbbox() is None
-    ), f"y-axis differs"
-
-
-def test_dumb_content_images():
-    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
-
-    test = convert_from_path(test_path)[0]
-    standard = convert_from_path(standard_path)[0]
-
-    # Assert the images have the same content
-    assert (
-        ImageChops.difference(test, standard).getbbox() is None
-    ), f"Image content differs"
 
 
 #################
@@ -129,6 +73,70 @@ def test_SBS96_unordered_images():
         assert (
             test.tobytes() == standard.tobytes()
         ), f"Images differ on page {page_num}."
+
+
+def test_SBS96_x_axis_images():
+    sigPlt.plotSBS(
+        SPP_SBS + "unordered/example.SBS96.all",
+        SPP_SBS + "output/",
+        "test_unordered",
+        "96",
+    )
+
+    test_path = SPP_SBS + "output/SBS_96_plots_test_unordered.pdf"
+    standard_path = SPP_standard + "SBS96_xaxis_reference.pdf"
+
+    test = convert_from_path(test_path)[0]
+    standard = convert_from_path(standard_path)[0]
+
+    # Crop the images to focus on the x-axis
+    x_axis_test = test.crop((338, 1810, 8710, 2000))
+
+    # Compare the images
+    assert (
+        ImageChops.difference(x_axis_test, standard).getbbox() is None
+    ), f"x-axis differs"
+
+
+def test_SBS96_bar_images():
+    sigPlt.plotSBS(
+        SPP_SBS + "unordered/example.SBS96.all",
+        SPP_SBS + "output/",
+        "test_unordered",
+        "96",
+    )
+    test_path = SPP_SBS + "output/SBS_96_plots_test_unordered.pdf"
+    standard_path = SPP_standard + "SBS96_bar_reference.pdf"
+
+    test = convert_from_path(test_path)[0]
+    standard = convert_from_path(standard_path)[0]
+
+    # Crop the images to focus on the bars
+    bar_test = test.crop((338, 600, 8710, 1820))
+
+    # Compare the images
+    assert ImageChops.difference(bar_test, standard).getbbox() is None, f"bars differs"
+
+
+def SBS96_x_axis_images():
+    test_path = "/Users/tingyang/Desktop/AlexandrovLabRepositories/SigProfilerPlotting/sigProfilerPlotting/standard/SBS_96_plots_SBS96.pdf"
+    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
+
+    test = convert_from_path(test_path)[0]
+    standard = convert_from_path(standard_path)[0]
+
+    # Crop the images to focus on the x-axis
+    x_axis_test = test.crop(
+        (338, 1810, 8710, 2000)
+    )  # Adjust the y-axis crop based on your requirement
+    x_axis_standard = standard.crop(
+        (338, 1810, 8710, 2000)
+    )  # Adjust the y-axis crop based on your requirement
+
+    # Assert the images have the same x-axis
+    assert (
+        ImageChops.difference(x_axis_test, x_axis_standard).getbbox() is None
+    ), f"x-axis differs"
 
 
 ##################
