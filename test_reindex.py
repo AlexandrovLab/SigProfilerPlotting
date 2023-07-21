@@ -118,24 +118,28 @@ def test_SBS96_bar_images():
     assert ImageChops.difference(bar_test, standard).getbbox() is None, f"bars differs"
 
 
-def SBS96_x_axis_images():
-    test_path = "/Users/tingyang/Desktop/AlexandrovLabRepositories/SigProfilerPlotting/sigProfilerPlotting/standard/SBS_96_plots_SBS96.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
+def test_SBS96_x_axis_png_images():
+    sigPlt.plotSBS(
+        SPP_SBS + "unordered/example.SBS96.all",
+        SPP_SBS + "output/",
+        "test_unordered",
+        "96",
+        savefig_format="png",
+    )
 
-    test = convert_from_path(test_path)[0]
-    standard = convert_from_path(standard_path)[0]
+    test_path = SPP_SBS + "output/SBS_96_plots_test_unordered.png"
+    standard_path = "/Users/tingyang/Desktop/AlexandrovLabRepositories/SigProfilerPlotting/sigProfilerPlotting/standard_png/SBS_96_plots_xaxis.png"
+
+    # Open the images
+    test_image = Image.open(test_path)
+    standard_image = Image.open(standard_path)
 
     # Crop the images to focus on the x-axis
-    x_axis_test = test.crop(
-        (338, 1810, 8710, 2000)
-    )  # Adjust the y-axis crop based on your requirement
-    x_axis_standard = standard.crop(
-        (338, 1810, 8710, 2000)
-    )  # Adjust the y-axis crop based on your requirement
+    x_axis_test = test_image.crop((170, 905, 6000, 2000))
 
-    # Assert the images have the same x-axis
+    # Compare the images
     assert (
-        ImageChops.difference(x_axis_test, x_axis_standard).getbbox() is None
+        ImageChops.difference(x_axis_test, standard_path).getbbox() is None
     ), f"x-axis differs"
 
 

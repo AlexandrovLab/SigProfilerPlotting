@@ -8,5 +8,8 @@ install:
   - pip install -q matplotlib
   - pip install . -v
 
-script: python3 plot_example.py
-
+script: 
+  # run unit tests
+  - pytest tests
+  # run integration test
+  - python3 plot_example.py
