@@ -98,6 +98,12 @@ setup(
         "pandas>=1.2.4,<2.0.0",
         "scikit-learn>=1.1.3",
     ],
+    extras_require={
+        "tests": [
+            "pytest",
+            "pdf2image>=1.16.3",
+        ],
+    },
     package_data={"": ["fonts/*.ttf"]},
     include_package_data=True,
     # Specify the custom install class
