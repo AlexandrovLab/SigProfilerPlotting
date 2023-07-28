@@ -6,31 +6,15 @@ from PIL import ImageChops
 import sigProfilerPlotting as sigPlt
 import os
 
-SPP_PATH = sigPlt.__path__[0]
+current_script_path = os.path.abspath(__file__)
+SPP_PATH = os.path.dirname(current_script_path)
+
+# SPP_PATH = sigPlt.__path__[0]
 SPP_SBS = os.path.join(SPP_PATH, "input/SBS/")
 SPP_DBS = os.path.join(SPP_PATH, "input/DBS/")
 SPP_ID = os.path.join(SPP_PATH, "input/ID/")
 SPP_standard = os.path.join(SPP_PATH, "standard/")
 SPP_standard_png = os.path.join(SPP_PATH, "standard_png/")
-
-#################
-##### dumb ######
-#################
-# THIS SHOULD FAIL
-def test_dumb_images():
-    test_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
-
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
-
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
-
 
 #################
 ##### SBS96 #####
