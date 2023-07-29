@@ -6,10 +6,11 @@ from PIL import ImageChops
 import sigProfilerPlotting as sigPlt
 import os
 
+# To run locally:`/Users/tingyang/opt/anaconda3/envs/u56/bin/python -m pytest tests`
+
 current_script_path = os.path.abspath(__file__)
 SPP_PATH = os.path.dirname(current_script_path)
 
-# SPP_PATH = sigPlt.__path__[0]
 SPP_SBS = os.path.join(SPP_PATH, "input/SBS/")
 SPP_DBS = os.path.join(SPP_PATH, "input/DBS/")
 SPP_ID = os.path.join(SPP_PATH, "input/ID/")
