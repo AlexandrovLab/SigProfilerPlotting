@@ -1,2 +1,3 @@
 include fonts/*
-include SigProfilerPlotting/reference_formats/*
+include sigProfilerPlotting/reference_formats/*
+include tests/*

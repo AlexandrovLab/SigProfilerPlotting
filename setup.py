@@ -101,7 +101,6 @@ setup(
     extras_require={
         "tests": [
             "pytest",
-            "pdf2image>=1.16.3",
         ],
     },
     package_data={"": ["fonts/*.ttf"]},

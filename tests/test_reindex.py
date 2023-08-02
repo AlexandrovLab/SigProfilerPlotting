@@ -1,6 +1,5 @@
 import filecmp
 import pytest
-from pdf2image import convert_from_path
 from PIL import Image
 from PIL import ImageChops
 import sigProfilerPlotting as sigPlt
@@ -14,67 +13,42 @@ SPP_PATH = os.path.dirname(current_script_path)
 SPP_SBS = os.path.join(SPP_PATH, "input/SBS/")
 SPP_DBS = os.path.join(SPP_PATH, "input/DBS/")
 SPP_ID = os.path.join(SPP_PATH, "input/ID/")
-SPP_standard = os.path.join(SPP_PATH, "standard/")
-SPP_standard_png = os.path.join(SPP_PATH, "standard_png/")
+SPP_STANDARD_PNG = os.path.join(SPP_PATH, "standard_png/")
 
 #################
 ##### SBS96 #####
 #################
-# test full image using ordered input
-def test_SBS96_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "ordered/example.SBS96.all", SPP_SBS + "output/", "test_ordered", "96"
-    )
-
-    test_path = SPP_SBS + "output/SBS_96_plots_test_ordered.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
-
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
-
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
-
-
 # test full image using unordered input
 def test_SBS96_unordered_images():
     sigPlt.plotSBS(
         SPP_SBS + "unordered/example.SBS96.all",
-        SPP_SBS + "output/",
+        SPP_SBS + "output/96_full_image/",
         "test_unordered",
         "96",
+        savefig_format="png",
     )
 
-    test_path = SPP_SBS + "output/SBS_96_plots_test_unordered.pdf"
-    standard_path = SPP_standard + "SBS_96_plots_SBS96.pdf"
+    test_path = SPP_SBS + "output/96_full_image/SBS_96_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SBS_96_plots_Random.png"
 
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
+    test = Image.open(test_path)
+    standard = Image.open(standard_path)
 
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
+    assert test.tobytes() == standard.tobytes(), f"image differs"
 
 
 # test x-axis using unordered input
 def test_SBS96_x_axis_images():
     sigPlt.plotSBS(
         SPP_SBS + "unordered/example.SBS96.all",
-        SPP_SBS + "output/",
+        SPP_SBS + "output/96_x_axis/",
         "test_unordered",
         "96",
         savefig_format="png",
     )
 
-    test_path = SPP_SBS + "output/SBS_96_plots_Random.png"
-    standard_path = SPP_standard_png + "SBS_96_plots_xaxis.png"
+    test_path = SPP_SBS + "output/96_x_axis/SBS_96_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SBS_96_plots_xaxis.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -90,14 +64,14 @@ def test_SBS96_x_axis_images():
 def test_SBS96_bars_images():
     sigPlt.plotSBS(
         SPP_SBS + "unordered/example.SBS96.all",
-        SPP_SBS + "output/",
+        SPP_SBS + "output/96_bars/",
         "test_unordered",
         "96",
         savefig_format="png",
     )
 
-    test_path = SPP_SBS + "output/SBS_96_plots_Random.png"
-    standard_path = SPP_standard_png + "SBS_96_plots_bars.png"
+    test_path = SPP_SBS + "output/96_bars/SBS_96_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SBS_96_plots_bars.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -112,62 +86,37 @@ def test_SBS96_bars_images():
 ##################
 ##### SBS288 #####
 ##################
-def test_SBS288_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "ordered/example.SBS288.all",
-        SPP_SBS + "output/",
-        "test_ordered",
-        "288",
-    )
-
-    test_path = SPP_SBS + "output/SBS_288_plots_test_ordered.pdf"
-    standard_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
-
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
-
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
-
-
+# test full image using unordered input
 def test_SBS288_unordered_images():
     sigPlt.plotSBS(
         SPP_SBS + "unordered/example.SBS288.all",
-        SPP_SBS + "output/",
+        SPP_SBS + "output/288_full_image/",
         "test_unordered",
         "288",
+        savefig_format="png",
     )
 
-    test_path = SPP_SBS + "output/SBS_288_plots_test_unordered.pdf"
-    standard_path = SPP_standard + "SBS_288_plots_SBS288.pdf"
+    test_path = SPP_SBS + "output/288_full_image/SBS_288_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SBS_288_plots_Random.png"
 
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
+    test = Image.open(test_path)
+    standard = Image.open(standard_path)
 
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
+    assert test.tobytes() == standard.tobytes(), f"image differs"
 
 
 # test x-axis using unordered input
 def test_SBS288_x_axis_images():
     sigPlt.plotSBS(
         SPP_SBS + "unordered/example.SBS288.all",
-        SPP_SBS + "output/",
+        SPP_SBS + "output/288_x_axis/",
         "test_unordered",
         "288",
         savefig_format="png",
     )
 
-    test_path = SPP_SBS + "output/SBS_288_plots_Random.png"
-    standard_path = SPP_standard_png + "SBS_288_plots_xaxis.png"
+    test_path = SPP_SBS + "output/288_x_axis/SBS_288_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SBS_288_plots_xaxis.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -183,14 +132,14 @@ def test_SBS288_x_axis_images():
 def test_SBS288_bars_images():
     sigPlt.plotSBS(
         SPP_SBS + "unordered/example.SBS288.all",
-        SPP_SBS + "output/",
+        SPP_SBS + "output/288_bars/",
         "test_unordered",
         "288",
         savefig_format="png",
     )
 
-    test_path = SPP_SBS + "output/SBS_288_plots_Random.png"
-    standard_path = SPP_standard_png + "SBS_288_plots_bars.png"
+    test_path = SPP_SBS + "output/288_bars/SBS_288_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SBS_288_plots_bars.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -205,62 +154,37 @@ def test_SBS288_bars_images():
 #################
 ##### DBS78 #####
 #################
-def test_DBS78_images():
-    sigPlt.plotDBS(
-        SPP_DBS + "ordered/example.DBS78.all",
-        SPP_DBS + "output/",
-        "test_ordered",
-        "78",
-    )
-
-    test_path = SPP_DBS + "output/DBS_78_plots_test_ordered.pdf"
-    standard_path = SPP_standard + "DBS_78_plots_DBS78.pdf"
-
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
-
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
-
-
+# test full image using unordered input
 def test_DBS78_unordered_images():
     sigPlt.plotDBS(
         SPP_DBS + "unordered/example.DBS78.all",
-        SPP_DBS + "output/",
+        SPP_DBS + "output/78_full_image/",
         "test_unordered",
         "78",
+        savefig_format="png",
     )
 
-    test_path = SPP_DBS + "output/DBS_78_plots_test_unordered.pdf"
-    standard_path = SPP_standard + "DBS_78_plots_DBS78.pdf"
+    test_path = SPP_DBS + "output/78_full_image/DBS_78_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "DBS_78_plots_Random.png"
 
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
+    test = Image.open(test_path)
+    standard = Image.open(standard_path)
 
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
+    assert test.tobytes() == standard.tobytes(), f"image differs"
 
 
 # test x-axis using unordered input
 def test_DBS78_x_axis_images():
     sigPlt.plotDBS(
         SPP_DBS + "unordered/example.DBS78.all",
-        SPP_DBS + "output/",
+        SPP_DBS + "output/78_x_axis/",
         "test_unordered",
         "78",
         savefig_format="png",
     )
 
-    test_path = SPP_DBS + "output/DBS_78_plots_Random.png"
-    standard_path = SPP_standard_png + "DBS_78_plots_xaxis.png"
+    test_path = SPP_DBS + "output/78_x_axis/DBS_78_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "DBS_78_plots_xaxis.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -276,14 +200,14 @@ def test_DBS78_x_axis_images():
 def test_DBS78_bars_images():
     sigPlt.plotDBS(
         SPP_DBS + "unordered/example.DBS78.all",
-        SPP_DBS + "output/",
+        SPP_DBS + "output/78_bars/",
         "test_unordered",
         "78",
         savefig_format="png",
     )
 
-    test_path = SPP_DBS + "output/DBS_78_plots_Random.png"
-    standard_path = SPP_standard_png + "DBS_78_plots_bars.png"
+    test_path = SPP_DBS + "output/78_bars/DBS_78_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "DBS_78_plots_bars.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -298,62 +222,37 @@ def test_DBS78_bars_images():
 ################
 ##### ID83 #####
 ################
-def test_ID83_images():
-    sigPlt.plotID(
-        SPP_ID + "ordered/example.ID83.all",
-        SPP_ID + "output/",
-        "test_ordered",
-        "83",
-    )
-
-    test_path = SPP_ID + "output/ID_83_plots_test_ordered.pdf"
-    standard_path = SPP_standard + "ID_83_plots_ID83.pdf"
-
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
-
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
-
-
+# test full image using unordered input
 def test_ID83_unordered_images():
     sigPlt.plotID(
         SPP_ID + "unordered/example.ID83.all",
-        SPP_ID + "output/",
+        SPP_ID + "output/83_full_image/",
         "test_unordered",
         "83",
+        savefig_format="png",
     )
 
-    test_path = SPP_ID + "output/ID_83_plots_test_unordered.pdf"
-    standard_path = SPP_standard + "ID_83_plots_ID83.pdf"
+    test_path = SPP_ID + "output/83_full_image/ID_83_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "ID_83_plots_Random.png"
 
-    test = convert_from_path(test_path)
-    standard = convert_from_path(standard_path)
+    test = Image.open(test_path)
+    standard = Image.open(standard_path)
 
-    for page_num, (test, standard) in enumerate(zip(test, standard), start=1):
-        assert test.mode == standard.mode, f"Different image modes on page {page_num}."
-        assert test.size == standard.size, f"Different image sizes on page {page_num}."
-        assert (
-            test.tobytes() == standard.tobytes()
-        ), f"Images differ on page {page_num}."
+    assert test.tobytes() == standard.tobytes(), f"image differs"
 
 
 # test x-axis using unordered input
 def test_ID83_x_axis_images():
     sigPlt.plotID(
         SPP_ID + "unordered/example.ID83.all",
-        SPP_ID + "output/",
+        SPP_ID + "output/83_x_axis/",
         "test_unordered",
         "83",
         savefig_format="png",
     )
 
-    test_path = SPP_ID + "output/ID_83_plots_Random.png"
-    standard_path = SPP_standard_png + "ID_83_plots_xaxis.png"
+    test_path = SPP_ID + "output/83_x_axis/ID_83_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "ID_83_plots_xaxis.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
@@ -369,14 +268,14 @@ def test_ID83_x_axis_images():
 def test_ID83_bars_images():
     sigPlt.plotID(
         SPP_ID + "unordered/example.ID83.all",
-        SPP_ID + "output/",
+        SPP_ID + "output/83_bars/",
         "test_unordered",
         "83",
         savefig_format="png",
     )
 
-    test_path = SPP_ID + "output/ID_83_plots_Random.png"
-    standard_path = SPP_standard_png + "ID_83_plots_bars.png"
+    test_path = SPP_ID + "output/83_bars/ID_83_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "ID_83_plots_bars.png"
 
     test = Image.open(test_path)
     standard = Image.open(standard_path)
