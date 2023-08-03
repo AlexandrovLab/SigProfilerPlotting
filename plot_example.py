@@ -5,8 +5,6 @@ import sigProfilerPlotting as sigPlt
 matrix_path = "input/examples/samples/"
 output_path = "output/examples/"
 
-# matrix_path = ''
-# output_path = ''
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
@@ -39,6 +37,3 @@ sigPlt.plotSV(
     percentage=False,
     aggregate=False,
 )  # plotting of SV counts
-
-# sigPlt.plotDBS(matrix_path + "breast_cancer_samples_example.DBS78.all", output_path, "BRCA_example", "78")
-# sigPlt.plotID(matrix_path + "breast_cancer_samples_example.ID94.all", output_path,  "BRCA_example", "94")

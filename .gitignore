@@ -34,3 +34,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+
+# test output
+tests/input/*/output/*
+
+example_output/

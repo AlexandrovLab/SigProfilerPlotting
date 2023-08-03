@@ -6,11 +6,10 @@ python:
 
 install:
   - pip install -q matplotlib
-  - pip install . -v
   - pip install .[tests]
 
 script: 
-  # run unit tests
-  - pytest tests
   # run integration test
   - python3 plot_example.py
+  # run unit tests
+  - pytest -s -rw tests

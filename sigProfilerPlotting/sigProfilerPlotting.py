@@ -41,9 +41,12 @@ matplotlib.use("Agg")
 MUTTYPE = "MutationType"
 SPP_PATH = spplt.__path__[0]
 SPP_TEMPLATES = os.path.join(SPP_PATH, "templates/")
+SPP_FONTS = os.path.join(SPP_PATH, "fonts/")
 SPP_REFERENCE = os.path.join(SPP_PATH, "reference_formats/")
 
-logging.getLogger("matplotlib.font_manager").disabled = True
+_FONTS_LOADED = False
+
+logging.getLogger("matplotlib.font_manager").disabled = False
 warnings.filterwarnings("ignore")
 
 type_dict = {
@@ -60,6 +63,20 @@ type_dict = {
     "id": "ID83.txt",
     "id83": "ID83.txt",
 }
+
+# Loads fonts required for plotting
+def load_custom_fonts():
+    global _FONTS_LOADED
+    if not _FONTS_LOADED:
+        for font_file in os.listdir(SPP_FONTS):
+            if font_file.endswith(".ttf"):
+                try:
+                    font_path = os.path.join(SPP_FONTS, font_file)
+                    matplotlib.font_manager.fontManager.addfont(font_path)
+                except:
+                    print("Error loading font: " + font_file)
+    _FONTS_LOADED = True
+
 
 # Note that plt.close(), plt.clf(), and plt.cla() would not close memory
 # Referenced the following post for the function below:
@@ -2667,6 +2684,13 @@ def plotSBS(
     sig_probs = False
     pcawg = False
 
+    # load custom fonts for plotting
+    load_custom_fonts()
+
+    # create the output directory if it doesn't exist
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
     if plot_type == "96":
         try:
             data = process_input(matrix_path, plot_type)
@@ -2954,7 +2978,9 @@ def plotSBS(
             return output_results(savefig_format, output_path, project, figs, "SBS_96")
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(os.path.join(output_path, "SBS_96_plots_" + project + ".pdf"))
+            pdf_path = output_path + "SBS_96_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif plot_type == "192" or plot_type == "96SB" or plot_type == "384":
         with open(matrix_path) as f:
@@ -3463,7 +3489,9 @@ def plotSBS(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "SBS_384_plots_" + project + ".pdf")
+            pdf_path = output_path + "SBS_384_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif (
         plot_type == "192_extended"
@@ -4022,7 +4050,9 @@ def plotSBS(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "SBS_384_extended_plots_" + project + ".pdf")
+            pdf_path = output_path + "SBS_384_extended_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif plot_type == "6":
         with open(matrix_path) as f:
@@ -4255,7 +4285,9 @@ def plotSBS(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "SBS_6_plots_" + project + ".pdf")
+            pdf_path = output_path + "SBS_6_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif plot_type == "12" or plot_type == "6SB" or plot_type == "24":
         with open(matrix_path) as f:
@@ -4508,7 +4540,9 @@ def plotSBS(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "SBS_24_plots_" + project + ".pdf")
+            pdf_path = output_path + "SBS_24_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif plot_type == "1536":
         with open(matrix_path) as f:
@@ -5837,7 +5871,9 @@ def plotSBS(
             pp.close()
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "SBS_1536_plots_" + project + ".pdf")
+            pdf_path = output_path + "SBS_1536_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif plot_type == "4608":
         with open(matrix_path) as f:
@@ -7283,9 +7319,6 @@ def plotSBS(
                 plt.close()
                 sample_count += 1
             pp.close()
-        # except:
-        # 	print("There may be an issue with the formatting of your matrix file.")
-        # 	os.remove(output_path + 'SBS_4608_plots_' + project + '.pdf')
 
     elif plot_type == "288":
         try:
@@ -7699,7 +7732,9 @@ def plotSBS(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "SBS_288_plots_" + project + ".pdf")
+            pdf_path = output_path + "SBS_288_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif plot_type == "288_Normalized":
         with open(matrix_path) as f:
@@ -8299,6 +8334,13 @@ def plotID(
     savefig_format="pdf",
     volume=None,
 ):
+    # create the output directory if it doesn't exist
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    # load custom fonts for plotting
+    load_custom_fonts()
+
     plot_custom_text = False
     sig_probs = False
     pcawg = False
@@ -8611,7 +8653,9 @@ def plotID(
             return output_results(savefig_format, output_path, project, figs, "ID_83")
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "ID_83_plots_" + project + ".pdf")
+            pdf_path = output_path + "ID_83_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif (
         plot_type == "INDEL_simple"
@@ -9160,7 +9204,9 @@ def plotID(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "ID_simple_plots_" + project + ".pdf")
+            pdf_path = output_path + "ID_simple_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif (
         plot_type == "96"
@@ -10240,7 +10286,9 @@ def plotID(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "ID_TSB_plots_" + project + ".pdf")
+            pdf_path = output_path + "ID_TSB_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     else:
         print(
@@ -10262,6 +10310,13 @@ def plotDBS(
     savefig_format="pdf",
     volume=None,
 ):
+    # create the output directory if it doesn't exist
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    # load custom fonts for plotting
+    load_custom_fonts()
+
     plot_custom_text = False
     pcawg = False
     sig_probs = False
@@ -10656,7 +10711,9 @@ def plotDBS(
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "DBS_78_plots_" + project + ".pdf")
+            pdf_path = output_path + "DBS_78_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     elif (
         plot_type == "312"
@@ -11154,7 +11211,9 @@ def plotDBS(
             pp.close()
         except:
             print("There may be an issue with the formatting of your matrix file.")
-            os.remove(output_path + "DBS_186_plots_" + project + ".pdf")
+            pdf_path = output_path + "DBS_186_plots_" + project + ".pdf"
+            if os.path.isfile(pdf_path):
+                os.remove(pdf_path)
 
     else:
         print(
