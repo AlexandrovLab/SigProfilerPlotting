@@ -64,6 +64,7 @@ type_dict = {
     "id83": "ID83.txt",
 }
 
+
 # Loads fonts required for plotting
 def load_custom_fonts():
     global _FONTS_LOADED
@@ -74,7 +75,7 @@ def load_custom_fonts():
                     font_path = os.path.join(SPP_FONTS, font_file)
                     matplotlib.font_manager.fontManager.addfont(font_path)
                 except:
-                    print("Error loading font: " + font_file)
+                    print("ERROR loading font: " + font_file)
     _FONTS_LOADED = True
 
 
@@ -155,7 +156,7 @@ def process_input(matrix_path, plot_type):
         raise ValueError("ERROR: matrix_path requires path to file or DataFrame.")
 
     if data.isnull().values.any():
-        raise ValueError("Input data contains Nans.")
+        raise ValueError("ERROR: matrix_path contains Nans.")
 
     def order_input_context(plot_type, input_data):
         if plot_type.lower() in type_dict:

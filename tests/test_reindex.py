@@ -1,11 +1,8 @@
-import filecmp
-import pytest
-from PIL import Image
-from PIL import ImageChops
-import numpy as np
-import sigProfilerPlotting as sigPlt
 import os
-from matplotlib.font_manager import FontManager
+
+from PIL import Image, ImageChops
+
+import sigProfilerPlotting as sigPlt
 
 current_script_path = os.path.abspath(__file__)
 SPP_PATH = os.path.dirname(current_script_path)
