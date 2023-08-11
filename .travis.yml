@@ -6,7 +6,10 @@ python:
 
 install:
   - pip install -q matplotlib
-  - pip install . -v
+  - pip install .[tests]
 
-script: python3 plot_example.py
-
+script: 
+  # run integration test
+  - python3 sigProfilerPlotting/examples/plot_example.py
+  # run unit tests
+  - pytest -s -rw tests

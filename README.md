@@ -58,10 +58,9 @@ sigPlt.plotID(matrix_path, output_path, project, plot_type, percentage=False)
 ```python
 import sigProfilerPlotting as sigPlt
 
-matrix_path = "./input/examples/samples/breast_cancer_samples_example.CNV48.all" #Output of CNVMatrixGenerator
-output_path = "./output/examples/samples/"
+matrix_path = "./sigProfilerPlotting/examples/input/breast_cancer_samples_example.CNV48.all" #Output of CNVMatrixGenerator
+output_path = "./sigProfilerPlotting/examples/output/"
 project = "Breast"
-
 ```
 
 **AVAILABLE FUNCTIONS**
@@ -106,12 +105,12 @@ sP.samplePortrait(sample_matrices_path, output_path, project, percentage=False)
 
 **EXAMPLE**
 
-This package comes with an example test for each plot type. Run the script plot_example.py from within the downloaded repo after installation:
+This package comes with an example test for each plot type. Run the script plot_example.py from within the examples directory in the downloaded repo after installation:
 ```python
-python3 plot_example.py
+python3 sigProfilerPlotting/examples/plot_example.py
 ```
 
-This example will create plots for each context for each of the included four samples. These plots will be saved within the BRCA_plot/plots/ folder.
+This example will create plots for each context for each of the included four samples. These plots will be saved within the `sigProfilerPlotting/examples/output/` folder.
 
 **CITATION**
 

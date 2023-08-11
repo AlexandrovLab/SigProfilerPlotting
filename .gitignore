@@ -34,3 +34,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+
+# test output
+tests/input/*/output/*
+sigProfilerPlotting/examples/output/
