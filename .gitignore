@@ -38,5 +38,4 @@ MANIFEST
 
 # test output
 tests/input/*/output/*
-
-example_output/
+sigProfilerPlotting/examples/output/
