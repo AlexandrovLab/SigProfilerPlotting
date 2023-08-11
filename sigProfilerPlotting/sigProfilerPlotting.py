@@ -55,6 +55,10 @@ type_dict = {
     "sbs96": "SBS96.txt",
     "288": "SBS288.txt",
     "sbs288": "SBS288.txt",
+    "sbs1536": "SBS1536.txt",
+    "1536": "SBS1536.txt",
+    "sbs6144": "SBS6144.txt",
+    "6144": "SBS6144.txt",
     "78": "DBS78.txt",
     "dbs": "DBS78.txt",
     "dbs78": "DBS78.txt",
@@ -169,6 +173,8 @@ def process_input(matrix_path, plot_type):
             else:
                 ref_format = get_context_reference(plot_type)
                 reindexed_data = input_data.reindex(ref_format)
+        else:
+            reindexed_data = input_data
         return reindexed_data
 
     return order_input_context(plot_type, data)
