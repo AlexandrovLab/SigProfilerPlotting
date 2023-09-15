@@ -14,7 +14,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.15"
+VERSION = "1.3.16"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -23,6 +23,7 @@ def write_version_py(filename="sigProfilerPlotting/version.py"):
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
 short_version = '%(version)s'
 version = '%(version)s'
+update = 'Upgrade v1.3.16: Generate output directory if it does not exist for CNV and SV plots'
     
     """
     fh = open(filename, "w")

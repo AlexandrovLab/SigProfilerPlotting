@@ -2044,6 +2044,10 @@ def plotSV(
 
         pp.savefig(fig, dpi=600, bbox_inches="tight")
 
+    # create the output directory if it doesn't exist
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
     df = pd.read_csv(
         matrix_path, sep=None, engine="python"
     )  # flexible reading of tsv or csv
@@ -2587,9 +2591,12 @@ def plotCNV(
             plt.close()
             return buffer
 
+    # create the output directory if it doesn't exist
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
     plt.style.use("ggplot")
     plt.rcParams["axes.facecolor"] = "white"
-
     df = pd.DataFrame()
     if read_from_file:
         if not os.path.exists(matrix_path):
