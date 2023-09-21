@@ -146,12 +146,13 @@ def get_context_reference(plot_type):
 
 def process_input(matrix_path, plot_type):
     if isinstance(matrix_path, pd.DataFrame):
-        data = matrix_path
-        if MUTTYPE in data.columns:
-            data = data.set_index(MUTTYPE, drop=True)
-        else:
-            data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
-            data = data.set_index(MUTTYPE, drop=True)
+        data = matrix_path.copy()  # copy a dataframe with deepcopy. 
+        if MUTTYPE != data.index.name:   # This condition is if the dataframe already has  MUTTYPE as its index_column
+            if MUTTYPE in data.columns:         
+                data = data.set_index(MUTTYPE, drop=True)
+            else:
+                data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
+                data = data.set_index(MUTTYPE, drop=True)
     # input data is a path to a file
     elif isinstance(matrix_path, str):
         data = pd.read_csv(matrix_path, sep="\t", index_col=0)
