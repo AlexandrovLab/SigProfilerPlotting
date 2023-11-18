@@ -66,6 +66,10 @@ type_dict = {
     "83": "ID83.txt",
     "id": "ID83.txt",
     "id83": "ID83.txt",
+    "cnv48": "CNV48.txt",
+    "48": "CNV48.txt",
+    "sv32": "SV32.txt",
+    "32": "SV32.txt",
 }
 
 
@@ -110,7 +114,7 @@ def output_results(savefig_format, output_path, project, figs, context_type, dpi
         clear_plotting_memory()
     elif savefig_format.lower() == "png":
         for fig in figs:
-            if context_type == "CNV_48" or "SV_32":
+            if context_type in ("CNV_48", "SV_32"):
                 figs[fig].savefig(
                     output_path + context_type + "_plots_" + fig + ".png", dpi=dpi, bbox_inches="tight"
                 )
@@ -157,9 +161,11 @@ def get_context_reference(plot_type):
 
 def process_input(matrix_path, plot_type):
     if isinstance(matrix_path, pd.DataFrame):
-        data = matrix_path.copy()  # copy a dataframe with deepcopy. 
-        if MUTTYPE != data.index.name:   # This condition is if the dataframe already has  MUTTYPE as its index_column
-            if MUTTYPE in data.columns:         
+        data = matrix_path.copy()  # copy a dataframe with deepcopy.
+        if (
+            MUTTYPE != data.index.name
+        ):  # This condition is if the dataframe already has  MUTTYPE as its index_column
+            if MUTTYPE in data.columns:
                 data = data.set_index(MUTTYPE, drop=True)
             else:
                 data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
@@ -2066,6 +2072,9 @@ def plotSV(
         matrix_path, sep=None, engine="python"
     )  # flexible reading of tsv or csv
 
+    # To reindex the input data
+    df = process_input(matrix_path, "32")
+    df.reset_index(inplace=True)
     label = df.columns[0]
     labels = df[label]
 
@@ -2613,7 +2622,9 @@ def plotCNV(
     else:
         df = matrix_path
 
-
+    # To reindex the input data
+    df = process_input(matrix_path, "48")
+    df.reset_index(inplace=True)
     label = df.columns[0]
     labels = df[label]
     figs = {}
