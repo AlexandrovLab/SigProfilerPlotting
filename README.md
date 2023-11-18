@@ -68,22 +68,22 @@ project = "Breast"
 *Multi-page pdf of CNV or SV signatures*
 
 ```python
-sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=True, aggregate=False) #plotting of CNV signatures
-sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=True, aggregate=False) #plotting of SV signatures
+sigPlt.plotCNV(matrix_path, output_path, project, percentage=True, aggregate=False) #plotting of CNV signatures
+sigPlt.plotSV(matrix_path, output_path, project, percentage=True, aggregate=False) #plotting of SV signatures
 
 ```
 *Multi-page pdf of CNV or SV counts*
 
 ```python
-sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False, aggregate=False) #plotting of CNV counts
-sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage=False, aggregate=False) #plotting of SV counts
+sigPlt.plotCNV(matrix_path, output_path, project, percentage=False, aggregate=False) #plotting of CNV counts
+sigPlt.plotSV(matrix_path, output_path, project,percentage=False, aggregate=False) #plotting of SV counts
 ```
 
 *Single pdf of CNV or SV counts per sample for a given cancer type/project*
 
 ```python
-sigPlt.plotCNV(matrix_path, output_path, project, "pdf", percentage=False, aggregate=True) #plotting of CNV counts
-sigPlt.plotSV(matrix_path, output_path, project, "pdf", percentage, aggregate=True) #plotting of SV counts
+sigPlt.plotCNV(matrix_path, output_path, project, percentage=False, aggregate=True) #plotting of CNV counts
+sigPlt.plotSV(matrix_path, output_path, project, percentage, aggregate=True) #plotting of SV counts
 ```
 
 matrix_path -> path to the mutational matrix of interest
