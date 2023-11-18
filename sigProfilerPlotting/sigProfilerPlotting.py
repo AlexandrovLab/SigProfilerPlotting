@@ -66,6 +66,10 @@ type_dict = {
     "83": "ID83.txt",
     "id": "ID83.txt",
     "id83": "ID83.txt",
+    "cnv48": "CNV48.txt",
+    "48": "CNV48.txt",
+    "sv32": "SV32.txt",
+    "32": "SV32.txt",
 }
 
 
@@ -98,24 +102,35 @@ def clear_plotting_memory():
 
 # Saves figures to files, unless savefig_format is "PIL_Image", in which case
 # the figures are saved to a dictionary of buffers
-def output_results(savefig_format, output_path, project, figs, context_type):
+def output_results(savefig_format, output_path, project, figs, context_type, dpi=100):
     if savefig_format.lower() == "pdf":
         pp = PdfPages(output_path + context_type + "_plots_" + project + ".pdf")
         for fig in figs:
-            figs[fig].savefig(pp, format="pdf")
+            if context_type == "CNV_48" or "SV_32":
+                figs[fig].savefig(pp, format="pdf", bbox_inches="tight")
+            else:
+                figs[fig].savefig(pp, format="pdf")
         pp.close()
         clear_plotting_memory()
     elif savefig_format.lower() == "png":
         for fig in figs:
-            figs[fig].savefig(
-                output_path + context_type + "_plots_" + fig + ".png", dpi=100
-            )
+            if context_type in ("CNV_48", "SV_32"):
+                figs[fig].savefig(
+                    output_path + context_type + "_plots_" + fig + ".png", dpi=dpi, bbox_inches="tight"
+                )
+            else:
+                figs[fig].savefig(
+                    output_path + context_type + "_plots_" + fig + ".png", dpi=dpi
+                )
         clear_plotting_memory()
     elif savefig_format.lower() == "pil_image":
         image_list = {}
         for fig in figs:
             tmp_buffer = io.BytesIO()
-            figs[fig].savefig(tmp_buffer, format="png")
+            if context_type == "CNV_48" or "SV_32":
+                figs[fig].savefig(tmp_buffer, format="png", bbox_inches="tight", dpi=dpi)
+            else:
+                figs[fig].savefig(tmp_buffer, format="png", dpi=dpi)
             # convert tmp_buffer to a PIL and close buffer
             tmp_buffer.seek(0)
             tmp_image = Image.open(tmp_buffer)
@@ -146,9 +161,11 @@ def get_context_reference(plot_type):
 
 def process_input(matrix_path, plot_type):
     if isinstance(matrix_path, pd.DataFrame):
-        data = matrix_path.copy()  # copy a dataframe with deepcopy. 
-        if MUTTYPE != data.index.name:   # This condition is if the dataframe already has  MUTTYPE as its index_column
-            if MUTTYPE in data.columns:         
+        data = matrix_path.copy()  # copy a dataframe with deepcopy.
+        if (
+            MUTTYPE != data.index.name
+        ):  # This condition is if the dataframe already has  MUTTYPE as its index_column
+            if MUTTYPE in data.columns:
                 data = data.set_index(MUTTYPE, drop=True)
             else:
                 data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
@@ -1613,9 +1630,10 @@ def plotSV(
     matrix_path,
     output_path,
     project,
-    plot_type="pdf",
     percentage=False,
     aggregate=False,
+    savefig_format="pdf",
+    dpi=100,
 ):
     """Outputs a pdf containing Rearrangement signature plots
 
@@ -2043,7 +2061,8 @@ def plotSV(
                 transform=trans,
             )
 
-        pp.savefig(fig, dpi=600, bbox_inches="tight")
+        return fig
+
 
     # create the output directory if it doesn't exist
     if not os.path.exists(output_path):
@@ -2052,8 +2071,15 @@ def plotSV(
     df = pd.read_csv(
         matrix_path, sep=None, engine="python"
     )  # flexible reading of tsv or csv
+
+    # To reindex the input data
+    df = process_input(matrix_path, "32")
+    df.reset_index(inplace=True)
     label = df.columns[0]
     labels = df[label]
+
+
+    figs={}
     if aggregate:
         num_samples = len(df.columns) - 1
         df["total_count"] = df.sum(axis=1) / num_samples  # NORMALIZE BY # of SAMPLES
@@ -2061,16 +2087,8 @@ def plotSV(
         if percentage and sum(counts) != 0:
             counts = [(x / sum(counts)) * 100 for x in counts]
         sample = ""
-        pp = PdfPages(output_path + project + "_RS32_counts_aggregated" + ".pdf")
-        plot(counts, labels, sample, project, percentage, aggregate=True)
+        figs[sample]=plot(counts, labels, sample, project, percentage, aggregate=True)
     else:
-        if plot_type == "pdf" and percentage:
-            pp = PdfPages(output_path + project + "_RS32_signatures" + ".pdf")
-        elif plot_type == "pdf" and percentage == False:
-            pp = PdfPages(output_path + project + "_RS32_counts" + ".pdf")
-        else:
-            print("The only plot type supported at this time is pdf")
-
         # each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
@@ -2079,19 +2097,19 @@ def plotSV(
                 counts = [(x / sum(counts)) * 100 for x in counts]
             assert (len(counts)) == 32
             assert (len(labels)) == 32
-            plot(counts, labels, sample, project, percentage)
-    pp.close()
+            figs[sample]=plot(counts, labels, sample, project, percentage)
+
+    return output_results(savefig_format, output_path, project, figs, "SV_32", dpi=dpi)
 
 
 def plotCNV(
     matrix_path,
     output_path,
     project,
-    plot_type="pdf",
     percentage=False,
     aggregate=False,
     read_from_file=True,
-    write_to_file=True,
+    savefig_format="pdf",
     dpi=100,
 ):
     """Outputs a pdf containing CNV signature plots
@@ -2099,7 +2117,6 @@ def plotCNV(
     :param matrix_path: path to matrix generated by CNVMatrixGenerator
     :param output_path: path to output pdf file containing plots
     :param project: name of project
-    :param plot_type: output type of plot (default:pdf)
     :param percentage: True if y-axis is displayed as percentage of CNV events, False if displayed as counts (default:False)
     :param aggregate: True if output is a single pdf of counts aggregated across samples(e.g for a given cancer type, y-axis will be counts per sample), False if output is a multi-page pdf of counts for each sample
     >>> plotCNV()
@@ -2108,7 +2125,7 @@ def plotCNV(
 
     # inner function to construct plot
     def plot(
-        counts, labels, sample, project, percentage, aggregate=False, write_to_file=True
+        counts, labels, sample, project, percentage, aggregate=False
     ):
         counts_ordered = list()
         labels_ordered = list()
@@ -2184,6 +2201,9 @@ def plotCNV(
         width = 0.27
         xticks = []
         i = -1  # used to distinguish first bar from the rest
+
+        plt.style.use("ggplot")
+        plt.rcParams["axes.facecolor"] = "white"
 
         # create the subplot
         fig, ax = plt.subplots(figsize=(16, 10))
@@ -2584,20 +2604,12 @@ def plotCNV(
             transform=trans,
         )
 
-        if write_to_file:
-            pp.savefig(fig, dpi=dpi, bbox_inches="tight")
-        else:
-            buffer = io.BytesIO()
-            plt.savefig(buffer, format="png", bbox_inches="tight", dpi=dpi)
-            plt.close()
-            return buffer
+        return fig
 
     # create the output directory if it doesn't exist
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    plt.style.use("ggplot")
-    plt.rcParams["axes.facecolor"] = "white"
     df = pd.DataFrame()
     if read_from_file:
         if not os.path.exists(matrix_path):
@@ -2609,9 +2621,13 @@ def plotCNV(
         )  # flexible reading of tsv or csv
     else:
         df = matrix_path
+
+    # To reindex the input data
+    df = process_input(matrix_path, "48")
+    df.reset_index(inplace=True)
     label = df.columns[0]
     labels = df[label]
-    buff_list = dict()
+    figs = {}
     if aggregate:
         num_samples = len(df.columns) - 1
         df["total_count"] = df.sum(axis=1) / num_samples  # NORMALIZE BY # of SAMPLES
@@ -2619,29 +2635,15 @@ def plotCNV(
         if percentage and sum(counts) != 0:
             counts = [(x / sum(counts)) * 100 for x in counts]
         sample = ""
-        if write_to_file:
-            pp = PdfPages(output_path + project + "_CNV48_counts_aggregated" + ".pdf")
-        buff_list = plot(
+        figs[sample] = plot(
             counts,
             labels,
             sample,
             project,
             percentage,
             aggregate=True,
-            write_to_file=write_to_file,
         )
     else:
-        file_name = ""
-        if plot_type == "pdf" and percentage:
-            file_name = output_path + project + "_CNV48_signatures" + ".pdf"
-        elif plot_type == "pdf" and percentage == False:
-            file_name = output_path + project + "_CNV48_counts" + ".pdf"
-        else:
-            print("The only plot type supported at this time is pdf")
-
-        if write_to_file:
-            pp = PdfPages(file_name)
-
         # each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
         for i, (col, sample) in enumerate(zip(df.columns[1:], samples)):
@@ -2650,25 +2652,9 @@ def plotCNV(
                 counts = [(x / sum(counts)) * 100 for x in counts]
             assert len(counts) == 48
             assert len(labels) == 48
-            if write_to_file:
-                plot(counts, labels, sample, project, percentage, aggregate=False)
-            else:
-                buffer = plot(
-                    counts,
-                    labels,
-                    sample,
-                    project,
-                    percentage,
-                    aggregate=False,
-                    write_to_file=write_to_file,
-                )
-                buff_list[sample] = buffer
+            figs[sample] = plot(counts, labels, sample, project, percentage, aggregate=False)
 
-    if write_to_file:
-        pp.close()
-    else:
-        return buff_list
-        pp.close()
+    return output_results(savefig_format, output_path, project, figs, "CNV_48", dpi=dpi)
 
 
 def plotSBS(
@@ -2682,6 +2668,7 @@ def plotSBS(
     custom_text_bottom=None,
     savefig_format="pdf",
     volume=None,
+    dpi=100,
 ):
     """Use an input matrix to create a SBS plot.
 
@@ -2990,7 +2977,7 @@ def plotSBS(
                 [i.set_color("black") for i in plt.gca().get_yticklabels()]
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "SBS_96")
+            return output_results(savefig_format, output_path, project, figs, "SBS_96", dpi=dpi)
         except:
             print("There may be an issue with the formatting of your matrix file.")
             pdf_path = output_path + "SBS_96_plots_" + project + ".pdf"
@@ -7743,7 +7730,7 @@ def plotSBS(
                 panel2.legend(handles[:3], labels[:3], loc="best", prop={"size": 30})
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "SBS_288")
+            return output_results(savefig_format, output_path, project, figs, "SBS_288", dpi=dpi)
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
@@ -8348,6 +8335,7 @@ def plotID(
     custom_text_bottom=None,
     savefig_format="pdf",
     volume=None,
+    dpi=100,
 ):
     # create the output directory if it doesn't exist
     if not os.path.exists(output_path):
@@ -8665,7 +8653,7 @@ def plotID(
                 [i.set_color("black") for i in plt.gca().get_yticklabels()]
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "ID_83")
+            return output_results(savefig_format, output_path, project, figs, "ID_83", dpi=dpi)
         except:
             print("There may be an issue with the formatting of your matrix file.")
             pdf_path = output_path + "ID_83_plots_" + project + ".pdf"
@@ -10324,6 +10312,7 @@ def plotDBS(
     custom_text_bottom=None,
     savefig_format="pdf",
     volume=None,
+    dpi=100,
 ):
     # create the output directory if it doesn't exist
     if not os.path.exists(output_path):
@@ -10722,7 +10711,7 @@ def plotDBS(
                 [i.set_color("grey") for i in plt.gca().get_xticklabels()]
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "DBS_78")
+            return output_results(savefig_format, output_path, project, figs, "DBS_78", dpi=dpi)
 
         except:
             print("There may be an issue with the formatting of your matrix file.")

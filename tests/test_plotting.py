@@ -1,7 +1,5 @@
 import os
-
 from PIL import Image, ImageChops
-
 import sigProfilerPlotting as sigPlt
 
 current_script_path = os.path.abspath(__file__)
@@ -10,6 +8,9 @@ SPP_PATH = os.path.dirname(current_script_path)
 SPP_SBS = os.path.join(SPP_PATH, "input/SBS/")
 SPP_DBS = os.path.join(SPP_PATH, "input/DBS/")
 SPP_ID = os.path.join(SPP_PATH, "input/ID/")
+SPP_CNV = os.path.join(SPP_PATH, "input/CNV/")
+SPP_SV = os.path.join(SPP_PATH, "input/SV/")
+
 SPP_STANDARD_PNG = os.path.join(SPP_PATH, "standard_png/")
 
 
@@ -59,7 +60,6 @@ def image_difference(img1, img2):
         img2.close()
 
     return relative_difference
-
 
 #################
 ##### SBS96 #####
@@ -358,6 +358,171 @@ def test_ID83_bars_images():
     relative_difference = image_difference(bars_test, standard_path)
     test.close()
 
+    assert (
+        relative_difference == 0
+    ), f"relative difference between unordered and standard is {relative_difference}"
+
+
+#################
+##### CNV48 #####
+#################
+##to generate the pdf plot for CNV48
+def test_CNV48_unordered_images():
+    # creat the output directory path
+    output_directory = os.path.join(SPP_CNV, "output", "48_full_image", "")
+    os.makedirs(output_directory, exist_ok=True)
+
+    sigPlt.plotCNV(
+        SPP_CNV + "unordered/example.CNV48.tsv",
+        output_directory,
+        "test_unordered",
+        savefig_format="png",
+    )
+    sigPlt.plotCNV(
+        SPP_CNV + "unordered/example.CNV48.tsv",
+        SPP_CNV + "output/48_x_axis/",
+        "test_unordered",
+        savefig_format="png",
+    )
+
+    sigPlt.plotCNV(
+        SPP_CNV + "unordered/example.CNV48.tsv",
+        SPP_CNV + "output/48_bars/",
+        "test_unordered",
+        savefig_format="png",
+    )
+    
+
+# ########################################
+# Compare the generated PNGs with the standard PNG
+def test_CNV48_unordered_full_images():
+    # creat the output directory path
+    test_path = os.path.join(
+        SPP_CNV, "output", "48_full_image/CNV_48_plots_Random.png"
+    )
+    # test_path = os.path.join(output_directory, "test_unordered_CNV48_counts.png")
+    standard_path = os.path.join(SPP_STANDARD_PNG, "CNV_48_plots_Random.png")
+
+    # compare the two images
+    relative_difference = image_difference(test_path, standard_path)
+
+    assert (
+        relative_difference == 0
+    ), f"relative difference between unordered and standard is {relative_difference}"
+
+
+# # test x-axis using unordered input
+def test_CNV48_x_axis_images():
+    test_path = SPP_CNV + "output/48_x_axis/CNV_48_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "CNV_48_plots_xaxis.png"
+
+    # Crop the images to focus on the x-axis
+    test = Image.open(test_path)
+    x_axis_test = test.crop((0, 878, 1372, 1021))
+
+    relative_difference = image_difference(x_axis_test, standard_path)
+    test.close()
+
+    # Compare the images
+    assert (
+        relative_difference == 0
+    ), f"relative difference between unordered and standard is {relative_difference}"
+
+
+# # test bars using unordered input
+def test_CNV48_bars_images():
+    test_path = SPP_CNV + "output/48_bars/CNV_48_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "CNV_48_plots_bars.png"
+
+    # Crop the images to focus on the x-axis
+    test = Image.open(test_path)
+    bar_test = test.crop((120, 95, 1372, 878))
+
+    relative_difference = image_difference(bar_test, standard_path)
+    test.close()
+
+    # Compare the images
+    assert (
+        relative_difference == 0
+    ), f"relative difference between unordered and standard is {relative_difference}"
+
+
+#################
+##### SV32 #####
+#################
+# to generate the pdf plot for SV32
+def test_SV32_unordered_images():
+    # creat the output directory path
+    output_directory = os.path.join(SPP_SV, "output", "32_full_image", "")
+    os.makedirs(output_directory, exist_ok=True)
+    sigPlt.plotSV(
+        SPP_SV + "unordered/example.SV32.tsv",
+        output_directory,
+        "test_unordered",
+        savefig_format="png",
+    )
+    sigPlt.plotSV(
+        SPP_SV + "unordered/example.SV32.tsv",
+        SPP_SV + "output/32_x_axis/",
+        "test_unordered",
+        savefig_format="png",
+    )
+    sigPlt.plotSV(
+        SPP_SV + "unordered/example.SV32.tsv",
+        SPP_SV + "output/32_bars/",
+        "test_unordered",
+        savefig_format="png",
+    )
+
+
+# ########################################
+# Compare the generated PNGs with the standard PNG
+def test_SV32_unordered_full_images():
+    # creat the output directory path
+    test_path = os.path.join(
+        SPP_SV, "output", "32_full_image/SV_32_plots_Random.png"
+    )
+    standard_path = os.path.join(SPP_STANDARD_PNG, "SV_32_plots_Random.png")
+
+    # compare the two images
+    relative_difference = image_difference(test_path, standard_path)
+
+    assert (
+        relative_difference == 0
+    ), f"relative difference between unordered and standard is {relative_difference}"
+
+
+# test x-axis using unordered input
+def test_SV32_x_axis_images():
+    test_path = SPP_SV + "output/32_x_axis/SV_32_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SV_32_plots_xaxis.png"
+
+    # Crop the images to focus on the x-axis
+    test = Image.open(test_path)
+    x_axis_test = test.crop((0, 740, 1360, 865))
+
+    relative_difference = image_difference(x_axis_test, standard_path)
+    test.close()
+
+    # Compare the images
+    assert (
+        relative_difference == 0
+    ), f"relative difference between unordered and standard is {relative_difference}"
+
+
+# test bars using unordered input
+def test_SV32_bars_images():
+    test_path = SPP_SV + "output/32_bars/SV_32_plots_Random.png"
+    standard_path = SPP_STANDARD_PNG + "SV_32_plots_bars.png"
+
+    # Crop the images to focus on the x-axis
+    test = Image.open(test_path)
+    bar_test = test.crop((120, 120, 1340, 725))
+
+    relative_difference = image_difference(bar_test, standard_path)
+    test.close()
+
+    # Compare the images
     assert (
         relative_difference == 0
     ), f"relative difference between unordered and standard is {relative_difference}"

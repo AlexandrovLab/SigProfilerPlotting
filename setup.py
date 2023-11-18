@@ -14,7 +14,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.17"
+VERSION = "1.3.18"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -23,7 +23,7 @@ def write_version_py(filename="sigProfilerPlotting/version.py"):
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
 short_version = '%(version)s'
 version = '%(version)s'
-update = 'Upgrade v1.3.17: Update input handling to use deepcopy'
+update = 'Upgrade v1.3.18: Update SV and CNV output handling to support pdf, png, pil_image.'
     
     """
     fh = open(filename, "w")
