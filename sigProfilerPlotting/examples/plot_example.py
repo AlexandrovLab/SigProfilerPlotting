@@ -27,7 +27,6 @@ sigPlt.plotCNV(
     matrix_path + "breast_cancer_samples_example.CNV48.all",
     output_path,
     "BRCA_example",
-    "pdf",
     percentage=False,
     aggregate=False,
 )  # plotting of CNV counts
@@ -35,7 +34,6 @@ sigPlt.plotSV(
     matrix_path + "breast_cancer_samples_example.RS32.all",
     output_path,
     "BRCA_example",
-    "pdf",
     percentage=False,
     aggregate=False,
 )  # plotting of SV counts
