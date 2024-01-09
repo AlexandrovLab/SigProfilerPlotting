@@ -12,7 +12,7 @@ import itertools
 import logging
 import os
 import pickle
-import re
+import mpld3
 import string
 import sys
 import warnings
@@ -33,6 +33,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.ticker import LinearLocator
 from PIL import Image
 from sklearn.preprocessing import LabelEncoder
+from plotly.tools import mpl_to_plotly
 
 import sigProfilerPlotting as spplt
 
@@ -116,7 +117,9 @@ def output_results(savefig_format, output_path, project, figs, context_type, dpi
         for fig in figs:
             if context_type in ("CNV_48", "SV_32"):
                 figs[fig].savefig(
-                    output_path + context_type + "_plots_" + fig + ".png", dpi=dpi, bbox_inches="tight"
+                    output_path + context_type + "_plots_" + fig + ".png",
+                    dpi=dpi,
+                    bbox_inches="tight",
                 )
             else:
                 figs[fig].savefig(
@@ -128,7 +131,9 @@ def output_results(savefig_format, output_path, project, figs, context_type, dpi
         for fig in figs:
             tmp_buffer = io.BytesIO()
             if context_type == "CNV_48" or "SV_32":
-                figs[fig].savefig(tmp_buffer, format="png", bbox_inches="tight", dpi=dpi)
+                figs[fig].savefig(
+                    tmp_buffer, format="png", bbox_inches="tight", dpi=dpi
+                )
             else:
                 figs[fig].savefig(tmp_buffer, format="png", dpi=dpi)
             # convert tmp_buffer to a PIL and close buffer
@@ -138,6 +143,20 @@ def output_results(savefig_format, output_path, project, figs, context_type, dpi
             image_list[fig] = tmp_image
         clear_plotting_memory()
         return image_list
+    elif savefig_format.lower() == "plotly":
+        plotly_figures = {}
+        for fig in figs:
+            plotly_fig = mpl_to_plotly(figs[fig])
+            plotly_figures[fig] = plotly_fig
+        clear_plotting_memory()
+        return plotly_figures
+    elif savefig_format.lower() == "mpld3":
+        mpld3_figures = {}
+        for fig in figs:
+            html_str = mpld3.fig_to_html(figs[fig])
+            mpld3_figures[fig] = html_str
+        clear_plotting_memory()
+        return mpld3_figures
     else:
         raise ValueError("ERROR: savefig_format must be 'pdf', 'png', or 'PIL_Image'.")
     return None
@@ -2063,7 +2082,6 @@ def plotSV(
 
         return fig
 
-
     # create the output directory if it doesn't exist
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -2078,8 +2096,7 @@ def plotSV(
     label = df.columns[0]
     labels = df[label]
 
-
-    figs={}
+    figs = {}
     if aggregate:
         num_samples = len(df.columns) - 1
         df["total_count"] = df.sum(axis=1) / num_samples  # NORMALIZE BY # of SAMPLES
@@ -2087,7 +2104,7 @@ def plotSV(
         if percentage and sum(counts) != 0:
             counts = [(x / sum(counts)) * 100 for x in counts]
         sample = ""
-        figs[sample]=plot(counts, labels, sample, project, percentage, aggregate=True)
+        figs[sample] = plot(counts, labels, sample, project, percentage, aggregate=True)
     else:
         # each column vector in dataframe contains counts for a specific sample
         samples = list(df)[1:]
@@ -2097,7 +2114,7 @@ def plotSV(
                 counts = [(x / sum(counts)) * 100 for x in counts]
             assert (len(counts)) == 32
             assert (len(labels)) == 32
-            figs[sample]=plot(counts, labels, sample, project, percentage)
+            figs[sample] = plot(counts, labels, sample, project, percentage)
 
     return output_results(savefig_format, output_path, project, figs, "SV_32", dpi=dpi)
 
@@ -2124,9 +2141,7 @@ def plotCNV(
     """
 
     # inner function to construct plot
-    def plot(
-        counts, labels, sample, project, percentage, aggregate=False
-    ):
+    def plot(counts, labels, sample, project, percentage, aggregate=False):
         counts_ordered = list()
         labels_ordered = list()
         labels_updated = list()
@@ -2652,7 +2667,9 @@ def plotCNV(
                 counts = [(x / sum(counts)) * 100 for x in counts]
             assert len(counts) == 48
             assert len(labels) == 48
-            figs[sample] = plot(counts, labels, sample, project, percentage, aggregate=False)
+            figs[sample] = plot(
+                counts, labels, sample, project, percentage, aggregate=False
+            )
 
     return output_results(savefig_format, output_path, project, figs, "CNV_48", dpi=dpi)
 
@@ -2977,7 +2994,9 @@ def plotSBS(
                 [i.set_color("black") for i in plt.gca().get_yticklabels()]
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "SBS_96", dpi=dpi)
+            return output_results(
+                savefig_format, output_path, project, figs, "SBS_96", dpi=dpi
+            )
         except:
             print("There may be an issue with the formatting of your matrix file.")
             pdf_path = output_path + "SBS_96_plots_" + project + ".pdf"
@@ -7730,7 +7749,9 @@ def plotSBS(
                 panel2.legend(handles[:3], labels[:3], loc="best", prop={"size": 30})
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "SBS_288", dpi=dpi)
+            return output_results(
+                savefig_format, output_path, project, figs, "SBS_288", dpi=dpi
+            )
 
         except:
             print("There may be an issue with the formatting of your matrix file.")
@@ -8653,7 +8674,9 @@ def plotID(
                 [i.set_color("black") for i in plt.gca().get_yticklabels()]
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "ID_83", dpi=dpi)
+            return output_results(
+                savefig_format, output_path, project, figs, "ID_83", dpi=dpi
+            )
         except:
             print("There may be an issue with the formatting of your matrix file.")
             pdf_path = output_path + "ID_83_plots_" + project + ".pdf"
@@ -10711,7 +10734,9 @@ def plotDBS(
                 [i.set_color("grey") for i in plt.gca().get_xticklabels()]
                 sample_count += 1
 
-            return output_results(savefig_format, output_path, project, figs, "DBS_78", dpi=dpi)
+            return output_results(
+                savefig_format, output_path, project, figs, "DBS_78", dpi=dpi
+            )
 
         except:
             print("There may be an issue with the formatting of your matrix file.")

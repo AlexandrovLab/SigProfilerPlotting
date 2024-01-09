@@ -62,6 +62,8 @@ setup(
         "pandas>=1.2.4,<2.0.0",
         "scikit-learn>=1.1.3",
         "pillow>=10.0.0",
+        "mpld3",
+        "plotly",
     ],
     extras_require={
         "tests": [
