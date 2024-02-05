@@ -2071,10 +2071,6 @@ def plotSV(
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    df = pd.read_csv(
-        matrix_path, sep=None, engine="python"
-    )  # flexible reading of tsv or csv
-
     # To reindex the input data
     df = process_input(matrix_path, "32")
     df.reset_index(inplace=True)
