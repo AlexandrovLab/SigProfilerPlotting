@@ -61,6 +61,7 @@ def image_difference(img1, img2):
 
     return relative_difference
 
+
 #################
 ##### SBS96 #####
 #################
@@ -391,15 +392,13 @@ def test_CNV48_unordered_images():
         "test_unordered",
         savefig_format="png",
     )
-    
+
 
 # ########################################
 # Compare the generated PNGs with the standard PNG
 def test_CNV48_unordered_full_images():
     # creat the output directory path
-    test_path = os.path.join(
-        SPP_CNV, "output", "48_full_image/CNV_48_plots_Random.png"
-    )
+    test_path = os.path.join(SPP_CNV, "output", "48_full_image/CNV_48_plots_Random.png")
     # test_path = os.path.join(output_directory, "test_unordered_CNV48_counts.png")
     standard_path = os.path.join(SPP_STANDARD_PNG, "CNV_48_plots_Random.png")
 
@@ -479,9 +478,7 @@ def test_SV32_unordered_images():
 # Compare the generated PNGs with the standard PNG
 def test_SV32_unordered_full_images():
     # creat the output directory path
-    test_path = os.path.join(
-        SPP_SV, "output", "32_full_image/SV_32_plots_Random.png"
-    )
+    test_path = os.path.join(SPP_SV, "output", "32_full_image/SV_32_plots_Random.png")
     standard_path = os.path.join(SPP_STANDARD_PNG, "SV_32_plots_Random.png")
 
     # compare the two images
