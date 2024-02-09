@@ -106,7 +106,7 @@ def output_results(savefig_format, output_path, project, figs, context_type, dpi
     if savefig_format.lower() == "pdf":
         pp = PdfPages(output_path + context_type + "_plots_" + project + ".pdf")
         for fig in figs:
-            if context_type == "CNV_48" or "SV_32":
+            if context_type in ("CNV_48", "SV_32"):
                 figs[fig].savefig(pp, format="pdf", bbox_inches="tight")
             else:
                 figs[fig].savefig(pp, format="pdf")
@@ -129,7 +129,7 @@ def output_results(savefig_format, output_path, project, figs, context_type, dpi
         image_list = {}
         for fig in figs:
             tmp_buffer = io.BytesIO()
-            if context_type == "CNV_48" or "SV_32":
+            if context_type in ("CNV_48", "SV_32"):
                 figs[fig].savefig(
                     tmp_buffer, format="png", bbox_inches="tight", dpi=dpi
                 )
