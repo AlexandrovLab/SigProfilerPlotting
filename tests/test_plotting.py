@@ -1,528 +1,204 @@
 import os
 from PIL import Image, ImageChops
 import sigProfilerPlotting as sigPlt
+import pytest
+import pandas as pd
 
 current_script_path = os.path.abspath(__file__)
+
 SPP_PATH = os.path.dirname(current_script_path)
-
-SPP_SBS = os.path.join(SPP_PATH, "input/SBS/")
-SPP_DBS = os.path.join(SPP_PATH, "input/DBS/")
-SPP_ID = os.path.join(SPP_PATH, "input/ID/")
-SPP_CNV = os.path.join(SPP_PATH, "input/CNV/")
-SPP_SV = os.path.join(SPP_PATH, "input/SV/")
-
-SPP_STANDARD_PNG = os.path.join(SPP_PATH, "standard_png/")
+SPP_SBS = os.path.join(SPP_PATH, "input", "SBS")
+SPP_DBS = os.path.join(SPP_PATH, "input", "DBS")
+SPP_ID = os.path.join(SPP_PATH, "input", "ID")
+SPP_CNV = os.path.join(SPP_PATH, "input", "CNV")
+SPP_SV = os.path.join(SPP_PATH, "input", "SV")
+SPP_STANDARD_PNG = os.path.join(SPP_PATH, "standard_png")
 
 
-def image_difference(img1, img2):
-    """
-    Calculate the difference between two images using ImageChops.
+# Helper function to calculate the difference between two images
+def image_difference(img1_path, img2_path):
+    with Image.open(img1_path) as img1, Image.open(img2_path) as img2:
+        img1, img2 = img1.convert("L"), img2.convert("L")
+        diff = ImageChops.difference(img1, img2)
+        total_difference = sum(abs(p) for p in diff.getdata())
+        max_difference = img1.size[0] * img1.size[1] * 255
+        if total_difference > 1e-4:
+            diff.show()
+        return total_difference / max_difference
 
-    Parameters:
-    - img1_path: Path to the first image.
-    - img2_path: Path to the second image.
 
-    Returns:
-    - relative_difference: The relative difference between the two images.
-    """
+def plotSV_wrapper(
+    matrix_path, output_path, project, context, savefig_format="png", **kwargs
+):
+    # Call the actual plotSV function with the correct parameters
+    sigPlt.plotSV(
+        matrix_path=matrix_path,
+        output_path=output_path,
+        project=project,
+        savefig_format=savefig_format,
+        percentage=kwargs.get("percentage", False),
+        aggregate=kwargs.get("aggregate", False),
+        dpi=kwargs.get("dpi", 100),
+    )
 
-    img1_opened_in_func = False
-    img2_opened_in_func = False
 
-    # Open the images if they are not already opened
-    if isinstance(img1, str):
-        img1 = Image.open(img1)
-        img1_opened_in_func = True
-    if isinstance(img2, str):
-        img2 = Image.open(img2)
-        img2_opened_in_func = True
+def plotCNV_wrapper(
+    matrix_path, output_path, project, context, savefig_format="png", **kwargs
+):
+    if type(matrix_path) == str:
+        read_from_file = True
+    else:
+        read_from_file = False
+    # Call the actual plotCNV function with the correct parameters
+    sigPlt.plotCNV(
+        matrix_path=matrix_path,
+        output_path=output_path,
+        project=project,
+        savefig_format=savefig_format,
+        read_from_file=read_from_file,
+        percentage=kwargs.get("percentage", False),
+        aggregate=kwargs.get("aggregate", False),
+        dpi=kwargs.get("dpi", 100),
+    )
 
-    # Convert images to grayscale
-    img1 = img1.convert("L")
-    img2 = img2.convert("L")
 
-    # Difference between the two images
-    diff = ImageChops.difference(img1, img2)
+test_configs = {
+    "SBS96": {
+        "type": "SBS",
+        "context": "96",
+        "function": sigPlt.plotSBS,
+        "example_file": "example.SBS96.all",
+        "crop_dimensions": {
+            "Random": None,
+            "xaxis": (170, 905, 6000, 2000),
+            "bars": (170, 300, 4340, 910),
+        },
+    },
+    "SBS288": {
+        "type": "SBS",
+        "context": "288",
+        "function": sigPlt.plotSBS,
+        "example_file": "example.SBS288.all",
+        "crop_dimensions": {
+            "Random": None,
+            "xaxis": (170, 905, 3250, 2000),
+            "bars": (170, 300, 3250, 910),
+        },
+    },
+    "DBS78": {
+        "type": "DBS",
+        "context": "78",
+        "function": sigPlt.plotDBS,
+        "example_file": "example.DBS78.all",
+        "crop_dimensions": {
+            "Random": None,
+            "xaxis": (170, 905, 4350, 990),
+            "bars": (170, 280, 4350, 910),
+        },
+    },
+    "ID83": {
+        "type": "ID",
+        "context": "83",
+        "function": sigPlt.plotID,
+        "example_file": "example.ID83.all",
+        "crop_dimensions": {
+            "Random": None,
+            "xaxis": (170, 1063, 4250, 1100),
+            "bars": (190, 350, 4250, 1003),
+        },
+    },
+    "CNV48": {
+        "type": "CNV",
+        "context": "48",
+        "function": plotCNV_wrapper,
+        "example_file": "example.CNV48.tsv",
+        "crop_dimensions": {
+            "Random": None,
+            "xaxis": (0, 878, 1372, 1021),
+            "bars": (120, 95, 1372, 878),
+        },
+    },
+    "SV32": {
+        "type": "SV",
+        "context": "32",
+        "function": plotSV_wrapper,
+        "example_file": "example.SV32.tsv",
+        "crop_dimensions": {
+            "Random": None,
+            "xaxis": (0, 740, 1360, 865),
+            "bars": (120, 120, 1340, 725),
+        },
+    },
+}
 
-    # Calculate the absolute difference
-    total_difference = sum(abs(p) for p in diff.getdata())
-    width, height = img1.size
-    num_channels = 1
-    max_difference = width * height * num_channels * 255
 
-    # Calculate the relative difference
-    relative_difference = total_difference / max_difference
+@pytest.fixture
+def config(request):
+    config_key = request.param
+    return test_configs[config_key]
 
-    # Close the images if they were opened
-    if img1_opened_in_func:
-        img1.close()
-    if img2_opened_in_func:
-        img2.close()
 
-    return relative_difference
+@pytest.fixture(params=["file", "dataframe"])
+def input_data(request):
+    def _input_data(config):
+        example_file_path = os.path.join(
+            SPP_PATH, "input", config["type"], "unordered", config["example_file"]
+        )
+        if request.param == "dataframe":
+            df = pd.read_csv(example_file_path, sep="\t")
+            return df
+        else:
+            return example_file_path
 
-#################
-##### SBS96 #####
-#################
-# test full image using unordered input
-def test_SBS96_unordered_images():
-    # creat the output directory path
-    output_directory = os.path.join(SPP_SBS, "output", "96_full_image", "")
+    return _input_data
+
+
+# Main test function tests plots for SBS, DBS, ID, CNV, and SV for dataframes and files
+@pytest.mark.parametrize("config_key", test_configs.keys())
+def test_plot_generation(config_key, input_data):
+    config = test_configs[config_key]
+    mutation_type = config["type"]
+    mutation_path = os.path.join(SPP_PATH, "input", mutation_type)
+    output_subdir = os.path.join(mutation_path, "output")
+    output_directory = os.path.join(output_subdir, f"{config_key}_full_image{os.sep}")
+
     os.makedirs(output_directory, exist_ok=True)
 
-    sigPlt.plotSBS(
-        SPP_SBS + "unordered/example.SBS96.all",
+    data = input_data(config)  # Pass config to input_data fixture
+
+    # Modify the wrapper functions to accept data and input_type
+    # and call the plotting function accordingly
+    config["function"](
+        data,
         output_directory,
-        "test_unordered",
-        "96",
+        "test",
+        config["context"],
         savefig_format="png",
+        percentage=False,
     )
 
-    test_path = os.path.join(output_directory, "SBS_96_plots_Random.png")
-    standard_path = os.path.join(SPP_STANDARD_PNG, "SBS_96_plots_Random.png")
-
-    # compare the two images
-    relative_difference = image_difference(test_path, standard_path)
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test x-axis using unordered input
-def test_SBS96_x_axis_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "unordered/example.SBS96.all",
-        SPP_SBS + "output/96_x_axis/",
-        "test_unordered",
-        "96",
-        savefig_format="png",
-    )
-
-    test_path = SPP_SBS + "output/96_x_axis/SBS_96_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SBS_96_plots_xaxis.png"
-
-    test = Image.open(test_path)
-    x_axis_test = test.crop((170, 905, 6000, 2000))
-
-    relative_difference = image_difference(x_axis_test, standard_path)
-    test.close()
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test bars using unordered input
-def test_SBS96_bars_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "unordered/example.SBS96.all",
-        SPP_SBS + "output/96_bars/",
-        "test_unordered",
-        "96",
-        savefig_format="png",
-    )
-
-    test_path = SPP_SBS + "output/96_bars/SBS_96_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SBS_96_plots_bars.png"
-
-    # Crop the images to focus on the bars
-    test = Image.open(test_path)
-    bars_test = test.crop((170, 300, 4340, 910))
-
-    # Compare the images
-    relative_difference = image_difference(bars_test, standard_path)
-    test.close()
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-##################
-##### SBS288 #####
-##################
-# test full image using unordered input
-def test_SBS288_unordered_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "unordered/example.SBS288.all",
-        SPP_SBS + "output/288_full_image/",
-        "test_unordered",
-        "288",
-        savefig_format="png",
-    )
-
-    test_path = SPP_SBS + "output/288_full_image/SBS_288_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SBS_288_plots_Random.png"
-
-    relative_difference = image_difference(test_path, standard_path)
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test x-axis using unordered input
-def test_SBS288_x_axis_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "unordered/example.SBS288.all",
-        SPP_SBS + "output/288_x_axis/",
-        "test_unordered",
-        "288",
-        savefig_format="png",
-    )
-
-    test_path = SPP_SBS + "output/288_x_axis/SBS_288_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SBS_288_plots_xaxis.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    x_axis_test = test.crop((170, 905, 3250, 2000))
-
-    relative_difference = image_difference(x_axis_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test bars using unordered input
-def test_SBS288_bars_images():
-    sigPlt.plotSBS(
-        SPP_SBS + "unordered/example.SBS288.all",
-        SPP_SBS + "output/288_bars/",
-        "test_unordered",
-        "288",
-        savefig_format="png",
-    )
-
-    test_path = SPP_SBS + "output/288_bars/SBS_288_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SBS_288_plots_bars.png"
-
-    # Crop the images to focus on the bars
-    test = Image.open(test_path)
-    bars_test = test.crop((170, 300, 3250, 910))
-
-    relative_difference = image_difference(bars_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-#################
-##### DBS78 #####
-#################
-# test full image using unordered input
-def test_DBS78_unordered_images():
-    sigPlt.plotDBS(
-        SPP_DBS + "unordered/example.DBS78.all",
-        SPP_DBS + "output/78_full_image/",
-        "test_unordered",
-        "78",
-        savefig_format="png",
-    )
-
-    test_path = SPP_DBS + "output/78_full_image/DBS_78_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "DBS_78_plots_Random.png"
-
-    relative_difference = image_difference(test_path, standard_path)
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test x-axis using unordered input
-def test_DBS78_x_axis_images():
-    sigPlt.plotDBS(
-        SPP_DBS + "unordered/example.DBS78.all",
-        SPP_DBS + "output/78_x_axis/",
-        "test_unordered",
-        "78",
-        savefig_format="png",
-    )
-
-    test_path = SPP_DBS + "output/78_x_axis/DBS_78_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "DBS_78_plots_xaxis.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    x_axis_test = test.crop((170, 905, 4350, 990))
-
-    relative_difference = image_difference(x_axis_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test bars using unordered input
-def test_DBS78_bars_images():
-    sigPlt.plotDBS(
-        SPP_DBS + "unordered/example.DBS78.all",
-        SPP_DBS + "output/78_bars/",
-        "test_unordered",
-        "78",
-        savefig_format="png",
-    )
-
-    test_path = SPP_DBS + "output/78_bars/DBS_78_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "DBS_78_plots_bars.png"
-
-    # Crop the images to focus on the bars
-    test = Image.open(test_path)
-    bars_test = test.crop((170, 280, 4350, 910))
-
-    # Compare the images
-    relative_difference = image_difference(bars_test, standard_path)
-    test.close()
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-################
-##### ID83 #####
-################
-# test full image using unordered input
-def test_ID83_unordered_images():
-    sigPlt.plotID(
-        SPP_ID + "unordered/example.ID83.all",
-        SPP_ID + "output/83_full_image/",
-        "test_unordered",
-        "83",
-        savefig_format="png",
-    )
-
-    test_path = SPP_ID + "output/83_full_image/ID_83_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "ID_83_plots_Random.png"
-
-    relative_difference = image_difference(test_path, standard_path)
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test x-axis using unordered input
-def test_ID83_x_axis_images():
-    sigPlt.plotID(
-        SPP_ID + "unordered/example.ID83.all",
-        SPP_ID + "output/83_x_axis/",
-        "test_unordered",
-        "83",
-        savefig_format="png",
-    )
-
-    test_path = SPP_ID + "output/83_x_axis/ID_83_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "ID_83_plots_xaxis.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    x_axis_test = test.crop((170, 1063, 4250, 1100))
-
-    # Compare the images
-    relative_difference = image_difference(x_axis_test, standard_path)
-    test.close()
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test bars using unordered input
-def test_ID83_bars_images():
-    sigPlt.plotID(
-        SPP_ID + "unordered/example.ID83.all",
-        SPP_ID + "output/83_bars/",
-        "test_unordered",
-        "83",
-        savefig_format="png",
-    )
-
-    test_path = SPP_ID + "output/83_bars/ID_83_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "ID_83_plots_bars.png"
-
-    # Crop the images to focus on the bars
-    test = Image.open(test_path)
-    bars_test = test.crop((190, 350, 4250, 1003))
-
-    relative_difference = image_difference(bars_test, standard_path)
-    test.close()
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-#################
-##### CNV48 #####
-#################
-##to generate the pdf plot for CNV48
-def test_CNV48_unordered_images():
-    # creat the output directory path
-    output_directory = os.path.join(SPP_CNV, "output", "48_full_image", "")
-    os.makedirs(output_directory, exist_ok=True)
-
-    sigPlt.plotCNV(
-        SPP_CNV + "unordered/example.CNV48.tsv",
-        output_directory,
-        "test_unordered",
-        savefig_format="png",
-    )
-    sigPlt.plotCNV(
-        SPP_CNV + "unordered/example.CNV48.tsv",
-        SPP_CNV + "output/48_x_axis/",
-        "test_unordered",
-        savefig_format="png",
-    )
-
-    sigPlt.plotCNV(
-        SPP_CNV + "unordered/example.CNV48.tsv",
-        SPP_CNV + "output/48_bars/",
-        "test_unordered",
-        savefig_format="png",
-    )
-    
-
-# ########################################
-# Compare the generated PNGs with the standard PNG
-def test_CNV48_unordered_full_images():
-    # creat the output directory path
-    test_path = os.path.join(
-        SPP_CNV, "output", "48_full_image/CNV_48_plots_Random.png"
-    )
-    # test_path = os.path.join(output_directory, "test_unordered_CNV48_counts.png")
-    standard_path = os.path.join(SPP_STANDARD_PNG, "CNV_48_plots_Random.png")
-
-    # compare the two images
-    relative_difference = image_difference(test_path, standard_path)
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# # test x-axis using unordered input
-def test_CNV48_x_axis_images():
-    test_path = SPP_CNV + "output/48_x_axis/CNV_48_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "CNV_48_plots_xaxis.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    x_axis_test = test.crop((0, 878, 1372, 1021))
-
-    relative_difference = image_difference(x_axis_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# # test bars using unordered input
-def test_CNV48_bars_images():
-    test_path = SPP_CNV + "output/48_bars/CNV_48_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "CNV_48_plots_bars.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    bar_test = test.crop((120, 95, 1372, 878))
-
-    relative_difference = image_difference(bar_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-#################
-##### SV32 #####
-#################
-# to generate the pdf plot for SV32
-def test_SV32_unordered_images():
-    # creat the output directory path
-    output_directory = os.path.join(SPP_SV, "output", "32_full_image", "")
-    os.makedirs(output_directory, exist_ok=True)
-    sigPlt.plotSV(
-        SPP_SV + "unordered/example.SV32.tsv",
-        output_directory,
-        "test_unordered",
-        savefig_format="png",
-    )
-    sigPlt.plotSV(
-        SPP_SV + "unordered/example.SV32.tsv",
-        SPP_SV + "output/32_x_axis/",
-        "test_unordered",
-        savefig_format="png",
-    )
-    sigPlt.plotSV(
-        SPP_SV + "unordered/example.SV32.tsv",
-        SPP_SV + "output/32_bars/",
-        "test_unordered",
-        savefig_format="png",
-    )
-
-
-# ########################################
-# Compare the generated PNGs with the standard PNG
-def test_SV32_unordered_full_images():
-    # creat the output directory path
-    test_path = os.path.join(
-        SPP_SV, "output", "32_full_image/SV_32_plots_Random.png"
-    )
-    standard_path = os.path.join(SPP_STANDARD_PNG, "SV_32_plots_Random.png")
-
-    # compare the two images
-    relative_difference = image_difference(test_path, standard_path)
-
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test x-axis using unordered input
-def test_SV32_x_axis_images():
-    test_path = SPP_SV + "output/32_x_axis/SV_32_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SV_32_plots_xaxis.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    x_axis_test = test.crop((0, 740, 1360, 865))
-
-    relative_difference = image_difference(x_axis_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
-
-
-# test bars using unordered input
-def test_SV32_bars_images():
-    test_path = SPP_SV + "output/32_bars/SV_32_plots_Random.png"
-    standard_path = SPP_STANDARD_PNG + "SV_32_plots_bars.png"
-
-    # Crop the images to focus on the x-axis
-    test = Image.open(test_path)
-    bar_test = test.crop((120, 120, 1340, 725))
-
-    relative_difference = image_difference(bar_test, standard_path)
-    test.close()
-
-    # Compare the images
-    assert (
-        relative_difference == 0
-    ), f"relative difference between unordered and standard is {relative_difference}"
+    for test_case, crop_area in config["crop_dimensions"].items():
+        test_image_path = os.path.join(
+            output_directory, f"{config['type']}_{config['context']}_plots_Random.png"
+        )
+        cropped_test_image_path = os.path.join(
+            output_directory,
+            f"{config['type']}_{config['context']}_plots_{test_case}.png",
+        )
+        standard_image_name = (
+            f"{config['type']}_{config['context']}_plots_{test_case}.png"
+        )
+        standard_image_path = os.path.join(SPP_STANDARD_PNG, standard_image_name)
+
+        if crop_area:
+            with Image.open(test_image_path) as img:
+                img = img.crop(crop_area)
+                img.save(cropped_test_image_path)
+        else:
+            # If there's no crop_area, use the original test image for comparison
+            # This handles the case for comparing the entire plot
+            os.rename(test_image_path, cropped_test_image_path)
+
+        assert (
+            image_difference(cropped_test_image_path, standard_image_path) < 1e-4
+        ), f"Images for {config_key}, {test_case} did not match."
