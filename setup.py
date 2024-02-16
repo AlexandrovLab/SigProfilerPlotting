@@ -14,7 +14,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.19"
+VERSION = "1.3.20"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -23,7 +23,7 @@ def write_version_py(filename="sigProfilerPlotting/version.py"):
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
 short_version = '%(version)s'
 version = '%(version)s'
-update = 'Upgrade v1.3.19: Fix plotSV input handling and refactor tests.'
+update = 'Upgrade v1.3.20: Add np.ndarray to process_input'
     
     """
     fh = open(filename, "w")

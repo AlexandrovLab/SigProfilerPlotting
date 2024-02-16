@@ -164,11 +164,12 @@ def get_context_reference(plot_type):
 
 
 def process_input(matrix_path, plot_type):
+    # input data is a DataFrame
     if isinstance(matrix_path, pd.DataFrame):
-        data = matrix_path.copy()  # copy a dataframe with deepcopy.
-        if (
-            MUTTYPE != data.index.name
-        ):  # This condition is if the dataframe already has  MUTTYPE as its index_column
+        # copy dataframe with deepcopy
+        data = matrix_path.copy()
+        # Index is not MutationType
+        if MUTTYPE != data.index.name:
             if MUTTYPE in data.columns:
                 data = data.set_index(MUTTYPE, drop=True)
             else:
@@ -178,8 +179,17 @@ def process_input(matrix_path, plot_type):
     elif isinstance(matrix_path, str):
         data = pd.read_csv(matrix_path, sep="\t", index_col=0)
         data = data.dropna(axis=1, how="all")
+    # input data is a numpy array
+    elif isinstance(matrix_path, np.ndarray):
+        # Note: ndarray does not have index or column names and is not recommended
+        data = pd.DataFrame(matrix_path)
+        # add index of mutation type to the dataframe
+        if plot_type.lower() in type_dict:
+            data.index = get_context_reference(plot_type)
     else:
-        raise ValueError("ERROR: matrix_path requires path to file or DataFrame.")
+        raise ValueError(
+            "ERROR: matrix_path requires pd.DataFrame, path to file, or np.ndarray, not " + f"{type(matrix_path)}."
+        )
 
     if data.isnull().values.any():
         raise ValueError("ERROR: matrix_path contains Nans.")
@@ -196,6 +206,7 @@ def process_input(matrix_path, plot_type):
                 ref_format = get_context_reference(plot_type)
                 reindexed_data = input_data.reindex(ref_format)
         else:
+            # If a non-standard context is used, no sort is applied
             reindexed_data = input_data
         return reindexed_data
 
