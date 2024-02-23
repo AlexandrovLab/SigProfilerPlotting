@@ -26,17 +26,23 @@ This section will guide you through the minimum steps required to plot mutationa
                           pip install SigProfilerPlotting
 ```
 
-2. From within a python session, you can now plot your mutational matrices as follows:
+2. Plot mutational matrices from a Python session or using the Command Line Interface (CLI) as follows:
+
+Using the Python session, the command is as follows:
  ```python
 $ python3
 >> import sigProfilerPlotting as sigPlt
 >> sigPlt.plotSBS(matrix_path, output_path, project, plot_type, percentage=False)
  ```
- The available functions are listed below and the layout of the required parameters are as follows:
 
-      sigPlt.plotSBS(matrix_path, output_path, project, plot_type)
+The required parameters are:
 
-where matrix_path, output_path, project, and plot_type must be strings (surrounded by quotation marks, ex: "/Users/ebergstr/Desktop/test_sample").   
+    sigPlt.plotSBS(matrix_path, output_path, project, plot_type)
+
+Using the CLI, the command is as follows:
+```bash
+SigProfilerPlotting plotSBS <matrix_path> <output_path> <project> <plot_type>
+```
 
  3. The final plots are saved into the user-provided output folder.
 

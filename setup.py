@@ -14,7 +14,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.20"
+VERSION = "1.3.21"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -23,7 +23,7 @@ def write_version_py(filename="sigProfilerPlotting/version.py"):
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
 short_version = '%(version)s'
 version = '%(version)s'
-update = 'Upgrade v1.3.20: Add np.ndarray to process_input'
+update = 'Upgrade v1.3.21: Add CLI and container updates'
     
     """
     fh = open(filename, "w")
@@ -56,6 +56,7 @@ setup(
         "sigProfilerPlotting",
         "sigProfilerPlotting.reference_formats",
         "sigProfilerPlotting.fonts",
+        "sigProfilerPlotting.controllers",
     ],
     install_requires=[
         "matplotlib>=3.4.3",
@@ -68,6 +69,11 @@ setup(
             "pytest",
             "scikit-image>=0.21.0",
             "numpy>=1.21.2",
+        ],
+    },
+    entry_points={
+        "console_scripts": [
+            "SigProfilerPlotting=sigProfilerPlotting.sigProfilerPlotting_CLI:main_function",
         ],
     },
     package_data={"": ["fonts/*.ttf"]},
