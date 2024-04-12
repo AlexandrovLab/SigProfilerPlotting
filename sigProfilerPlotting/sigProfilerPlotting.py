@@ -39,6 +39,7 @@ import sigProfilerPlotting as spplt
 matplotlib.use("Agg")
 
 MUTTYPE = "MutationType"
+INDEX_VALS = ["MutationType", "index", "Mutation Types", "classification"]
 SPP_PATH = spplt.__path__[0]
 SPP_TEMPLATES = os.path.join(SPP_PATH, "templates/")
 SPP_FONTS = os.path.join(SPP_PATH, "fonts/")
@@ -168,17 +169,26 @@ def process_input(matrix_path, plot_type):
     if isinstance(matrix_path, pd.DataFrame):
         # copy dataframe with deepcopy
         data = matrix_path.copy()
-        # Index is not MutationType
-        if MUTTYPE != data.index.name:
+        # index is a non-standard value
+        if data.index.name not in INDEX_VALS:
             if MUTTYPE in data.columns:
                 data = data.set_index(MUTTYPE, drop=True)
+            # the first column is non-MUTTYPE and non-integer
+            elif not data.iloc[:, 0].apply(lambda x: isinstance(x, int)).all():
+                    data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
+                    data = data.set_index(data.columns[0], drop=True)
             else:
+                data = data.reset_index()
                 data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
                 data = data.set_index(MUTTYPE, drop=True)
-    # input data is a path to a file
+        else:
+            # Note: set the index to MUTTYPE for consistency with the rest of the code
+            data.index.name = MUTTYPE
+    # input data is a file path
     elif isinstance(matrix_path, str):
         data = pd.read_csv(matrix_path, sep="\t", index_col=0)
         data = data.dropna(axis=1, how="all")
+        data.index.name = MUTTYPE
     # input data is a numpy array
     elif isinstance(matrix_path, np.ndarray):
         # Note: ndarray does not have index or column names and is not recommended

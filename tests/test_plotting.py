@@ -22,7 +22,7 @@ def image_difference(img1_path, img2_path):
         diff = ImageChops.difference(img1, img2)
         total_difference = sum(abs(p) for p in diff.getdata())
         max_difference = img1.size[0] * img1.size[1] * 255
-        if total_difference > 1e-4:
+        if (total_difference / max_difference) > 1e-4:
             diff.show()
         return total_difference / max_difference
 
