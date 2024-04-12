@@ -14,7 +14,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.21"
+VERSION = "1.3.22"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -23,7 +23,7 @@ def write_version_py(filename="sigProfilerPlotting/version.py"):
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
 short_version = '%(version)s'
 version = '%(version)s'
-update = 'Upgrade v1.3.21: Add CLI and container updates'
+update = 'Upgrade v1.3.22: Update input_processing index.name handling to be more robust.'
     
     """
     fh = open(filename, "w")
