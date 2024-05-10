@@ -175,8 +175,8 @@ def process_input(matrix_path, plot_type):
                 data = data.set_index(MUTTYPE, drop=True)
             # the first column is non-MUTTYPE and non-integer
             elif not data.iloc[:, 0].apply(lambda x: isinstance(x, int)).all():
-                    data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
-                    data = data.set_index(data.columns[0], drop=True)
+                data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
+                data = data.set_index(data.columns[0], drop=True)
             else:
                 data = data.reset_index()
                 data.rename(columns={data.columns[0]: MUTTYPE}, inplace=True)
@@ -198,7 +198,8 @@ def process_input(matrix_path, plot_type):
             data.index = get_context_reference(plot_type)
     else:
         raise ValueError(
-            "ERROR: matrix_path requires pd.DataFrame, path to file, or np.ndarray, not " + f"{type(matrix_path)}."
+            "ERROR: matrix_path requires pd.DataFrame, path to file, or np.ndarray, not "
+            + f"{type(matrix_path)}."
         )
 
     if data.isnull().values.any():
@@ -7024,86 +7025,59 @@ def plotSBS(
                 except:
                     custom_text_bottom = False
 
+                x_pos_custom = 0.85
+                y_pos_upper = 0.125
+                y_pos_middle = 0.10
+                y_pos_bottom = 0.075
+                zorder_value = 10
+
+                fontsize_custom = 25
+                fontweight_custom = "bold"
+                fontcolor_custom = ("black")
+                fontname_custom = "Arial"
+                ha_custom = "left"
+
                 if custom_text_upper:
-                    plot_custom_text = True
-                    if len(custom_text_upper[sample_count]) > 40:
-                        print(
-                            "To add a custom text, please limit the string to <40 characters including spaces."
-                        )
-                        plot_custom_text = False
+                    plt.text(
+                        x_pos_custom,
+                        y_pos_upper,
+                        custom_text_upper[sample_count],
+                        fontsize=fontsize_custom,
+                        weight=fontweight_custom,
+                        color=fontcolor_custom,
+                        fontname=fontname_custom,
+                        transform=plt.gcf().transFigure,
+                        ha=ha_custom,
+                        zorder=zorder_value,
+                    )
+
                 if custom_text_middle:
-                    if len(custom_text_middle[sample_count]) > 40:
-                        print(
-                            "To add a custom text, please limit the string to <40 characters including spaces."
-                        )
-                        plot_custom_text = False
+                    plt.text(
+                        x_pos_custom,
+                        y_pos_middle,
+                        custom_text_middle[sample_count],
+                        fontsize=fontsize_custom,
+                        weight=fontweight_custom,
+                        color=fontcolor_custom,
+                        fontname=fontname_custom,
+                        transform=plt.gcf().transFigure,
+                        ha=ha_custom,
+                        zorder=zorder_value,
+                    )
 
-                if plot_custom_text:
-                    x_pos_custom = 0.94
-                    if custom_text_upper and custom_text_middle:
-                        custom_text_upper_plot = (
-                            custom_text_upper[sample_count]
-                            + "\n"
-                            + custom_text_middle[sample_count]
-                        )
-                        if custom_text_bottom:
-                            custom_text_upper_plot += (
-                                "\n" + custom_text_bottom[sample_count]
-                            )
-
-                    if custom_text_upper and not custom_text_middle:
-                        custom_text_upper_plot = custom_text_upper[sample_count]
-                        panel2.text(
-                            x_pos_custom,
-                            0.78,
-                            custom_text_upper_plot,
-                            fontsize=40,
-                            weight="bold",
-                            color="black",
-                            fontname="Arial",
-                            transform=plt.gcf().transFigure,
-                            ha="right",
-                        )
-
-                    elif custom_text_upper and custom_text_middle:
-                        if not custom_text_bottom:
-                            panel2.text(
-                                x_pos_custom,
-                                0.86,
-                                custom_text_upper_plot,
-                                fontsize=40,
-                                weight="bold",
-                                color="black",
-                                fontname="Arial",
-                                transform=plt.gcf().transFigure,
-                                ha="right",
-                            )
-                        else:
-                            panel2.text(
-                                x_pos_custom,
-                                0.835,
-                                custom_text_upper_plot,
-                                fontsize=40,
-                                weight="bold",
-                                color="black",
-                                fontname="Arial",
-                                transform=plt.gcf().transFigure,
-                                ha="right",
-                            )
-
-                    elif not custom_text_upper and custom_text_middle:
-                        custom_text_upper_plot = custom_text_middle[sample_count]
-                        panel2.text(
-                            x_pos_custom,
-                            0.78,
-                            custom_text_upper_plot,
-                            fontsize=40,
-                            weight="bold",
-                            color="black",
-                            fontname="Arial",
-                            transform=plt.gcf().transFigure,
-                            ha="right",
-                        )
+                if custom_text_bottom:
+                    plt.text(
+                        x_pos_custom,
+                        y_pos_bottom,
+                        custom_text_bottom[sample_count],
+                        fontsize=fontsize_custom,
+                        weight=fontweight_custom,
+                        color=fontcolor_custom,
+                        fontname=fontname_custom,
+                        transform=plt.gcf().transFigure,
+                        ha=ha_custom,
+                        zorder=zorder_value,
+                    )
 
                 # Plot the sample name in upper left corner of plot
                 if sig_probs:
