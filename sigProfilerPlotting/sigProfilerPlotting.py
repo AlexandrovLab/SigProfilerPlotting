@@ -105,7 +105,8 @@ def clear_plotting_memory():
 # the figures are saved to a dictionary of buffers
 def output_results(savefig_format, output_path, project, figs, context_type, dpi=100):
     if savefig_format.lower() == "pdf":
-        pp = PdfPages(output_path + context_type + "_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"{context_type}_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         for fig in figs:
             if context_type in ("CNV_48", "SV_32"):
                 figs[fig].savefig(pp, format="pdf", bbox_inches="tight")
@@ -3021,7 +3022,8 @@ def plotSBS(
                 sys.exit(
                     "The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function."
                 )
-        pp = PdfPages(output_path + "SBS_384_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_384_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         mutations = OrderedDict()
         try:
             with open(matrix_path) as f:
@@ -3537,7 +3539,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS288 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_384_extended_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_384_extended_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         mutations = OrderedDict()
         try:
             with open(matrix_path) as f:
@@ -4087,8 +4090,8 @@ def plotSBS(
                 sys.exit(
                     "The matrix does not match the correct SBS6 format. Please check you formatting and rerun this plotting function."
                 )
-
-        pp = PdfPages(output_path + "SBS_6_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_6_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         mutations = OrderedDict()
         total_count = []
@@ -4322,8 +4325,8 @@ def plotSBS(
                 sys.exit(
                     "The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function."
                 )
-
-        pp = PdfPages(output_path + "SBS_24_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_24_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         mutations = OrderedDict()
 
         try:
@@ -4580,7 +4583,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS1536 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_1536_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_1536_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         mutations_96 = OrderedDict()
         path_list = matrix_path.split("/")
@@ -5911,7 +5915,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS4608 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_4608_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_4608_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         path_list = matrix_path.split("/")
         extension = path_list[-1].split(".")
@@ -7751,7 +7756,9 @@ def plotSBS(
                     "The matrix does not match the correct SBS288 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_288_Normalized_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_288_Normalized_plots_{project}.pdf")
+        pp = PdfPages(file_path)
+
 
         mutations = OrderedDict()
         mutations_TSB = OrderedDict()
@@ -8676,7 +8683,9 @@ def plotID(
                 sys.exit(
                     "The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function."
                 )
-        pp = PdfPages(output_path + "ID_simple_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"ID_simple_plots_{project}.pdf")
+        pp = PdfPages(file_path)
+
 
         indel_types = [
             "1:Del:C:1",
@@ -9229,7 +9238,9 @@ def plotID(
                     "The matrix does not match the correct ID-96 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "ID_TSB_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"ID_TSB_plots_{project}.pdf")
+        pp = PdfPages(file_path)
+
 
         indel_types_tsb = []
         tsb_I = ["T", "U", "N", "B", "Q"]
@@ -10736,7 +10747,9 @@ def plotDBS(
                     "The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "DBS_186_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"DBS_186_plots_{project}.pdf")
+        pp = PdfPages(file_path)
+
 
         dinucs = [
             "TT>GG",
