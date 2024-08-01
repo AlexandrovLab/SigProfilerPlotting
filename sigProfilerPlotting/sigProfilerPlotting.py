@@ -242,6 +242,12 @@ def get_default_96labels():
 
 
 def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
+
+    # The environmental variable takes precedence over the volume argument
+    # If the environmental variable is not set, the volume argument is used
+    volume = os.getenv('SIGPROFILERPLOTTING_VOLUME', volume)
+
+    # Use the default volume when no environmental variable or volume argument is provided
     if volume is None:
         volume = SPP_TEMPLATES
 
@@ -744,7 +750,6 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
         else:
             pickle.dump(plot1, open(path, "wb"))
             return plot1
-
     elif context == "DBS78":
         plot_custom_text = False
         pcawg = False
@@ -1017,7 +1022,6 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
         else:
             pickle.dump(plot1, open(path, "wb"))
             return plot1
-
     elif context == "ID83":
         plt.rcParams["axes.linewidth"] = 2
         plot1 = plt.figure(figsize=(43.93, 12))
