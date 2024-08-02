@@ -2095,7 +2095,7 @@ def plotSV(
         return fig
 
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     # To reindex the input data
@@ -2630,7 +2630,7 @@ def plotCNV(
         return fig
 
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     df = pd.DataFrame()
@@ -2715,7 +2715,7 @@ def plotSBS(
     load_custom_fonts()
 
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     if plot_type == "96":
@@ -8346,7 +8346,7 @@ def plotID(
     dpi=100,
 ):
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     # load custom fonts for plotting
@@ -10329,7 +10329,7 @@ def plotDBS(
     dpi=100,
 ):
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     # load custom fonts for plotting
