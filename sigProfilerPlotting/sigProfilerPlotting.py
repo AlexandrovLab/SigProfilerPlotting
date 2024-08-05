@@ -245,7 +245,7 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
 
     # The environmental variable takes precedence over the volume argument
     # If the environmental variable is not set, the volume argument is used
-    volume = os.getenv('SIGPROFILERPLOTTING_VOLUME', volume)
+    volume = os.getenv("SIGPROFILERPLOTTING_VOLUME", volume)
 
     # Use the default volume when no environmental variable or volume argument is provided
     if volume is None:
@@ -7042,7 +7042,7 @@ def plotSBS(
 
                 fontsize_custom = 25
                 fontweight_custom = "bold"
-                fontcolor_custom = ("black")
+                fontcolor_custom = "black"
                 fontname_custom = "Arial"
                 ha_custom = "left"
 
@@ -7763,7 +7763,6 @@ def plotSBS(
         file_path = os.path.join(output_path, f"SBS_288_Normalized_plots_{project}.pdf")
         pp = PdfPages(file_path)
 
-
         mutations = OrderedDict()
         mutations_TSB = OrderedDict()
         total_count = []
@@ -8326,9 +8325,9 @@ def plotSBS(
 
     else:
         print(
-            "The provided plot_type:",
+            "Error: The function plotSBS does not support plot_type",
             plot_type,
-            "is not supported by this plotting function",
+            "so no plot has been generated."
         )
 
 
@@ -8689,7 +8688,6 @@ def plotID(
                 )
         file_path = os.path.join(output_path, f"ID_simple_plots_{project}.pdf")
         pp = PdfPages(file_path)
-
 
         indel_types = [
             "1:Del:C:1",
@@ -9224,10 +9222,7 @@ def plotID(
                 os.remove(pdf_path)
 
     elif (
-        plot_type == "96"
-        or plot_type == "ID96"
-        or plot_type == "96ID"
-        or plot_type == "IDSB"
+        plot_type == "IDSB"
         or plot_type == "415"
     ):
         with open(matrix_path) as f:
@@ -9244,7 +9239,6 @@ def plotID(
 
         file_path = os.path.join(output_path, f"ID_TSB_plots_{project}.pdf")
         pp = PdfPages(file_path)
-
 
         indel_types_tsb = []
         tsb_I = ["T", "U", "N", "B", "Q"]
@@ -10309,9 +10303,9 @@ def plotID(
 
     else:
         print(
-            "The provided plot_type:",
+            "Error: The function plotID does not support plot_type",
             plot_type,
-            "is not supported by this plotting function",
+            "so no plot has been generated."
         )
 
 
@@ -10753,7 +10747,6 @@ def plotDBS(
 
         file_path = os.path.join(output_path, f"DBS_186_plots_{project}.pdf")
         pp = PdfPages(file_path)
-
 
         dinucs = [
             "TT>GG",
@@ -11239,7 +11232,7 @@ def plotDBS(
 
     else:
         print(
-            "The provided plot_type:",
+            "Error: The function plotDBS does not support plot_type",
             plot_type,
-            "is not supported by this plotting function",
+            "so no plot has been generated."
         )
