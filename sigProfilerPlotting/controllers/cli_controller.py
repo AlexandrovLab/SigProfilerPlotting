@@ -3,6 +3,17 @@ from typing import List
 import sigProfilerPlotting as sigPlt
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 # Common parser setup for shared arguments
 def common_plotting_arguments(parser):
     parser.add_argument("matrix_path", help="The path to the input matrix file.")
@@ -12,7 +23,12 @@ def common_plotting_arguments(parser):
     parser.add_argument("project", help="The name of the project.")
     parser.add_argument("plot_type", help="The type of plot to generate.")
     parser.add_argument(
-        "--percentage", action="store_true", help="Display percentages in the plot."
+        "--percentage",
+        type=str2bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Display percentages in the plot.",
     )
     parser.add_argument(
         "--custom_text_upper", help="Custom text to display at the top of the plot."
@@ -40,7 +56,7 @@ def common_plotting_arguments(parser):
 
 def parse_arguments_sbs(args: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="SigProfilerPlotting plotDBS", description="Generate DBS plots."
+        prog="SigProfilerPlotting plotSBS", description="Generate SBS plots."
     )
     common_plotting_arguments(parser)
     return parser.parse_args(args)
@@ -72,10 +88,20 @@ def parse_arguments_sv(args: List[str]) -> argparse.Namespace:
     )
     parser.add_argument("project", help="The name of the project.")
     parser.add_argument(
-        "--percentage", action="store_true", help="Display percentages in the plot."
+        "--percentage",
+        type=str2bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Display percentages in the plot.",
     )
     parser.add_argument(
-        "--aggregate", action="store_true", help="Aggregate all samples."
+        "--aggregate",
+        type=str2bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Aggregate all samples.",
     )
     parser.add_argument(
         "--savefig_format",
@@ -102,14 +128,26 @@ def parse_arguments_cnv(args: List[str]) -> argparse.Namespace:
     )
     parser.add_argument("project", help="The name of the project.")
     parser.add_argument(
-        "--percentage", action="store_true", help="Display percentages in the plot."
+        "--percentage",
+        type=str2bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Display percentages in the plot.",
     )
     parser.add_argument(
-        "--aggregate", action="store_true", help="Aggregate data for the plot."
+        "--aggregate",
+        type=str2bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Aggregate data for the plot.",
     )
     parser.add_argument(
         "--read_from_file",
-        action="store_true",
+        type=str2bool,
+        nargs="?",
+        const=True,
         default=True,
         help="Read data from a file for the plot.",
     )

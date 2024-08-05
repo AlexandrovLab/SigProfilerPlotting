@@ -105,7 +105,8 @@ def clear_plotting_memory():
 # the figures are saved to a dictionary of buffers
 def output_results(savefig_format, output_path, project, figs, context_type, dpi=100):
     if savefig_format.lower() == "pdf":
-        pp = PdfPages(output_path + context_type + "_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"{context_type}_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         for fig in figs:
             if context_type in ("CNV_48", "SV_32"):
                 figs[fig].savefig(pp, format="pdf", bbox_inches="tight")
@@ -241,6 +242,12 @@ def get_default_96labels():
 
 
 def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
+
+    # The environmental variable takes precedence over the volume argument
+    # If the environmental variable is not set, the volume argument is used
+    volume = os.getenv("SIGPROFILERPLOTTING_VOLUME", volume)
+
+    # Use the default volume when no environmental variable or volume argument is provided
     if volume is None:
         volume = SPP_TEMPLATES
 
@@ -743,7 +750,6 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
         else:
             pickle.dump(plot1, open(path, "wb"))
             return plot1
-
     elif context == "DBS78":
         plot_custom_text = False
         pcawg = False
@@ -1016,7 +1022,6 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
         else:
             pickle.dump(plot1, open(path, "wb"))
             return plot1
-
     elif context == "ID83":
         plt.rcParams["axes.linewidth"] = 2
         plot1 = plt.figure(figsize=(43.93, 12))
@@ -2090,7 +2095,7 @@ def plotSV(
         return fig
 
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     # To reindex the input data
@@ -2625,7 +2630,7 @@ def plotCNV(
         return fig
 
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     df = pd.DataFrame()
@@ -2710,7 +2715,7 @@ def plotSBS(
     load_custom_fonts()
 
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     if plot_type == "96":
@@ -3021,7 +3026,8 @@ def plotSBS(
                 sys.exit(
                     "The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function."
                 )
-        pp = PdfPages(output_path + "SBS_384_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_384_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         mutations = OrderedDict()
         try:
             with open(matrix_path) as f:
@@ -3537,7 +3543,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS288 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_384_extended_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_384_extended_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         mutations = OrderedDict()
         try:
             with open(matrix_path) as f:
@@ -4087,8 +4094,8 @@ def plotSBS(
                 sys.exit(
                     "The matrix does not match the correct SBS6 format. Please check you formatting and rerun this plotting function."
                 )
-
-        pp = PdfPages(output_path + "SBS_6_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_6_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         mutations = OrderedDict()
         total_count = []
@@ -4322,8 +4329,8 @@ def plotSBS(
                 sys.exit(
                     "The matrix does not match the correct SBS192 format. Please check you formatting and rerun this plotting function."
                 )
-
-        pp = PdfPages(output_path + "SBS_24_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_24_plots_{project}.pdf")
+        pp = PdfPages(file_path)
         mutations = OrderedDict()
 
         try:
@@ -4580,7 +4587,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS1536 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_1536_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_1536_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         mutations_96 = OrderedDict()
         path_list = matrix_path.split("/")
@@ -5911,7 +5919,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS4608 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_4608_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_4608_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         path_list = matrix_path.split("/")
         extension = path_list[-1].split(".")
@@ -7033,7 +7042,7 @@ def plotSBS(
 
                 fontsize_custom = 25
                 fontweight_custom = "bold"
-                fontcolor_custom = ("black")
+                fontcolor_custom = "black"
                 fontname_custom = "Arial"
                 ha_custom = "left"
 
@@ -7751,7 +7760,8 @@ def plotSBS(
                     "The matrix does not match the correct SBS288 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "SBS_288_Normalized_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"SBS_288_Normalized_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         mutations = OrderedDict()
         mutations_TSB = OrderedDict()
@@ -8315,9 +8325,9 @@ def plotSBS(
 
     else:
         print(
-            "The provided plot_type:",
+            "Error: The function plotSBS does not support plot_type",
             plot_type,
-            "is not supported by this plotting function",
+            "so no plot has been generated."
         )
 
 
@@ -8335,7 +8345,7 @@ def plotID(
     dpi=100,
 ):
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     # load custom fonts for plotting
@@ -8676,7 +8686,8 @@ def plotID(
                 sys.exit(
                     "The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function."
                 )
-        pp = PdfPages(output_path + "ID_simple_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"ID_simple_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         indel_types = [
             "1:Del:C:1",
@@ -9211,10 +9222,7 @@ def plotID(
                 os.remove(pdf_path)
 
     elif (
-        plot_type == "96"
-        or plot_type == "ID96"
-        or plot_type == "96ID"
-        or plot_type == "IDSB"
+        plot_type == "IDSB"
         or plot_type == "415"
     ):
         with open(matrix_path) as f:
@@ -9229,7 +9237,8 @@ def plotID(
                     "The matrix does not match the correct ID-96 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "ID_TSB_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"ID_TSB_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         indel_types_tsb = []
         tsb_I = ["T", "U", "N", "B", "Q"]
@@ -10294,9 +10303,9 @@ def plotID(
 
     else:
         print(
-            "The provided plot_type:",
+            "Error: The function plotID does not support plot_type",
             plot_type,
-            "is not supported by this plotting function",
+            "so no plot has been generated."
         )
 
 
@@ -10314,7 +10323,7 @@ def plotDBS(
     dpi=100,
 ):
     # create the output directory if it doesn't exist
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) and savefig_format.lower() != "pil_image":
         os.makedirs(output_path)
 
     # load custom fonts for plotting
@@ -10736,7 +10745,8 @@ def plotDBS(
                     "The matrix does not match the correct SBS96 format. Please check you formatting and rerun this plotting function."
                 )
 
-        pp = PdfPages(output_path + "DBS_186_plots_" + project + ".pdf")
+        file_path = os.path.join(output_path, f"DBS_186_plots_{project}.pdf")
+        pp = PdfPages(file_path)
 
         dinucs = [
             "TT>GG",
@@ -11222,7 +11232,7 @@ def plotDBS(
 
     else:
         print(
-            "The provided plot_type:",
+            "Error: The function plotDBS does not support plot_type",
             plot_type,
-            "is not supported by this plotting function",
+            "so no plot has been generated."
         )
