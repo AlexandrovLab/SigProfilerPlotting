@@ -1573,9 +1573,6 @@ def getylabels(ylabels):
     return ylabels
 
 
-
-
-
 def getxlabels(xlabels):
     if max(xlabels) >= 10**10:
         xlabels = ["{:.2e}".format(x) for x in xlabels]

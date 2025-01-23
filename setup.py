@@ -63,6 +63,7 @@ setup(
         "pandas>=1.2.4,<2.0.0",
         "scikit-learn>=1.1.3",
         "pillow>=10.0.0",
+        "numpy<=1.26.4",
     ],
     extras_require={
         "tests": [
