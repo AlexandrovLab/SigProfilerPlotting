@@ -242,7 +242,6 @@ def get_default_96labels():
 
 
 def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
-
     # The environmental variable takes precedence over the volume argument
     # If the environmental variable is not set, the volume argument is used
     volume = os.getenv("SIGPROFILERPLOTTING_VOLUME", volume)
@@ -1549,20 +1548,32 @@ def make_pickle_file(context="SBS96", return_plot_template=False, volume=None):
 
 
 def getylabels(ylabels):
-    if max(ylabels) >= 10**9:
-        ylabels = ["{:.2e}".format(x) for x in ylabels]
-        ylabels[0] = "0.00"
-    else:
-        if max(ylabels) <= 1000:
-            ylabels = ["{:,.0f}".format(x) for x in ylabels]
-            ylabels[0] = "0"
-        elif max(ylabels) < 10**5 and max(ylabels) > 1000:
-            ylabels = ["{:,.0f}".format(x / 1000) + "k" for x in ylabels]
-            ylabels[0] = "0"
-        else:  # if max(ylabels)>= 10**5:
-            ylabels = ["{:,.0f}".format(x / (10**6)) + "m" for x in ylabels]
-            ylabels[0] = "0"
+    max_val = max(ylabels)
+    if max_val >= 10**9:  # Very large values (>= 1 billion)
+        ylabels = ["{:.2f}b".format(x / 10**9) for x in ylabels]
+        ylabels[0] = '0.00'
+    elif max_val >= 10**6:  # Large values (>= 1 million)
+        ylabels = ["{:.0f}m".format(x / 10**6) for x in ylabels]
+        ylabels[0] = '0m'
+    elif max_val >= 10**3:  # Mid-range values (>= 1 thousand)
+        if max_val < 10**4:  # Small range in thousands, show full numbers
+            ylabels = ["{:.0f}".format(x) for x in ylabels]
+        else:  # Use 'k' for larger ranges
+            ylabels = ["{:.0f}k".format(x / 10**3) for x in ylabels]
+        ylabels[0] = '0'
+    elif max_val >= 10:  # Little bigger than very small
+        ylabels = ["{:.1f}".format(x) for x in ylabels]
+        ylabels[0] = '0.0'
+    elif max_val >= 1e-4:  # Very small values (>= 1e-4, < 0.1)
+        ylabels = ["{:.3f}".format(x) for x in ylabels]
+        ylabels[0] = '0.000'
+    else:  # Extremely small values (< 1e-4)
+        ylabels = ["{:.1e}".format(x).replace("e+0", "e").replace("e+","e").replace("e0", "e").replace("e-0", "e-") for x in ylabels]
+        ylabels = ["0" if x == "0.0e" else x for x in ylabels]
     return ylabels
+
+
+
 
 
 def getxlabels(xlabels):
@@ -2837,6 +2848,11 @@ def plotSBS(
 
                 if not percentage:
                     ylabels = getylabels(ylabels)
+
+                # if y-labels are too long, reduce font size
+                if len(ylabels[1]) > 5:
+                    font_label_size = 20
+
 
                 panel1.set_xlim([0, 96])
                 panel1.set_ylim([0, y])
@@ -8327,7 +8343,7 @@ def plotSBS(
         print(
             "Error: The function plotSBS does not support plot_type",
             plot_type,
-            "so no plot has been generated."
+            "so no plot has been generated.",
         )
 
 
@@ -9221,10 +9237,7 @@ def plotID(
             if os.path.isfile(pdf_path):
                 os.remove(pdf_path)
 
-    elif (
-        plot_type == "IDSB"
-        or plot_type == "415"
-    ):
+    elif plot_type == "IDSB" or plot_type == "415":
         with open(matrix_path) as f:
             next(f)
             first_line = f.readline()
@@ -10305,7 +10318,7 @@ def plotID(
         print(
             "Error: The function plotID does not support plot_type",
             plot_type,
-            "so no plot has been generated."
+            "so no plot has been generated.",
         )
 
 
@@ -11234,5 +11247,5 @@ def plotDBS(
         print(
             "Error: The function plotDBS does not support plot_type",
             plot_type,
-            "so no plot has been generated."
+            "so no plot has been generated.",
         )
