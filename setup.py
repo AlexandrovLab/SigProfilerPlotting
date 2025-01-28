@@ -60,7 +60,7 @@ setup(
     ],
     install_requires=[
         "matplotlib>=3.4.3",
-        "pandas>=1.2.4,<2.0.0",
+        "pandas>=2.0.0",
         "scikit-learn>=1.1.3",
         "pillow>=10.0.0",
     ],
@@ -68,7 +68,7 @@ setup(
         "tests": [
             "pytest",
             "scikit-image>=0.21.0",
-            "numpy>=1.21.2",
+            "numpy>=2.0.0",
         ],
     },
     entry_points={

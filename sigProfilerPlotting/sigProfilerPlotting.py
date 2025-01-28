@@ -1629,15 +1629,18 @@ def reindex_sbs288(data_f):
         index=["C>A", "C>G", "C>T", "T>A", "T>C", "T>G"],
         columns=data_f.columns,
     )
-    mutations_TSB_df_T = mutations_TSB_df_T.append(
-        mutations_TSB_df_T.sum().rename("All")
+    # Concatenate the sum row to the DataFrame
+    mutations_TSB_df_T = pd.concat(
+        [mutations_TSB_df_T, mutations_TSB_df_T.sum().rename("All").to_frame().T]
     )
-    mutations_TSB_df_U = mutations_TSB_df_U.append(
-        mutations_TSB_df_U.sum().rename("All")
+    mutations_TSB_df_U = pd.concat(
+        [mutations_TSB_df_U, mutations_TSB_df_U.sum().rename("All").to_frame().T]
     )
-    mutations_TSB_df_N = mutations_TSB_df_N.append(
-        mutations_TSB_df_N.sum().rename("All")
+    mutations_TSB_df_N = pd.concat(
+        [mutations_TSB_df_N, mutations_TSB_df_N.sum().rename("All").to_frame().T]
     )
+
+    # Reindex the DataFrame to roll the index
     mutations_TSB_df_T = mutations_TSB_df_T.reindex(
         np.roll(mutations_TSB_df_T.index, shift=1)
     )
@@ -2025,7 +2028,8 @@ def plotSV(
             tmp_y_labels = [round(x, 1) for x in ax.get_yticks().tolist()]
         # ax.yaxis.labelpad = 300
 
-        # set the y-axis labels
+        # set the y-axis ticks and labels
+        ax.set_yticks(ax.get_yticks())
         ax.set_yticklabels(
             tmp_y_labels, fontname="Arial", weight="bold", fontsize=16, color="black"
         )
@@ -2173,7 +2177,7 @@ def plotCNV(
                 len(lab_homdel) + len(lab_LOH) + len(lab_het),
             )
         ]
-        labels_ordered = lab_homdel.append(lab_LOH.append(lab_het))
+        labels_ordered = pd.concat([lab_homdel, lab_LOH, lab_het])
         for i in labels_ordered:
             tmp_count = i.split(":", 1)
             counts_ordered.append(float(tmp_count[0]))
@@ -2572,7 +2576,8 @@ def plotCNV(
         else:
             tmp_y_labels = [round(x, 1) for x in ax.get_yticks().tolist()]
 
-        # set the y-axis labels
+        # set the y-axis ticks and labels
+        ax.set_yticks(ax.get_yticks())
         ax.set_yticklabels(
             tmp_y_labels, fontname="Arial", weight="bold", fontsize=16, color="black"
         )
@@ -2719,297 +2724,291 @@ def plotSBS(
         os.makedirs(output_path)
 
     if plot_type == "96":
-        try:
-            data = process_input(matrix_path, plot_type)
-            data = reindex_sbs96(data)
-            sample_count = 0
+        data = process_input(matrix_path, plot_type)
+        data = reindex_sbs96(data)
+        sample_count = 0
 
-            buf = io.BytesIO()
-            fig_orig = make_pickle_file(
-                context="SBS96", return_plot_template=True, volume=volume
-            )
-            pickle.dump(fig_orig, buf)
+        buf = io.BytesIO()
+        fig_orig = make_pickle_file(
+            context="SBS96", return_plot_template=True, volume=volume
+        )
+        pickle.dump(fig_orig, buf)
 
-            figs = {}
-            buff_list = {}
-            ctx = data.index  # [seq[0]+seq[2]+seq[6] for seq in data.index]
-            colors = [
-                [3 / 256, 189 / 256, 239 / 256],
-                [1 / 256, 1 / 256, 1 / 256],
-                [228 / 256, 41 / 256, 38 / 256],
-                [203 / 256, 202 / 256, 202 / 256],
-                [162 / 256, 207 / 256, 99 / 256],
-                [236 / 256, 199 / 256, 197 / 256],
-            ]
-            colorsall = [
-                [colors[j] for i in range(int(len(ctx) / 6))] for j in range(6)
-            ]
-            colors_flat_list = [item for sublist in colorsall for item in sublist]
+        figs = {}
+        buff_list = {}
+        ctx = data.index  # [seq[0]+seq[2]+seq[6] for seq in data.index]
+        colors = [
+            [3 / 256, 189 / 256, 239 / 256],
+            [1 / 256, 1 / 256, 1 / 256],
+            [228 / 256, 41 / 256, 38 / 256],
+            [203 / 256, 202 / 256, 202 / 256],
+            [162 / 256, 207 / 256, 99 / 256],
+            [236 / 256, 199 / 256, 197 / 256],
+        ]
+        colorsall = [
+            [colors[j] for i in range(int(len(ctx) / 6))] for j in range(6)
+        ]
+        colors_flat_list = [item for sublist in colorsall for item in sublist]
 
-            for sample in data.columns:
-                buf.seek(0)
-                figs[sample] = pickle.load(buf)
-                panel1 = figs[sample].axes[0]
+        for sample in data.columns:
+            buf.seek(0)
+            figs[sample] = pickle.load(buf)
+            panel1 = figs[sample].axes[0]
 
-                total_count = np.sum(data[sample].values)
-                x = 0.4
-                ymax = 0
-                i = 0
-                muts = data[sample].values
-                if percentage:
-                    if total_count > 0:
-                        plt.bar(
-                            np.arange(len(ctx)) + x,
-                            muts / total_count * 100,
-                            width=0.4,
-                            color=colors_flat_list,
-                            align="center",
-                            zorder=1000,
-                        )
-                        ymax = np.max(muts / total_count * 100)
-                    sig_probs = True
-                else:
+            total_count = np.sum(data[sample].values)
+            x = 0.4
+            ymax = 0
+            i = 0
+            muts = data[sample].values
+            if percentage:
+                if total_count > 0:
                     plt.bar(
                         np.arange(len(ctx)) + x,
-                        muts,
+                        muts / total_count * 100,
                         width=0.4,
                         color=colors_flat_list,
                         align="center",
                         zorder=1000,
                     )
-                    ymax = np.max(muts)
-
-                x = 0.043
-                y3 = 0.87
-                y = int(ymax * 1.25)
-                y2 = y + 2
-
-                if y <= 4:
-                    y += 4
-
-                while y % 4 != 0:
-                    y += 1
-
-                y = ymax / 1.025
-                ytick_offest = float(y / 3)
-
-                if percentage:
-                    ylabs = [
-                        0,
-                        round(ytick_offest, 1),
-                        round(ytick_offest * 2, 1),
-                        round(ytick_offest * 3, 1),
-                        round(ytick_offest * 4, 1),
-                    ]
-                    ylabels = [
-                        str(0),
-                        str(round(ytick_offest, 1)) + "%",
-                        str(round(ytick_offest * 2, 1)) + "%",
-                        str(round(ytick_offest * 3, 1)) + "%",
-                        str(round(ytick_offest * 4, 1)) + "%",
-                    ]
-                else:
-                    ylabs = [
-                        0,
-                        ytick_offest,
-                        ytick_offest * 2,
-                        ytick_offest * 3,
-                        ytick_offest * 4,
-                    ]
-                    ylabels = [
-                        0,
-                        ytick_offest,
-                        ytick_offest * 2,
-                        ytick_offest * 3,
-                        ytick_offest * 4,
-                    ]
-
-                labs = np.arange(0.375, 96.375, 1)
-
-                font_label_size = 30
-                if not percentage:
-                    if int(ylabels[3]) >= 1000:
-                        font_label_size = 20
-
-                if percentage:
-                    if len(ylabels) > 2:
-                        font_label_size = 20
-
-                if not percentage:
-                    ylabels = getylabels(ylabels)
-
-                panel1.set_xlim([0, 96])
-                panel1.set_ylim([0, y])
-                panel1.set_yticks(ylabs)
-                if sig_probs:
-                    plt.text(
-                        0.045,
-                        0.75,
-                        sample,
-                        fontsize=60,
-                        weight="bold",
-                        color="black",
-                        fontname="Arial",
-                        transform=plt.gcf().transFigure,
-                    )
-                else:
-                    plt.text(
-                        0.045,
-                        0.75,
-                        sample + ": " + "{:,}".format(int(total_count)) + " subs",
-                        fontsize=60,
-                        weight="bold",
-                        color="black",
-                        fontname="Arial",
-                        transform=plt.gcf().transFigure,
-                    )
-
-                panel1.set_yticklabels(ylabels, fontsize=font_label_size)
-                plt.gca().yaxis.grid(True)
-                plt.gca().grid(
-                    which="major", axis="y", color=[0.93, 0.93, 0.93], zorder=1
+                    ymax = np.max(muts / total_count * 100)
+                sig_probs = True
+            else:
+                plt.bar(
+                    np.arange(len(ctx)) + x,
+                    muts,
+                    width=0.4,
+                    color=colors_flat_list,
+                    align="center",
+                    zorder=1000,
                 )
-                panel1.set_xlabel("")
-                panel1.set_ylabel("")
+                ymax = np.max(muts)
 
-                custom_text_upper_plot = ""
-                try:
-                    custom_text_upper[sample_count]
-                except:
-                    custom_text_upper = False
-                try:
-                    custom_text_middle[sample_count]
-                except:
-                    custom_text_middle = False
-                try:
-                    custom_text_bottom[sample_count]
-                except:
-                    custom_text_bottom = False
+            x = 0.043
+            y3 = 0.87
+            y = int(ymax * 1.25)
+            y2 = y + 2
 
-                if custom_text_upper:
-                    plot_custom_text = True
-                    if len(custom_text_upper[sample_count]) > 40:
-                        print(
-                            "To add a custom text, please limit the string to <40 characters including spaces."
-                        )
-                        plot_custom_text = False
-                if custom_text_middle:
-                    if len(custom_text_middle[sample_count]) > 40:
-                        print(
-                            "To add a custom text, please limit the string to <40 characters including spaces."
-                        )
-                        plot_custom_text = False
+            if y <= 4:
+                y += 4
 
-                if plot_custom_text:
-                    x_pos_custom = 0.98
-                    if custom_text_upper and custom_text_middle:
-                        custom_text_upper_plot = (
-                            custom_text_upper[sample_count]
-                            + "\n"
-                            + custom_text_middle[sample_count]
-                        )
-                        if custom_text_bottom:
-                            custom_text_upper_plot += (
-                                "\n" + custom_text_bottom[sample_count]
-                            )
+            while y % 4 != 0:
+                y += 1
 
-                    if custom_text_upper and not custom_text_middle:
-                        custom_text_upper_plot = custom_text_upper[sample_count]
-                        panel1.text(
-                            x_pos_custom,
-                            0.78,
-                            custom_text_upper_plot,
-                            fontsize=40,
-                            weight="bold",
-                            color="black",
-                            fontname="Arial",
-                            transform=plt.gcf().transFigure,
-                            ha="right",
-                        )
+            y = ymax / 1.025
+            ytick_offest = float(y / 3)
 
-                    elif custom_text_upper and custom_text_middle:
-                        if not custom_text_bottom:
-                            panel1.text(
-                                x_pos_custom,
-                                0.72,
-                                custom_text_upper_plot,
-                                fontsize=40,
-                                weight="bold",
-                                color="black",
-                                fontname="Arial",
-                                transform=plt.gcf().transFigure,
-                                ha="right",
-                            )
-                        else:
-                            panel1.text(
-                                x_pos_custom,
-                                0.68,
-                                custom_text_upper_plot,
-                                fontsize=40,
-                                weight="bold",
-                                color="black",
-                                fontname="Arial",
-                                transform=plt.gcf().transFigure,
-                                ha="right",
-                            )
+            if percentage:
+                ylabs = [
+                    0,
+                    round(ytick_offest, 1),
+                    round(ytick_offest * 2, 1),
+                    round(ytick_offest * 3, 1),
+                    round(ytick_offest * 4, 1),
+                ]
+                ylabels = [
+                    str(0),
+                    str(round(ytick_offest, 1)) + "%",
+                    str(round(ytick_offest * 2, 1)) + "%",
+                    str(round(ytick_offest * 3, 1)) + "%",
+                    str(round(ytick_offest * 4, 1)) + "%",
+                ]
+            else:
+                ylabs = [
+                    0,
+                    ytick_offest,
+                    ytick_offest * 2,
+                    ytick_offest * 3,
+                    ytick_offest * 4,
+                ]
+                ylabels = [
+                    0,
+                    ytick_offest,
+                    ytick_offest * 2,
+                    ytick_offest * 3,
+                    ytick_offest * 4,
+                ]
 
-                    elif not custom_text_upper and custom_text_middle:
-                        custom_text_upper_plot = custom_text_middle[sample_count]
-                        panel1.text(
-                            x_pos_custom,
-                            0.78,
-                            custom_text_upper_plot,
-                            fontsize=40,
-                            weight="bold",
-                            color="black",
-                            fontname="Arial",
-                            transform=plt.gcf().transFigure,
-                            ha="right",
-                        )
+            labs = np.arange(0.375, 96.375, 1)
 
-                if percentage:
-                    plt.ylabel(
-                        "Percentage of Single Base Substitutions",
-                        fontsize=35,
-                        fontname="Times New Roman",
-                        weight="bold",
-                    )
-                else:
-                    plt.ylabel(
-                        "Number of Single Base Substitutions",
-                        fontsize=35,
-                        fontname="Times New Roman",
-                        weight="bold",
-                    )
+            font_label_size = 30
+            if not percentage:
+                if int(ylabels[3]) >= 1000:
+                    font_label_size = 20
 
-                panel1.tick_params(
-                    axis="both",
-                    which="both",
-                    bottom=False,
-                    labelbottom=False,
-                    left=True,
-                    labelleft=True,
-                    right=True,
-                    labelright=False,
-                    top=False,
-                    labeltop=False,
-                    direction="in",
-                    length=25,
-                    colors="lightgray",
-                    width=2,
+            if percentage:
+                if len(ylabels) > 2:
+                    font_label_size = 20
+
+            if not percentage:
+                ylabels = getylabels(ylabels)
+
+            panel1.set_xlim([0, 96])
+            panel1.set_ylim([0, y])
+            panel1.set_yticks(ylabs)
+            if sig_probs:
+                plt.text(
+                    0.045,
+                    0.75,
+                    sample,
+                    fontsize=60,
+                    weight="bold",
+                    color="black",
+                    fontname="Arial",
+                    transform=plt.gcf().transFigure,
+                )
+            else:
+                plt.text(
+                    0.045,
+                    0.75,
+                    sample + ": " + "{:,}".format(int(total_count)) + " subs",
+                    fontsize=60,
+                    weight="bold",
+                    color="black",
+                    fontname="Arial",
+                    transform=plt.gcf().transFigure,
                 )
 
-                [i.set_color("black") for i in plt.gca().get_yticklabels()]
-                sample_count += 1
-
-            return output_results(
-                savefig_format, output_path, project, figs, "SBS_96", dpi=dpi
+            panel1.set_yticklabels(ylabels, fontsize=font_label_size)
+            plt.gca().yaxis.grid(True)
+            plt.gca().grid(
+                which="major", axis="y", color=[0.93, 0.93, 0.93], zorder=1
             )
-        except:
-            print("There may be an issue with the formatting of your matrix file.")
-            pdf_path = output_path + "SBS_96_plots_" + project + ".pdf"
-            if os.path.isfile(pdf_path):
-                os.remove(pdf_path)
+            panel1.set_xlabel("")
+            panel1.set_ylabel("")
+
+            custom_text_upper_plot = ""
+            try:
+                custom_text_upper[sample_count]
+            except:
+                custom_text_upper = False
+            try:
+                custom_text_middle[sample_count]
+            except:
+                custom_text_middle = False
+            try:
+                custom_text_bottom[sample_count]
+            except:
+                custom_text_bottom = False
+
+            if custom_text_upper:
+                plot_custom_text = True
+                if len(custom_text_upper[sample_count]) > 40:
+                    print(
+                        "To add a custom text, please limit the string to <40 characters including spaces."
+                    )
+                    plot_custom_text = False
+            if custom_text_middle:
+                if len(custom_text_middle[sample_count]) > 40:
+                    print(
+                        "To add a custom text, please limit the string to <40 characters including spaces."
+                    )
+                    plot_custom_text = False
+
+            if plot_custom_text:
+                x_pos_custom = 0.98
+                if custom_text_upper and custom_text_middle:
+                    custom_text_upper_plot = (
+                        custom_text_upper[sample_count]
+                        + "\n"
+                        + custom_text_middle[sample_count]
+                    )
+                    if custom_text_bottom:
+                        custom_text_upper_plot += (
+                            "\n" + custom_text_bottom[sample_count]
+                        )
+
+                if custom_text_upper and not custom_text_middle:
+                    custom_text_upper_plot = custom_text_upper[sample_count]
+                    panel1.text(
+                        x_pos_custom,
+                        0.78,
+                        custom_text_upper_plot,
+                        fontsize=40,
+                        weight="bold",
+                        color="black",
+                        fontname="Arial",
+                        transform=plt.gcf().transFigure,
+                        ha="right",
+                    )
+
+                elif custom_text_upper and custom_text_middle:
+                    if not custom_text_bottom:
+                        panel1.text(
+                            x_pos_custom,
+                            0.72,
+                            custom_text_upper_plot,
+                            fontsize=40,
+                            weight="bold",
+                            color="black",
+                            fontname="Arial",
+                            transform=plt.gcf().transFigure,
+                            ha="right",
+                        )
+                    else:
+                        panel1.text(
+                            x_pos_custom,
+                            0.68,
+                            custom_text_upper_plot,
+                            fontsize=40,
+                            weight="bold",
+                            color="black",
+                            fontname="Arial",
+                            transform=plt.gcf().transFigure,
+                            ha="right",
+                        )
+
+                elif not custom_text_upper and custom_text_middle:
+                    custom_text_upper_plot = custom_text_middle[sample_count]
+                    panel1.text(
+                        x_pos_custom,
+                        0.78,
+                        custom_text_upper_plot,
+                        fontsize=40,
+                        weight="bold",
+                        color="black",
+                        fontname="Arial",
+                        transform=plt.gcf().transFigure,
+                        ha="right",
+                    )
+
+            if percentage:
+                plt.ylabel(
+                    "Percentage of Single Base Substitutions",
+                    fontsize=35,
+                    fontname="Times New Roman",
+                    weight="bold",
+                )
+            else:
+                plt.ylabel(
+                    "Number of Single Base Substitutions",
+                    fontsize=35,
+                    fontname="Times New Roman",
+                    weight="bold",
+                )
+
+            panel1.tick_params(
+                axis="both",
+                which="both",
+                bottom=False,
+                labelbottom=False,
+                left=True,
+                labelleft=True,
+                right=True,
+                labelright=False,
+                top=False,
+                labeltop=False,
+                direction="in",
+                length=25,
+                colors="lightgray",
+                width=2,
+            )
+
+            [i.set_color("black") for i in plt.gca().get_yticklabels()]
+            sample_count += 1
+
+        return output_results(
+            savefig_format, output_path, project, figs, "SBS_96", dpi=dpi
+        )
 
     elif plot_type == "192" or plot_type == "96SB" or plot_type == "384":
         with open(matrix_path) as f:
@@ -7327,422 +7326,415 @@ def plotSBS(
             pp.close()
 
     elif plot_type == "288":
-        try:
-            plot_custom_text = False
-            sig_probs = False
-            pcawg = False
+        plot_custom_text = False
+        sig_probs = False
+        pcawg = False
 
-            data = process_input(matrix_path, plot_type)
+        data = process_input(matrix_path, plot_type)
 
-            sample_count = 0
+        sample_count = 0
 
-            data, tsb_mats = reindex_sbs288(data)
-            buf = io.BytesIO()
-            fig_orig = make_pickle_file(
-                context="SBS288", return_plot_template=True, volume=volume
-            )
-            pickle.dump(fig_orig, buf)
+        data, tsb_mats = reindex_sbs288(data)
+        buf = io.BytesIO()
+        fig_orig = make_pickle_file(
+            context="SBS288", return_plot_template=True, volume=volume
+        )
+        pickle.dump(fig_orig, buf)
 
-            figs = {}
-            buff_list = {}
-            ctx = data.index
-            colors = [
-                [3 / 256, 189 / 256, 239 / 256],
-                [1 / 256, 1 / 256, 1 / 256],
-                [228 / 256, 41 / 256, 38 / 256],
-                [203 / 256, 202 / 256, 202 / 256],
-                [162 / 256, 207 / 256, 99 / 256],
-                [236 / 256, 199 / 256, 197 / 256],
-            ]
-            colorsall = [
-                [colors[j] for i in range(int(len(ctx) / 6))] for j in range(6)
-            ]
-            colors_flat_list = [item for sublist in colorsall for item in sublist]
+        figs = {}
+        buff_list = {}
+        ctx = data.index
+        colors = [
+            [3 / 256, 189 / 256, 239 / 256],
+            [1 / 256, 1 / 256, 1 / 256],
+            [228 / 256, 41 / 256, 38 / 256],
+            [203 / 256, 202 / 256, 202 / 256],
+            [162 / 256, 207 / 256, 99 / 256],
+            [236 / 256, 199 / 256, 197 / 256],
+        ]
+        colorsall = [
+            [colors[j] for i in range(int(len(ctx) / 6))] for j in range(6)
+        ]
+        colors_flat_list = [item for sublist in colorsall for item in sublist]
 
-            for sample in data.columns:
-                buf.seek(0)
-                figs[sample] = pickle.load(buf)
-                panel1 = figs[sample].axes[0]
-                panel2 = figs[sample].axes[1]
+        for sample in data.columns:
+            buf.seek(0)
+            figs[sample] = pickle.load(buf)
+            panel1 = figs[sample].axes[0]
+            panel2 = figs[sample].axes[1]
 
-                total_count = np.sum(data[sample].values)
-                muts = data[sample].values
-                x = 0.4
-                if percentage:
-                    if total_count > 0:
-                        panel1.bar(
-                            np.arange(len(ctx)) + x,
-                            muts / total_count * 100,
-                            width=0.4,
-                            color=colors_flat_list,
-                            align="center",
-                            zorder=1000,
-                        )
-                        ymax = np.max(muts / total_count * 100)
-                    sig_probs = True
-                else:
+            total_count = np.sum(data[sample].values)
+            muts = data[sample].values
+            x = 0.4
+            if percentage:
+                if total_count > 0:
                     panel1.bar(
                         np.arange(len(ctx)) + x,
-                        muts,
+                        muts / total_count * 100,
                         width=0.4,
                         color=colors_flat_list,
                         align="center",
                         zorder=1000,
                     )
-                    ymax = np.max(muts)
-
-                y = int(ymax * 1.25)
-                if y <= 4:
-                    y += 4
-
-                while y % 4 != 0:
-                    y += 1
-                y = ymax / 1.025
-                ytick_offest = float(y / 3)
-
-                if percentage:
-                    ylabs = [
-                        0,
-                        round(ytick_offest, 1),
-                        round(ytick_offest * 2, 1),
-                        round(ytick_offest * 3, 1),
-                        round(ytick_offest * 4, 1),
-                    ]
-                    ylabels = [
-                        str(0),
-                        str(round(ytick_offest, 1)) + "%",
-                        str(round(ytick_offest * 2, 1)) + "%",
-                        str(round(ytick_offest * 3, 1)) + "%",
-                        str(round(ytick_offest * 4, 1)) + "%",
-                    ]
-
-                else:
-                    ylabs = [
-                        0,
-                        ytick_offest,
-                        ytick_offest * 2,
-                        ytick_offest * 3,
-                        ytick_offest * 4,
-                    ]
-                    ylabels = [
-                        0,
-                        ytick_offest,
-                        ytick_offest * 2,
-                        ytick_offest * 3,
-                        ytick_offest * 4,
-                    ]
-
-                font_label_size = 30
-                if not percentage:
-                    if int(ylabels[3]) >= 1000:
-                        font_label_size = 20
-
-                if percentage:
-                    if len(ylabels) > 2:
-                        font_label_size = 20
-
-                labs = np.arange(0.375, 96.375, 1)
-
-                if not percentage:
-                    ylabels = spplt.getylabels(ylabels)
-
-                panel1.set_xlim([0, 96])
-                panel1.set_ylim([0, y])
-
-                panel1.set_yticks(ylabs)
-
-                if sig_probs:
-                    plt.text(
-                        0.045,
-                        0.75,
-                        sample,
-                        fontsize=60,
-                        weight="bold",
-                        color="black",
-                        fontname="Arial",
-                        transform=plt.gcf().transFigure,
-                    )
-                else:
-                    plt.text(
-                        0.045,
-                        0.75,
-                        sample + ": " + "{:,}".format(int(total_count)) + " subs",
-                        fontsize=60,
-                        weight="bold",
-                        color="black",
-                        fontname="Arial",
-                        transform=plt.gcf().transFigure,
-                    )
-
-                custom_text_upper_plot = ""
-                try:
-                    custom_text_upper[sample_count]
-                except:
-                    custom_text_upper = False
-                try:
-                    custom_text_middle[sample_count]
-                except:
-                    custom_text_middle = False
-                try:
-                    custom_text_bottom[sample_count]
-                except:
-                    custom_text_bottom = False
-
-                if custom_text_upper:
-                    plot_custom_text = True
-                    if len(custom_text_upper[sample_count]) > 40:
-                        print(
-                            "To add a custom text, please limit the string to <40 characters including spaces."
-                        )
-                        plot_custom_text = False
-                if custom_text_middle:
-                    if len(custom_text_middle[sample_count]) > 40:
-                        print(
-                            "To add a custom text, please limit the string to <40 characters including spaces."
-                        )
-                        plot_custom_text = False
-
-                if plot_custom_text:
-                    x_pos_custom = 0.73
-                    if custom_text_upper and custom_text_middle:
-                        custom_text_upper_plot = (
-                            custom_text_upper[sample_count]
-                            + "\n"
-                            + custom_text_middle[sample_count]
-                        )
-                        if custom_text_bottom:
-                            custom_text_upper_plot += (
-                                "\n" + custom_text_bottom[sample_count]
-                            )
-
-                    if custom_text_upper and not custom_text_middle:
-                        custom_text_upper_plot = custom_text_upper[sample_count]
-                        panel1.text(
-                            x_pos_custom,
-                            0.78,
-                            custom_text_upper_plot,
-                            fontsize=40,
-                            weight="bold",
-                            color="black",
-                            fontname="Arial",
-                            transform=plt.gcf().transFigure,
-                            ha="right",
-                            zorder=1,
-                        )
-
-                    elif custom_text_upper and custom_text_middle:
-                        if not custom_text_bottom:
-                            panel1.text(
-                                x_pos_custom,
-                                0.72,
-                                custom_text_upper_plot,
-                                fontsize=40,
-                                weight="bold",
-                                color="black",
-                                fontname="Arial",
-                                transform=plt.gcf().transFigure,
-                                ha="right",
-                            )
-                        else:
-                            panel1.text(
-                                x_pos_custom,
-                                0.68,
-                                custom_text_upper_plot,
-                                fontsize=40,
-                                weight="bold",
-                                color="black",
-                                fontname="Arial",
-                                transform=plt.gcf().transFigure,
-                                ha="right",
-                            )
-
-                    elif not custom_text_upper and custom_text_middle:
-                        custom_text_upper_plot = custom_text_middle[sample_count]
-                        panel1.text(
-                            x_pos_custom,
-                            0.78,
-                            custom_text_upper_plot,
-                            fontsize=40,
-                            weight="bold",
-                            color="black",
-                            fontname="Arial",
-                            transform=plt.gcf().transFigure,
-                            ha="right",
-                        )
-
-                panel1.set_yticklabels(ylabels, fontsize=font_label_size)
-                panel1.yaxis.grid(True)
-                panel1.grid(which="major", axis="y", color=[0.93, 0.93, 0.93], zorder=1)
-                panel1.set_xlabel("")
-                panel1.set_ylabel("")
-
-                if percentage:
-                    panel1.set_ylabel(
-                        "Percentage of Single Base Substitutions",
-                        fontsize=35,
-                        fontname="Times New Roman",
-                        weight="bold",
-                    )
-                else:
-                    panel1.set_ylabel(
-                        "Number of Single Base Substitutions",
-                        fontsize=35,
-                        fontname="Times New Roman",
-                        weight="bold",
-                    )
-
-                panel1.tick_params(
-                    axis="both",
-                    which="both",
-                    bottom=False,
-                    labelbottom=False,
-                    left=True,
-                    labelleft=True,
-                    right=True,
-                    labelright=False,
-                    top=False,
-                    labeltop=False,
-                    direction="in",
-                    length=25,
-                    colors="lightgray",
-                    width=2,
+                    ymax = np.max(muts / total_count * 100)
+                sig_probs = True
+            else:
+                panel1.bar(
+                    np.arange(len(ctx)) + x,
+                    muts,
+                    width=0.4,
+                    color=colors_flat_list,
+                    align="center",
+                    zorder=1000,
                 )
+                ymax = np.max(muts)
 
-                [i.set_color("black") for i in panel1.get_yticklabels()]
+            y = int(ymax * 1.25)
+            if y <= 4:
+                y += 4
 
-                yp2 = 28
-                labels = []
-                y2max = 0
-                tsbColors = [
-                    [1 / 256, 70 / 256, 102 / 256],
-                    [228 / 256, 41 / 256, 38 / 256],
-                    "green",
+            while y % 4 != 0:
+                y += 1
+            y = ymax / 1.025
+            ytick_offest = float(y / 3)
+
+            if percentage:
+                ylabs = [
+                    0,
+                    round(ytick_offest, 1),
+                    round(ytick_offest * 2, 1),
+                    round(ytick_offest * 3, 1),
+                    round(ytick_offest * 4, 1),
+                ]
+                ylabels = [
+                    str(0),
+                    str(round(ytick_offest, 1)) + "%",
+                    str(round(ytick_offest * 2, 1)) + "%",
+                    str(round(ytick_offest * 3, 1)) + "%",
+                    str(round(ytick_offest * 4, 1)) + "%",
                 ]
 
-                if percentage:
-                    y2max = (
-                        np.max(
-                            [
-                                tsb_mats["T"][sample]["All"],
-                                tsb_mats["U"][sample]["All"],
-                                tsb_mats["N"][sample]["All"],
-                            ]
+            else:
+                ylabs = [
+                    0,
+                    ytick_offest,
+                    ytick_offest * 2,
+                    ytick_offest * 3,
+                    ytick_offest * 4,
+                ]
+                ylabels = [
+                    0,
+                    ytick_offest,
+                    ytick_offest * 2,
+                    ytick_offest * 3,
+                    ytick_offest * 4,
+                ]
+
+            font_label_size = 30
+            if not percentage:
+                if int(ylabels[3]) >= 1000:
+                    font_label_size = 20
+
+            if percentage:
+                if len(ylabels) > 2:
+                    font_label_size = 20
+
+            labs = np.arange(0.375, 96.375, 1)
+
+            if not percentage:
+                ylabels = spplt.getylabels(ylabels)
+
+            panel1.set_xlim([0, 96])
+            panel1.set_ylim([0, y])
+
+            panel1.set_yticks(ylabs)
+
+            if sig_probs:
+                plt.text(
+                    0.045,
+                    0.75,
+                    sample,
+                    fontsize=60,
+                    weight="bold",
+                    color="black",
+                    fontname="Arial",
+                    transform=plt.gcf().transFigure,
+                )
+            else:
+                plt.text(
+                    0.045,
+                    0.75,
+                    sample + ": " + "{:,}".format(int(total_count)) + " subs",
+                    fontsize=60,
+                    weight="bold",
+                    color="black",
+                    fontname="Arial",
+                    transform=plt.gcf().transFigure,
+                )
+
+            custom_text_upper_plot = ""
+            try:
+                custom_text_upper[sample_count]
+            except:
+                custom_text_upper = False
+            try:
+                custom_text_middle[sample_count]
+            except:
+                custom_text_middle = False
+            try:
+                custom_text_bottom[sample_count]
+            except:
+                custom_text_bottom = False
+
+            if custom_text_upper:
+                plot_custom_text = True
+                if len(custom_text_upper[sample_count]) > 40:
+                    print(
+                        "To add a custom text, please limit the string to <40 characters including spaces."
+                    )
+                    plot_custom_text = False
+            if custom_text_middle:
+                if len(custom_text_middle[sample_count]) > 40:
+                    print(
+                        "To add a custom text, please limit the string to <40 characters including spaces."
+                    )
+                    plot_custom_text = False
+
+            if plot_custom_text:
+                x_pos_custom = 0.73
+                if custom_text_upper and custom_text_middle:
+                    custom_text_upper_plot = (
+                        custom_text_upper[sample_count]
+                        + "\n"
+                        + custom_text_middle[sample_count]
+                    )
+                    if custom_text_bottom:
+                        custom_text_upper_plot += (
+                            "\n" + custom_text_bottom[sample_count]
                         )
-                        / total_count
-                        * 100
+
+                if custom_text_upper and not custom_text_middle:
+                    custom_text_upper_plot = custom_text_upper[sample_count]
+                    panel1.text(
+                        x_pos_custom,
+                        0.78,
+                        custom_text_upper_plot,
+                        fontsize=40,
+                        weight="bold",
+                        color="black",
+                        fontname="Arial",
+                        transform=plt.gcf().transFigure,
+                        ha="right",
+                        zorder=1,
                     )
 
-                    panel2.barh(
-                        range(28, 1, -4),
-                        tsb_mats["T"][sample].values / total_count * 100,
-                        color=tsbColors[0],
-                        label="Genic-transcribed",
-                    )
-                    panel2.barh(
-                        range(27, 1, -4),
-                        tsb_mats["U"][sample].values / total_count * 100,
-                        color=tsbColors[1],
-                        label="Genic-untranscribed",
-                    )
-                    panel2.barh(
-                        range(26, 1, -4),
-                        tsb_mats["N"][sample].values / total_count * 100,
-                        color=tsbColors[2],
-                        label="Intergenic",
+                elif custom_text_upper and custom_text_middle:
+                    if not custom_text_bottom:
+                        panel1.text(
+                            x_pos_custom,
+                            0.72,
+                            custom_text_upper_plot,
+                            fontsize=40,
+                            weight="bold",
+                            color="black",
+                            fontname="Arial",
+                            transform=plt.gcf().transFigure,
+                            ha="right",
+                        )
+                    else:
+                        panel1.text(
+                            x_pos_custom,
+                            0.68,
+                            custom_text_upper_plot,
+                            fontsize=40,
+                            weight="bold",
+                            color="black",
+                            fontname="Arial",
+                            transform=plt.gcf().transFigure,
+                            ha="right",
+                        )
+
+                elif not custom_text_upper and custom_text_middle:
+                    custom_text_upper_plot = custom_text_middle[sample_count]
+                    panel1.text(
+                        x_pos_custom,
+                        0.78,
+                        custom_text_upper_plot,
+                        fontsize=40,
+                        weight="bold",
+                        color="black",
+                        fontname="Arial",
+                        transform=plt.gcf().transFigure,
+                        ha="right",
                     )
 
-                else:
-                    y2max = np.max(
+            panel1.set_yticklabels(ylabels, fontsize=font_label_size)
+            panel1.yaxis.grid(True)
+            panel1.grid(which="major", axis="y", color=[0.93, 0.93, 0.93], zorder=1)
+            panel1.set_xlabel("")
+            panel1.set_ylabel("")
+
+            if percentage:
+                panel1.set_ylabel(
+                    "Percentage of Single Base Substitutions",
+                    fontsize=35,
+                    fontname="Times New Roman",
+                    weight="bold",
+                )
+            else:
+                panel1.set_ylabel(
+                    "Number of Single Base Substitutions",
+                    fontsize=35,
+                    fontname="Times New Roman",
+                    weight="bold",
+                )
+
+            panel1.tick_params(
+                axis="both",
+                which="both",
+                bottom=False,
+                labelbottom=False,
+                left=True,
+                labelleft=True,
+                right=True,
+                labelright=False,
+                top=False,
+                labeltop=False,
+                direction="in",
+                length=25,
+                colors="lightgray",
+                width=2,
+            )
+
+            [i.set_color("black") for i in panel1.get_yticklabels()]
+
+            yp2 = 28
+            labels = []
+            y2max = 0
+            tsbColors = [
+                [1 / 256, 70 / 256, 102 / 256],
+                [228 / 256, 41 / 256, 38 / 256],
+                "green",
+            ]
+
+            if percentage:
+                y2max = (
+                    np.max(
                         [
                             tsb_mats["T"][sample]["All"],
                             tsb_mats["U"][sample]["All"],
                             tsb_mats["N"][sample]["All"],
                         ]
                     )
-                    panel2.barh(
-                        range(28, 1, -4),
-                        tsb_mats["T"][sample].values,
-                        color=tsbColors[0],
-                        label="Genic-transcribed",
-                    )
-                    panel2.barh(
-                        range(27, 1, -4),
-                        tsb_mats["U"][sample].values,
-                        color=tsbColors[1],
-                        label="Genic-untranscribed",
-                    )
-                    panel2.barh(
-                        range(26, 1, -4),
-                        tsb_mats["N"][sample].values,
-                        color=tsbColors[2],
-                        label="Intergenic",
-                    )
-
-                labels = list(tsb_mats["T"][sample].index)
-
-                y = int(y2max * 1.1)
-                if y <= 4:
-                    y += 4
-                while y % 4 != 0:
-                    y += 1
-                ytick_offest = int(y / 4)
-
-                if percentage:
-                    xlabs = [
-                        0,
-                        round(ytick_offest, 1),
-                        round(ytick_offest * 2, 1),
-                        round(ytick_offest * 3, 1),
-                        round(ytick_offest * 4, 1),
-                    ]
-                    xlabels = [
-                        str(0),
-                        str(round(ytick_offest, 1)) + "%",
-                        str(round(ytick_offest * 2, 1)) + "%",
-                        str(round(ytick_offest * 3, 1)) + "%",
-                        str(round(ytick_offest * 4, 1)) + "%",
-                    ]
-                else:
-                    xlabs = [
-                        0,
-                        ytick_offest,
-                        ytick_offest * 2,
-                        ytick_offest * 3,
-                        ytick_offest * 4,
-                    ]
-                    xlabels = [
-                        0,
-                        ytick_offest,
-                        ytick_offest * 2,
-                        ytick_offest * 3,
-                        ytick_offest * 4,
-                    ]
-
-                if not percentage:
-                    xlabels = spplt.getxlabels(xlabels)
-
-                panel2.spines["right"].set_visible(False)
-                panel2.spines["top"].set_visible(False)
-                labels.reverse()
-                panel2.set_yticks([3, 7, 11, 15, 19, 23, 27])
-                panel2.set_yticklabels(
-                    labels, fontsize=30, fontname="Arial", weight="bold"
+                    / total_count
+                    * 100
                 )
-                panel2.set_xticklabels(xlabels, fontsize=30)
-                panel2.set_xticks(xlabs)
-                handles, labels = panel2.get_legend_handles_labels()
-                panel2.legend(handles[:3], labels[:3], loc="best", prop={"size": 30})
-                sample_count += 1
 
-            return output_results(
-                savefig_format, output_path, project, figs, "SBS_288", dpi=dpi
+                panel2.barh(
+                    range(28, 1, -4),
+                    tsb_mats["T"][sample].values / total_count * 100,
+                    color=tsbColors[0],
+                    label="Genic-transcribed",
+                )
+                panel2.barh(
+                    range(27, 1, -4),
+                    tsb_mats["U"][sample].values / total_count * 100,
+                    color=tsbColors[1],
+                    label="Genic-untranscribed",
+                )
+                panel2.barh(
+                    range(26, 1, -4),
+                    tsb_mats["N"][sample].values / total_count * 100,
+                    color=tsbColors[2],
+                    label="Intergenic",
+                )
+
+            else:
+                y2max = np.max(
+                    [
+                        tsb_mats["T"][sample]["All"],
+                        tsb_mats["U"][sample]["All"],
+                        tsb_mats["N"][sample]["All"],
+                    ]
+                )
+                panel2.barh(
+                    range(28, 1, -4),
+                    tsb_mats["T"][sample].values,
+                    color=tsbColors[0],
+                    label="Genic-transcribed",
+                )
+                panel2.barh(
+                    range(27, 1, -4),
+                    tsb_mats["U"][sample].values,
+                    color=tsbColors[1],
+                    label="Genic-untranscribed",
+                )
+                panel2.barh(
+                    range(26, 1, -4),
+                    tsb_mats["N"][sample].values,
+                    color=tsbColors[2],
+                    label="Intergenic",
+                )
+
+            labels = list(tsb_mats["T"][sample].index)
+
+            y = int(y2max * 1.1)
+            if y <= 4:
+                y += 4
+            while y % 4 != 0:
+                y += 1
+            ytick_offest = int(y / 4)
+
+            if percentage:
+                xlabs = [
+                    0,
+                    round(ytick_offest, 1),
+                    round(ytick_offest * 2, 1),
+                    round(ytick_offest * 3, 1),
+                    round(ytick_offest * 4, 1),
+                ]
+                xlabels = [
+                    str(0),
+                    str(round(ytick_offest, 1)) + "%",
+                    str(round(ytick_offest * 2, 1)) + "%",
+                    str(round(ytick_offest * 3, 1)) + "%",
+                    str(round(ytick_offest * 4, 1)) + "%",
+                ]
+            else:
+                xlabs = [
+                    0,
+                    ytick_offest,
+                    ytick_offest * 2,
+                    ytick_offest * 3,
+                    ytick_offest * 4,
+                ]
+                xlabels = [
+                    0,
+                    ytick_offest,
+                    ytick_offest * 2,
+                    ytick_offest * 3,
+                    ytick_offest * 4,
+                ]
+
+            if not percentage:
+                xlabels = spplt.getxlabels(xlabels)
+
+            panel2.spines["right"].set_visible(False)
+            panel2.spines["top"].set_visible(False)
+            labels.reverse()
+            panel2.set_yticks([3, 7, 11, 15, 19, 23, 27])
+            panel2.set_yticklabels(
+                labels, fontsize=30, fontname="Arial", weight="bold"
             )
+            panel2.set_xticks(xlabs)
+            panel2.set_xticklabels(xlabels, fontsize=30)
+            handles, labels = panel2.get_legend_handles_labels()
+            panel2.legend(handles[:3], labels[:3], loc="best", prop={"size": 30})
+            sample_count += 1
 
-        except:
-            print("There may be an issue with the formatting of your matrix file.")
-            pdf_path = output_path + "SBS_288_plots_" + project + ".pdf"
-            if os.path.isfile(pdf_path):
-                os.remove(pdf_path)
+        return output_results(
+            savefig_format, output_path, project, figs, "SBS_288", dpi=dpi
+        )
 
     elif plot_type == "288_Normalized":
         with open(matrix_path) as f:
@@ -8307,8 +8299,8 @@ def plotSBS(
                 panel2.set_yticklabels(
                     labels, fontsize=30, fontname="Arial", weight="bold"
                 )
-                panel2.set_xticklabels(xlabels, fontsize=30)
                 panel2.set_xticks(xlabs)
+                panel2.set_xticklabels(xlabels, fontsize=30)
                 handles, labels = panel2.get_legend_handles_labels()
                 panel2.legend(
                     handles[:4],
