@@ -2,7 +2,8 @@ dist: focal
 language: python
 
 python:
-  - "3.9.13"
+  - "3.9"
+  - "3.12"
 
 install:
   - pip install -q matplotlib

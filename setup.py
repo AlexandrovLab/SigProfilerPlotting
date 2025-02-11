@@ -14,7 +14,7 @@ def readme():
         return f.read()
 
 
-VERSION = "1.3.24"
+VERSION = "1.4.0"
 
 
 def write_version_py(filename="sigProfilerPlotting/version.py"):
@@ -23,7 +23,7 @@ def write_version_py(filename="sigProfilerPlotting/version.py"):
 # THIS FILE IS GENERATED FROM SIGPROFILERPLOTTING SETUP.PY
 short_version = '%(version)s'
 version = '%(version)s'
-update = 'Upgrade v1.3.24: Make output path handling more robust with os.path.join() and add environmental variable SIGPROFILERPLOTTING_VOLUME'
+update = 'v1.4.0: Pandas and Numpy >= 2.0.0 and require Python >= 3.9'
     
     """
     fh = open(filename, "w")
@@ -58,9 +58,10 @@ setup(
         "sigProfilerPlotting.fonts",
         "sigProfilerPlotting.controllers",
     ],
+    python_requires=">=3.9",
     install_requires=[
         "matplotlib>=3.4.3",
-        "pandas>=1.2.4,<2.0.0",
+        "pandas>=2.0.0",
         "scikit-learn>=1.1.3",
         "pillow>=10.0.0",
     ],
@@ -68,7 +69,7 @@ setup(
         "tests": [
             "pytest",
             "scikit-image>=0.21.0",
-            "numpy>=1.21.2",
+            "numpy>=2.0.0",
         ],
     },
     entry_points={
