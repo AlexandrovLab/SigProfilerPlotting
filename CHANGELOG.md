@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.4.1] - 2025-03-10
+
+### Fixed
+- The plotting function for structural variants has had syntax to reflect pandas 2.0.0 changes.
+
 ## [1.4.0] - 2025-02-11
 
 ### Changed

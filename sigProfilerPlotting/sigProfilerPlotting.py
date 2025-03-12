@@ -2111,7 +2111,7 @@ def plotSV(
     figs = {}
     if aggregate:
         num_samples = len(df.columns) - 1
-        df["total_count"] = df.sum(axis=1) / num_samples  # NORMALIZE BY # of SAMPLES
+        df["total_count"] = df.select_dtypes(include=[np.number]).sum(axis=1) / num_samples  # NORMALIZE BY # of SAMPLES
         counts = list(df["total_count"])
         if percentage and sum(counts) != 0:
             counts = [(x / sum(counts)) * 100 for x in counts]
