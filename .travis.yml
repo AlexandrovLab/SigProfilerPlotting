@@ -1,11 +1,19 @@
 dist: focal
 language: python
 
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'CHANGELOG.md'
+      - 'README.md'
+      - 'LICENSE'
+
 python:
   - "3.9"
   - "3.12"
 
-# Enable the Docker service for the build environment
 services:
   - docker
 
@@ -19,12 +27,10 @@ script:
   # run unit tests
   - pytest -s -rw tests
 
-# After tests pass, build and push the Docker image
 after_success:
-  # The Docker image will only be built and pushed for the master branch on Python 3.12
   - |
     if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_PYTHON_VERSION" == "3.12" ]; then
-      echo "Starting Docker deployment process"
+      echo "Starting Docker deployment to Docker Hub..."
       
       # Dynamically get the version from setup.py for the tag
       VERSION_TAG=$(grep "VERSION = " setup.py | cut -d'"' -f2)
@@ -36,12 +42,12 @@ after_success:
       # Build the image, passing the commit SHA and tagging with the version and "latest"
       docker build \
         --build-arg COMMIT_SHA=$TRAVIS_COMMIT \
-        -t mdbarnesucsd/SigProfilerPlotting:$VERSION_TAG \
-        -t mdbarnesucsd/SigProfilerPlotting:latest .
+        -t mdbarnesucsd/sigprofilerplotting:$VERSION_TAG \
+        -t mdbarnesucsd/sigprofilerplotting:latest .
         
       # Push both tags to your personal Docker Hub account
-      docker push mdbarnesucsd/SigProfilerPlotting:$VERSION_TAG
-      docker push mdbarnesucsd/SigProfilerPlotting:latest
+      docker push mdbarnesucsd/sigprofilerplotting:$VERSION_TAG
+      docker push mdbarnesucsd/sigprofilerplotting:latest
       
       echo "Docker deployment successful"
     else
