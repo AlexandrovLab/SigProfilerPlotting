@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.4.2] - 2025-10-13
+
+### Added
+- Implemented a CI/CD pipeline with Travis CI to automate the building and publishing of Docker images to Docker Hub.
+- Added a `pyproject.toml` file to standardize the package build system.
+
 ## [1.4.1] - 2025-03-10
 
 ### Fixed

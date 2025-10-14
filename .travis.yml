@@ -1,9 +1,21 @@
 dist: focal
 language: python
 
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'CHANGELOG.md'
+      - 'README.md'
+      - 'LICENSE'
+
 python:
   - "3.9"
   - "3.12"
+
+services:
+  - docker
 
 install:
   - pip install -q matplotlib
@@ -14,3 +26,30 @@ script:
   - python3 sigProfilerPlotting/examples/plot_example.py
   # run unit tests
   - pytest -s -rw tests
+
+after_success:
+  - |
+    if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_PYTHON_VERSION" == "3.12" ]; then
+      echo "Starting Docker deployment to Docker Hub..."
+      
+      # Dynamically get the version from setup.py for the tag
+      VERSION_TAG=$(grep "VERSION = " setup.py | cut -d'"' -f2)
+      echo "Building version: $VERSION_TAG for commit: $TRAVIS_COMMIT"
+      
+      # Log in securely using environment variables from Travis CI settings
+      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      
+      # Build the image, passing the commit SHA and tagging with the version and "latest"
+      docker build \
+        --build-arg COMMIT_SHA=$TRAVIS_COMMIT \
+        -t mdbarnesucsd/sigprofilerplotting:$VERSION_TAG \
+        -t mdbarnesucsd/sigprofilerplotting:latest .
+        
+      # Push both tags to your personal Docker Hub account
+      docker push mdbarnesucsd/sigprofilerplotting:$VERSION_TAG
+      docker push mdbarnesucsd/sigprofilerplotting:latest
+      
+      echo "Docker deployment successful"
+    else
+      echo "Skipping Docker deployment"
+    fi
