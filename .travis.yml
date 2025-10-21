@@ -22,18 +22,18 @@ script:
 
 after_success:
   - |
-    # This logic deploys after a merge to master. It runs on the "push" build that a merge creates,
-    # and skips the "pull request" build that runs before the merge.
     if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_PYTHON_VERSION" == "3.12" ]; then
       echo "Starting Docker deployment to GHCR for alexandrovlab..."
       
       VERSION_TAG=$(grep "VERSION = " setup.py | cut -d'"' -f2)
-      IMAGE_NAME="ghcr.io/alexandrovlab/$(basename $TRAVIS_REPO_SLUG)"
+
+      # Get the repository name and convert it to lowercase
+      REPO_NAME=$(basename $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
+      IMAGE_NAME="ghcr.io/alexandrovlab/$REPO_NAME"
       
       echo "Building version: $VERSION_TAG for image: $IMAGE_NAME"
       
-      # Log in to GHCR using your specified environment variables
-      echo "$GHRC_PASSWORD" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+      echo "$GHCR_PASSWORD" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
       
       docker build \
         --build-arg COMMIT_SHA=$TRAVIS_COMMIT \
