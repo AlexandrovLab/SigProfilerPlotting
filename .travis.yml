@@ -1,14 +1,9 @@
 dist: focal
 language: python
 
-on:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - 'CHANGELOG.md'
-      - 'README.md'
-      - 'LICENSE'
+branches:
+  only:
+    - master
 
 python:
   - "3.9"
@@ -22,34 +17,33 @@ install:
   - pip install .[tests]
 
 script: 
-  # run integration test
   - python3 sigProfilerPlotting/examples/plot_example.py
-  # run unit tests
   - pytest -s -rw tests
 
 after_success:
   - |
+    # This logic deploys after a merge to master. It runs on the "push" build that a merge creates,
+    # and skips the "pull request" build that runs before the merge.
     if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_PYTHON_VERSION" == "3.12" ]; then
-      echo "Starting Docker deployment to Docker Hub..."
+      echo "Starting Docker deployment to GHCR for alexandrovlab..."
       
-      # Dynamically get the version from setup.py for the tag
       VERSION_TAG=$(grep "VERSION = " setup.py | cut -d'"' -f2)
-      echo "Building version: $VERSION_TAG for commit: $TRAVIS_COMMIT"
+      IMAGE_NAME="ghcr.io/alexandrovlab/$(basename $TRAVIS_REPO_SLUG)"
       
-      # Log in securely using environment variables from Travis CI settings
-      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      echo "Building version: $VERSION_TAG for image: $IMAGE_NAME"
       
-      # Build the image, passing the commit SHA and tagging with the version and "latest"
+      # Log in to GHCR using your specified environment variables
+      echo "$GHRC_PASSWORD" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+      
       docker build \
         --build-arg COMMIT_SHA=$TRAVIS_COMMIT \
-        -t mdbarnesucsd/sigprofilerplotting:$VERSION_TAG \
-        -t mdbarnesucsd/sigprofilerplotting:latest .
+        -t $IMAGE_NAME:$VERSION_TAG \
+        -t $IMAGE_NAME:latest .
         
-      # Push both tags to your personal Docker Hub account
-      docker push mdbarnesucsd/sigprofilerplotting:$VERSION_TAG
-      docker push mdbarnesucsd/sigprofilerplotting:latest
+      docker push $IMAGE_NAME:$VERSION_TAG
+      docker push $IMAGE_NAME:latest
       
-      echo "Docker deployment successful"
+      echo "Docker deployment to GHCR successful"
     else
       echo "Skipping Docker deployment"
     fi
